@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicle Details — AutoPrime</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: #edf0f5; }
+    .page-wrap { max-width: 500px; }
+    .card { padding: 0; overflow: hidden; }
+    .specs-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .specs-table tr { border-bottom: 1px solid var(--border); }
+    .specs-table tr:last-child { border-bottom: none; }
+    .specs-table td { padding: 13px 18px; }
+    .specs-table td:first-child { color: var(--muted); font-size: .85rem; width: 35%; }
+    .specs-table td:last-child { font-weight: 600; color: var(--text); }
+  </style>
+
+  <script>
+    const cars = {
+      1: { id: 1, make: "Toyota",     model: "Corolla", year: 2021, price: "$18,500.00" },
+      2: { id: 2, make: "Volkswagen", model: "Golf",    year: 2020, price: "$17,200.00" },
+      3: { id: 3, make: "BMW",        model: "320d",    year: 2022, price: "$31,500.00" },
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const id = new URLSearchParams(location.search).get("id");
+      const car = cars[id];
+
+      if (!car) {
+        document.getElementById("heading").textContent = "Vehicle not found";
+        document.getElementById("rows").innerHTML = "<tr><td colspan='2'>No car with that ID exists.</td></tr>";
+        return;
+      }
+
+      document.title = `${car.year} ${car.make} ${car.model} — AutoPrime`;
+      document.getElementById("heading").textContent = `${car.year} ${car.make} ${car.model}`;
+      document.getElementById("rows").innerHTML = `
+        <tr><td>ID</td><td>${car.id}</td></tr>
+        <tr><td>Make</td><td>${car.make}</td></tr>
+        <tr><td>Model</td><td>${car.model}</td></tr>
+        <tr><td>Year</td><td>${car.year}</td></tr>
+        <tr><td>Price</td><td>${car.price}</td></tr>
+      `;
+    });
+  </script>
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">AutoPrime</div>
+    <a href="admin-dashboard.html">Vehicles</a>
+  </aside>
+
+  <main class="admin-main">
+    <div class="page-wrap">
+      <div style="margin-bottom:20px;">
+        <a href="admin-dashboard.html" class="back-link">← Back to Vehicles</a>
+      </div>
+
+      <h1 id="heading" style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:18px;"></h1>
+
+      <div class="card">
+        <table class="specs-table">
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+</body>
+</html>
