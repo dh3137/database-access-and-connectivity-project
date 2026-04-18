@@ -72,8 +72,8 @@ They are **not linked**. The SQL files do not update automatically when you use 
 
 1. You click "Add Car" and fill in the form.
 2. The browser sends a `POST /api/cars` request to the Java server.
-3. `Main.java` receives it, calls `CarService.addCar()`, which calls `CarDao.addCar()`.
-4. `CarDao` opens a JDBC connection to MySQL and runs:
+3. `Main.java` receives it and calls `CarDatabase.saveCar()`.
+4. `CarDatabase` opens a JDBC connection to MySQL and runs:
    ```sql
    INSERT INTO cars (make, model, year, price) VALUES (?, ?, ?, ?)
    ```
@@ -126,9 +126,9 @@ src/main/java/com/cardealership/
   util/DatabaseConnection.java  — Opens JDBC connections to MySQL. Credentials live here.
   model/Car.java          — Plain Java object representing a car row.
   model/User.java         — Plain Java object representing a user row.
-  dao/CarDao.java         — All SQL for cars: SELECT, INSERT, UPDATE, DELETE.
-  dao/UserDao.java        — SQL for users: find by username.
-  dao/ActionLogDao.java   — SQL for the action_log table: insert and read entries.
+  dao/CarDatabase.java    — All SQL for cars: SELECT, INSERT, UPDATE, DELETE.
+  dao/UserDatabase.java        — SQL for users: find by username.
+  dao/ActionLogDatabase.java   — SQL for the action_log table: insert and read entries.
   service/CarService.java — Business logic for cars (validation before hitting the DAO).
   service/UserService.java — Authenticates users: hashes the password and compares to DB.
 
