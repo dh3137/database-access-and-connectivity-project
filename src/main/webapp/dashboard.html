@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — AutoPrime</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Dashboard-specific overrides */
+    .stat-row { margin-bottom: 0; }
+    tbody tr td:not(:last-child) { cursor: pointer; }
+    .modal-backdrop { display: none; }
+    .modal-backdrop.open { display: flex; }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">AutoPrime</div>
+    <div class="user-info" id="user-name"></div>
+    <a href="/dashboard.html" class="active">Vehicles</a>
+    <a href="/api/logout" style="margin-top:auto;">Logout</a>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Vehicle Inventory</div>
+        <div class="page-subtitle">Manage your dealership's full vehicle catalogue.</div>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-row" id="stat-row">
+      <div class="stat-box">
+        <div class="label">Total Vehicles</div>
+        <div class="value" id="stat-total">—</div>
+        <div class="sub">in inventory</div>
+      </div>
+      <div class="stat-box green">
+        <div class="label">Available</div>
+        <div class="value" id="stat-available">—</div>
+        <div class="sub">ready to sell</div>
+      </div>
+      <div class="stat-box red">
+        <div class="label">Sold</div>
+        <div class="value" id="stat-sold">—</div>
+        <div class="sub">completed deals</div>
+      </div>
+      <div class="stat-box amber">
+        <div class="label">Reserved</div>
+        <div class="value" id="stat-reserved">—</div>
+        <div class="sub">pending deals</div>
+      </div>
+    </div>
+
+    <!-- Vehicles table card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">All Vehicles</span>
+        <button class="btn-add" onclick="openModal()">+ Add Car</button>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
+        <select id="f-status" onchange="applyFilters()">
+          <option value="">All statuses</option>
+          <option value="AVAILABLE">Available</option>
+          <option value="SOLD">Sold</option>
+          <option value="RESERVED">Reserved</option>
+        </select>
+        <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
+        <input type="number" id="f-max-price" placeholder="Max $"     oninput="applyFilters()" />
+        <input type="number" id="f-min-year"  placeholder="From year" oninput="applyFilters()" />
+        <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Make</th>
+              <th>Model</th>
+              <th>Year</th>
+              <th>Color</th>
+              <th>Mileage</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="car-rows">
+            <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Activity log card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">Activity Log</span>
+        <span style="color:var(--muted);font-size:.78rem;">last 50 actions</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody id="log-rows">
+            <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Add Car</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modal-id" />
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Make</label>
+          <input type="text" id="modal-make" placeholder="e.g. Toyota" />
+        </div>
+        <div class="form-group">
+          <label>Model</label>
+          <input type="text" id="modal-model" placeholder="e.g. Corolla" />
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <input type="number" id="modal-year" placeholder="e.g. 2023" />
+        </div>
+        <div class="form-group">
+          <label>Price ($)</label>
+          <input type="number" id="modal-price" placeholder="e.g. 25000" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <input type="text" id="modal-color" placeholder="e.g. Midnight Blue" />
+        </div>
+        <div class="form-group">
+          <label>Mileage (km)</label>
+          <input type="number" id="modal-mileage" placeholder="e.g. 45000" />
+        </div>
+        <div class="form-group full">
+          <label>Status</label>
+          <select id="modal-status">
+            <option value="AVAILABLE">Available</option>
+            <option value="SOLD">Sold</option>
+            <option value="RESERVED">Reserved</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Image URL <span style="font-weight:400;color:var(--muted-2);">(optional)</span></label>
+          <input type="text" id="modal-image" placeholder="https://…" />
+        </div>
+        <div class="form-group full">
+          <label>Description <span style="font-weight:400;color:var(--muted-2);">(optional)</span></label>
+          <textarea id="modal-desc" placeholder="Brief description of the car…"></textarea>
+        </div>
+      </div>
+
+      <div id="modal-error" style="display:none;margin-top:12px;color:var(--red);font-size:.84rem;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveCar()">Save Car</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let allCars = [];
+
+  async function init() {
+    const meRes = await fetch("/api/me", { credentials: "include" });
+    const me = await meRes.json();
+    if (me.error) { location.href = "/login.html"; return; }
+    if (me.role !== "ADMIN") { location.href = "/cars.html"; return; }
+    document.getElementById("user-name").textContent = me.fullName;
+    await loadCars();
+    await loadLogs();
+  }
+
+  async function loadCars() {
+    const res = await fetch("/api/cars", { credentials: "include" });
+    const cars = await res.json();
+    if (cars.error) { location.href = "/login.html"; return; }
+    allCars = cars;
+    updateStats();
+    applyFilters();
+  }
+
+  function updateStats() {
+    document.getElementById("stat-total").textContent     = allCars.length;
+    document.getElementById("stat-available").textContent = allCars.filter(c => c.status === "AVAILABLE").length;
+    document.getElementById("stat-sold").textContent      = allCars.filter(c => c.status === "SOLD").length;
+    document.getElementById("stat-reserved").textContent  = allCars.filter(c => c.status === "RESERVED").length;
+  }
+
+  function applyFilters() {
+    const search   = document.getElementById("f-search").value.trim().toLowerCase();
+    const status   = document.getElementById("f-status").value;
+    const minPrice = parseFloat(document.getElementById("f-min-price").value) || 0;
+    const maxPrice = parseFloat(document.getElementById("f-max-price").value) || Infinity;
+    const minYear  = parseInt(document.getElementById("f-min-year").value)  || 0;
+    const maxYear  = parseInt(document.getElementById("f-max-year").value)  || 9999;
+
+    const filtered = allCars.filter(c => {
+      if (search && !c.make.toLowerCase().includes(search) && !c.model.toLowerCase().includes(search)) return false;
+      if (status && c.status !== status) return false;
+      if (c.price < minPrice || c.price > maxPrice) return false;
+      if (c.year  < minYear  || c.year  > maxYear)  return false;
+      return true;
+    });
+
+    renderCars(filtered);
+  }
+
+  function renderCars(cars) {
+    const tbody = document.getElementById("car-rows");
+    if (cars.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='9' style='text-align:center;color:var(--muted);padding:32px;'>No vehicles match your filters.</td></tr>";
+      return;
+    }
+    tbody.innerHTML = cars.map(car => `
+      <tr>
+        <td class="muted" onclick="goDetail(${car.id})">${car.id}</td>
+        <td onclick="goDetail(${car.id})"><strong>${car.make}</strong></td>
+        <td onclick="goDetail(${car.id})">${car.model}</td>
+        <td onclick="goDetail(${car.id})">${car.year}</td>
+        <td onclick="goDetail(${car.id})" class="muted">${car.color || '—'}</td>
+        <td onclick="goDetail(${car.id})" class="muted">${car.mileage ? car.mileage.toLocaleString() + ' km' : '—'}</td>
+        <td onclick="goDetail(${car.id})">$${car.price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
+        <td onclick="goDetail(${car.id})">${statusBadge(car.status)}</td>
+        <td style="white-space:nowrap;">
+          <button class="action-btn btn-edit" onclick="openEdit(${car.id})">Edit</button>
+          <button class="action-btn btn-delete" onclick="deleteCar(${car.id})">Delete</button>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  function statusBadge(s) {
+    const cls = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[s] || 'badge-available';
+    const label = s ? s.charAt(0) + s.slice(1).toLowerCase() : 'Available';
+    return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  function goDetail(id) { location.href = "/vehicle-details.html?id=" + id; }
+
+  async function loadLogs() {
+    const res = await fetch("/api/logs", { credentials: "include" });
+    const logs = await res.json();
+    const tbody = document.getElementById("log-rows");
+    if (!logs || !logs.length) {
+      tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;color:var(--muted);padding:24px;'>No actions yet.</td></tr>";
+      return;
+    }
+    tbody.innerHTML = logs.map(l => `
+      <tr>
+        <td class="muted" style="white-space:nowrap;font-size:.8rem;">${l.time}</td>
+        <td><strong>${l.username}</strong></td>
+        <td>${l.action}</td>
+        <td class="muted" style="font-size:.83rem;">${l.detail}</td>
+      </tr>
+    `).join("");
+  }
+
+  function openModal() {
+    document.getElementById("modal-title").textContent = "Add Car";
+    document.getElementById("modal-id").value = "";
+    ["modal-make","modal-model","modal-year","modal-price","modal-color","modal-mileage","modal-image","modal-desc"].forEach(id => {
+      document.getElementById(id).value = "";
+    });
+    document.getElementById("modal-status").value = "AVAILABLE";
+    document.getElementById("modal-error").style.display = "none";
+    document.getElementById("modal-backdrop").classList.add("open");
+  }
+
+  function openEdit(id) {
+    const car = allCars.find(c => c.id === id);
+    if (!car) return;
+    document.getElementById("modal-title").textContent   = "Edit Car";
+    document.getElementById("modal-id").value            = car.id;
+    document.getElementById("modal-make").value          = car.make;
+    document.getElementById("modal-model").value         = car.model;
+    document.getElementById("modal-year").value          = car.year;
+    document.getElementById("modal-price").value         = car.price;
+    document.getElementById("modal-color").value         = car.color || "";
+    document.getElementById("modal-mileage").value       = car.mileage || "";
+    document.getElementById("modal-status").value        = car.status || "AVAILABLE";
+    document.getElementById("modal-image").value         = car.imageUrl || "";
+    document.getElementById("modal-desc").value          = car.description || "";
+    document.getElementById("modal-error").style.display = "none";
+    document.getElementById("modal-backdrop").classList.add("open");
+  }
+
+  function closeModal() {
+    document.getElementById("modal-backdrop").classList.remove("open");
+  }
+
+  async function saveCar() {
+    const id          = document.getElementById("modal-id").value;
+    const make        = document.getElementById("modal-make").value.trim();
+    const model       = document.getElementById("modal-model").value.trim();
+    const year        = parseInt(document.getElementById("modal-year").value);
+    const price       = parseFloat(document.getElementById("modal-price").value);
+    const color       = document.getElementById("modal-color").value.trim();
+    const mileage     = parseInt(document.getElementById("modal-mileage").value) || 0;
+    const status      = document.getElementById("modal-status").value;
+    const imageUrl    = document.getElementById("modal-image").value.trim();
+    const description = document.getElementById("modal-desc").value.trim();
+    const errEl       = document.getElementById("modal-error");
+
+    if (!make || !model || !year || isNaN(price)) {
+      errEl.textContent = "Make, model, year, and price are required.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    const body   = JSON.stringify({ make, model, year, price, status, color, mileage, imageUrl, description });
+    const isEdit = id !== "";
+    const url    = isEdit ? `/api/cars/${id}` : "/api/cars";
+    const method = isEdit ? "PUT" : "POST";
+
+    const res  = await fetch(url, { method, credentials: "include", headers: { "Content-Type": "application/json" }, body });
+    const data = await res.json();
+
+    if (data.error) { errEl.textContent = data.error; errEl.style.display = "block"; return; }
+    closeModal();
+    await loadCars();
+    await loadLogs();
+  }
+
+  async function deleteCar(id) {
+    if (!confirm("Delete this car? This cannot be undone.")) return;
+    const res  = await fetch(`/api/cars/${id}`, { method: "DELETE", credentials: "include" });
+    const data = await res.json();
+    if (data.error) { alert("Error: " + data.error); return; }
+    await loadCars();
+    await loadLogs();
+  }
+
+  // Close modal when clicking backdrop
+  document.getElementById("modal-backdrop").addEventListener("click", function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  init();
+</script>
+
+</body>
+</html>
