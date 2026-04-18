@@ -1,2 +1,5 @@
 .class/
 .DS_Store/
+
+# Maven build output (do not commit compiled classes)
+target/
