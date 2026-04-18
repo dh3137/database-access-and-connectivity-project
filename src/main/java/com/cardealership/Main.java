@@ -1,10 +1,11 @@
 package com.cardealership;
 
-import com.cardealership.dao.ActionLogDao;
+import com.cardealership.database.ActionLogDatabase;
+import com.cardealership.database.CarDatabase;
+import com.cardealership.database.UserDatabase;
 import com.cardealership.model.Car;
 import com.cardealership.model.User;
-import com.cardealership.service.CarService;
-import com.cardealership.service.UserService;
+import com.cardealership.util.MySQLDatabase;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Year;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +27,25 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
+    private static final MySQLDatabase database =
+            new MySQLDatabase("localhost", "3306", "car_dealership", "root", "Mineaitaci27");
     private static final Map<String, User> sessions = new ConcurrentHashMap<>();
-    private static final CarService carService = new CarService();
-    private static final UserService userService = new UserService();
-    private static final ActionLogDao actionLog = new ActionLogDao();
+    private static final CarDatabase carDatabase = new CarDatabase(database);
+    private static final UserDatabase userDatabase = new UserDatabase(database);
+    private static final ActionLogDatabase actionLogDatabase = new ActionLogDatabase(database);
 
     // Serve static files from src/main/webapp (works when run from project root via mvn exec:java)
     private static final String STATIC_DIR = "src/main/webapp";
 
     public static void main(String[] args) throws IOException {
+        try {
+            boolean connected = database.connect();
+            System.out.println("Connected: " + connected);
+        } catch (DLException e) {
+            System.err.println(e.getMessage());
+            return;
+        }
+
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
         server.createContext("/api/login",  Main::handleLogin);
@@ -60,13 +72,13 @@ public class Main {
             String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             System.out.println("[login] body: " + body);
             Map<String, String> params = parseForm(body);
-            User user = userService.authenticate(params.get("username"), params.get("password"));
+            User user = authenticate(params.get("username"), params.get("password"));
             System.out.println("[login] user found: " + (user != null ? user.getUsername() : "null"));
 
             if (user != null) {
                 String token = UUID.randomUUID().toString();
                 sessions.put(token, user);
-                actionLog.log(user.getUsername(), "LOGIN", "Role: " + user.getRole());
+                logAction(user.getUsername(), "LOGIN", "Role: " + user.getRole());
                 String dest = "ADMIN".equals(user.getRole()) ? "/dashboard.html" : "/cars.html";
                 ex.getResponseHeaders().add("Set-Cookie", "session=" + token + "; Path=/; HttpOnly");
                 redirect(ex, dest);
@@ -132,8 +144,8 @@ public class Main {
 
             if ("DELETE".equals(method) && hasId) {
                 int id = Integer.parseInt(parts[3]);
-                boolean deleted = carService.deleteCar(id);
-                if (deleted) actionLog.log(user.getUsername(), "DELETE_CAR", "Car id=" + id);
+                boolean deleted = carDatabase.deleteCar(id);
+                if (deleted) logAction(user.getUsername(), "DELETE_CAR", "Car id=" + id);
                 sendJson(ex, deleted ? 200 : 404, deleted ? "{\"ok\":true}" : "{\"error\":\"Car not found\"}");
 
             } else if ("PUT".equals(method) && hasId) {
@@ -141,20 +153,22 @@ public class Main {
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Car car = parseCarJson(body);
                 car.setId(id);
-                boolean updated = carService.updateCar(car);
-                if (updated) actionLog.log(user.getUsername(), "EDIT_CAR", car.getYear() + " " + car.getMake() + " " + car.getModel() + " (id=" + id + ")");
+                validateCar(car, true);
+                boolean updated = carDatabase.updateCar(car);
+                if (updated) logAction(user.getUsername(), "EDIT_CAR", car.getYear() + " " + car.getMake() + " " + car.getModel() + " (id=" + id + ")");
                 sendJson(ex, updated ? 200 : 404, updated ? carToJson(car) : "{\"error\":\"Car not found\"}");
 
             } else if ("POST".equals(method) && !hasId) {
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Car car = parseCarJson(body);
-                boolean added = carService.addCar(car);
-                if (added) actionLog.log(user.getUsername(), "ADD_CAR", car.getYear() + " " + car.getMake() + " " + car.getModel());
+                validateCar(car, false);
+                boolean added = carDatabase.saveCar(car);
+                if (added) logAction(user.getUsername(), "ADD_CAR", car.getYear() + " " + car.getMake() + " " + car.getModel());
                 sendJson(ex, added ? 201 : 500, added ? "{\"ok\":true}" : "{\"error\":\"Could not add car\"}");
 
             } else if ("GET".equals(method) && hasId) {
                 int id = Integer.parseInt(parts[3]);
-                Car car = carService.getCarById(id);
+                Car car = carDatabase.getCarById(id);
                 if (car == null) {
                     sendJson(ex, 404, "{\"error\":\"Car not found\"}");
                 } else {
@@ -162,7 +176,7 @@ public class Main {
                 }
 
             } else if ("GET".equals(method)) {
-                List<Car> cars = carService.getAllCars();
+                List<Car> cars = carDatabase.getAllCars();
                 StringBuilder sb = new StringBuilder("[");
                 for (int i = 0; i < cars.size(); i++) {
                     if (i > 0) sb.append(",");
@@ -188,7 +202,7 @@ public class Main {
             if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
             if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
 
-            List<String[]> entries = actionLog.getRecent(50);
+            List<String[]> entries = actionLogDatabase.getRecent(50);
             StringBuilder sb = new StringBuilder("[");
             for (int i = 0; i < entries.size(); i++) {
                 if (i > 0) sb.append(",");
@@ -361,5 +375,63 @@ public class Main {
     private static String escapeJson(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private static User authenticate(String username, String password) throws DLException {
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return null;
+        }
+
+        return userDatabase.authenticate(username, sha256(password));
+    }
+
+    private static String sha256(String input) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
+    }
+
+    private static void validateCar(Car car, boolean update) {
+        int maxYear = Year.now().getValue() + 1;
+
+        if (car == null) {
+            throw new IllegalArgumentException("Car data is required.");
+        }
+
+        if (update && car.getId() <= 0) {
+            throw new IllegalArgumentException("Car id is required for update.");
+        }
+
+        if (car.getMake() == null || car.getMake().trim().isEmpty()) {
+            throw new IllegalArgumentException("Car make is required.");
+        }
+
+        if (car.getModel() == null || car.getModel().trim().isEmpty()) {
+            throw new IllegalArgumentException("Car model is required.");
+        }
+
+        if (car.getYear() < 1900 || car.getYear() > maxYear) {
+            throw new IllegalArgumentException("Car year is not valid.");
+        }
+
+        if (car.getPrice() < 0) {
+            throw new IllegalArgumentException("Car price cannot be negative.");
+        }
+    }
+
+    private static void logAction(String username, String action, String detail) {
+        try {
+            actionLogDatabase.saveActionLog(username, action, detail);
+        } catch (DLException e) {
+            System.err.println("[action_log] Failed to write log: " + e.getMessage());
+        }
     }
 }
