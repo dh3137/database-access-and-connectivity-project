@@ -13,7 +13,7 @@ public class CarDao {
 
     public List<Car> findAll() {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT id, make, model, year, price FROM cars ORDER BY id";
+        String sql = "SELECT id, make, model, year, price, status, color, mileage, image_url, description FROM cars ORDER BY id";
 
         try (Connection connection = openConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -30,7 +30,7 @@ public class CarDao {
     }
 
     public Car findById(int id) {
-        String sql = "SELECT id, make, model, year, price FROM cars WHERE id = ?";
+        String sql = "SELECT id, make, model, year, price, status, color, mileage, image_url, description FROM cars WHERE id = ?";
 
         try (Connection connection = openConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -50,7 +50,7 @@ public class CarDao {
     }
 
     public boolean addCar(Car car) {
-        String sql = "INSERT INTO cars (make, model, year, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO cars (make, model, year, price, status, color, mileage, image_url, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = openConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -59,6 +59,11 @@ public class CarDao {
             statement.setString(2, car.getModel());
             statement.setInt(3, car.getYear());
             statement.setDouble(4, car.getPrice());
+            statement.setString(5, car.getStatus() != null ? car.getStatus() : "AVAILABLE");
+            statement.setString(6, car.getColor());
+            statement.setInt(7, car.getMileage());
+            statement.setString(8, car.getImageUrl());
+            statement.setString(9, car.getDescription());
 
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -66,17 +71,58 @@ public class CarDao {
         }
     }
 
+    public boolean updateCar(Car car) {
+        String sql = "UPDATE cars SET make=?, model=?, year=?, price=?, status=?, color=?, mileage=?, image_url=?, description=? WHERE id=?";
+
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, car.getMake());
+            statement.setString(2, car.getModel());
+            statement.setInt(3, car.getYear());
+            statement.setDouble(4, car.getPrice());
+            statement.setString(5, car.getStatus() != null ? car.getStatus() : "AVAILABLE");
+            statement.setString(6, car.getColor());
+            statement.setInt(7, car.getMileage());
+            statement.setString(8, car.getImageUrl());
+            statement.setString(9, car.getDescription());
+            statement.setInt(10, car.getId());
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not update the car.", e);
+        }
+    }
+
+    public boolean deleteCar(int id) {
+        String sql = "DELETE FROM cars WHERE id=?";
+
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not delete the car.", e);
+        }
+    }
+
     private Connection openConnection() throws SQLException {
         return DatabaseConnection.getConnection();
     }
 
-    private Car mapCar(ResultSet resultSet) throws SQLException {
+    private Car mapCar(ResultSet rs) throws SQLException {
         Car car = new Car();
-        car.setId(resultSet.getInt("id"));
-        car.setMake(resultSet.getString("make"));
-        car.setModel(resultSet.getString("model"));
-        car.setYear(resultSet.getInt("year"));
-        car.setPrice(resultSet.getDouble("price"));
+        car.setId(rs.getInt("id"));
+        car.setMake(rs.getString("make"));
+        car.setModel(rs.getString("model"));
+        car.setYear(rs.getInt("year"));
+        car.setPrice(rs.getDouble("price"));
+        car.setStatus(rs.getString("status"));
+        car.setColor(rs.getString("color"));
+        car.setMileage(rs.getInt("mileage"));
+        car.setImageUrl(rs.getString("image_url"));
+        car.setDescription(rs.getString("description"));
         return car;
     }
 }

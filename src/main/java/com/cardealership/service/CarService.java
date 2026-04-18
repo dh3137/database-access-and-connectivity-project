@@ -30,6 +30,21 @@ public class CarService {
         return carDao.addCar(car);
     }
 
+    public boolean updateCar(Car car) {
+        if (car.getId() <= 0) {
+            throw new IllegalArgumentException("Car id is required for update.");
+        }
+        validateCar(car);
+        return carDao.updateCar(car);
+    }
+
+    public boolean deleteCar(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Car id must be greater than 0.");
+        }
+        return carDao.deleteCar(id);
+    }
+
     private void validateCar(Car car) {
         int maxYear = Year.now().getValue() + 1;
 

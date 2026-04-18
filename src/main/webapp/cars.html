@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicles — AutoPrime</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    tbody tr { cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">AutoPrime</div>
+    <div class="user-info" id="user-name"></div>
+    <a href="/cars.html" class="active">Vehicles</a>
+    <a href="/api/logout" style="margin-top:auto;">Logout</a>
+  </aside>
+
+  <main class="admin-main">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Vehicle Inventory</div>
+        <div class="page-subtitle">Click any row to view full vehicle details.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">All Vehicles</span>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
+        <select id="f-status" onchange="applyFilters()">
+          <option value="">All statuses</option>
+          <option value="AVAILABLE">Available</option>
+          <option value="SOLD">Sold</option>
+          <option value="RESERVED">Reserved</option>
+        </select>
+        <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
+        <input type="number" id="f-max-price" placeholder="Max $"     oninput="applyFilters()" />
+        <input type="number" id="f-min-year"  placeholder="From year" oninput="applyFilters()" />
+        <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Make</th>
+              <th>Model</th>
+              <th>Year</th>
+              <th>Color</th>
+              <th>Mileage</th>
+              <th>Price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="car-rows">
+            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let allCars = [];
+
+  async function init() {
+    const meRes = await fetch("/api/me", { credentials: "include" });
+    const me = await meRes.json();
+    if (me.error) { location.href = "/login.html"; return; }
+    document.getElementById("user-name").textContent = me.fullName;
+
+    const carsRes = await fetch("/api/cars", { credentials: "include" });
+    const cars = await carsRes.json();
+    if (cars.error) { location.href = "/login.html"; return; }
+    allCars = cars;
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const search   = document.getElementById("f-search").value.trim().toLowerCase();
+    const status   = document.getElementById("f-status").value;
+    const minPrice = parseFloat(document.getElementById("f-min-price").value) || 0;
+    const maxPrice = parseFloat(document.getElementById("f-max-price").value) || Infinity;
+    const minYear  = parseInt(document.getElementById("f-min-year").value)  || 0;
+    const maxYear  = parseInt(document.getElementById("f-max-year").value)  || 9999;
+
+    const filtered = allCars.filter(c => {
+      if (search && !c.make.toLowerCase().includes(search) && !c.model.toLowerCase().includes(search)) return false;
+      if (status && c.status !== status) return false;
+      if (c.price < minPrice || c.price > maxPrice) return false;
+      if (c.year  < minYear  || c.year  > maxYear)  return false;
+      return true;
+    });
+
+    const tbody = document.getElementById("car-rows");
+    if (filtered.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:var(--muted);padding:32px;'>No vehicles match your filters.</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(car => `
+      <tr onclick="location.href='/vehicle-details.html?id=${car.id}'">
+        <td class="muted">${car.id}</td>
+        <td><strong>${car.make}</strong></td>
+        <td>${car.model}</td>
+        <td>${car.year}</td>
+        <td class="muted">${car.color || '—'}</td>
+        <td class="muted">${car.mileage ? car.mileage.toLocaleString() + ' km' : '—'}</td>
+        <td>$${car.price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
+        <td>${statusBadge(car.status)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function statusBadge(s) {
+    const cls = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[s] || 'badge-available';
+    const label = s ? s.charAt(0) + s.slice(1).toLowerCase() : 'Available';
+    return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  init();
+</script>
+
+</body>
+</html>
