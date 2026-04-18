@@ -10,6 +10,14 @@ public final class DatabaseConnection {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "LuckaPuckaisBo55and$$";
 
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("MySQL JDBC driver is not available.", e);
+        }
+    }
+
     private DatabaseConnection() {
     }
 
