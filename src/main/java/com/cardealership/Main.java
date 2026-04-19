@@ -9,6 +9,7 @@ import com.cardealership.util.MySQLDatabase;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -21,14 +22,33 @@ import java.time.Year;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
 public class Main {
 
-    private static final MySQLDatabase database =
-            new MySQLDatabase("localhost", "3306", "car_dealership", "root", "Mineaitaci27");
+    private static final MySQLDatabase database = loadDatabase();
+
+    private static MySQLDatabase loadDatabase() {
+        String osUser = System.getProperty("user.name");
+        Properties props = new Properties();
+        try (FileInputStream fis = new FileInputStream("db.properties")) {
+            props.load(fis);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read db.properties file. Make sure it exists in the project root.", e);
+        }
+        String host     = props.getProperty(osUser + ".host");
+        String port     = props.getProperty(osUser + ".port");
+        String database = props.getProperty(osUser + ".database");
+        String username = props.getProperty(osUser + ".username");
+        String password = props.getProperty(osUser + ".password");
+        if (host == null || password == null) {
+            throw new RuntimeException("No DB config found for OS user: \"" + osUser + "\". Add your entry to db.properties.");
+        }
+        return new MySQLDatabase(host, port, database, username, password);
+    }
     private static final Map<String, User> sessions = new ConcurrentHashMap<>();
     private static final CarDatabase carDatabase = new CarDatabase(database);
     private static final UserDatabase userDatabase = new UserDatabase(database);
