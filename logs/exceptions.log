@@ -73,3 +73,126 @@ java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check th
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
+Apr 20, 2026 1:26:44 AM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-20 01:26:44
+Exception Type: java.sql.SQLException
+Message: Access denied for user 'root'@'localhost' (using password: YES)
+Additional Info:
+  [0] Operation=connect
+  [1] DatabaseType=MySQL
+Stack Trace:
+java.sql.SQLException: Access denied for user 'root'@'localhost' (using password: YES)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:191)
+	at com.cardealership.util.MySQLDatabase.createConnection(MySQLDatabase.java:139)
+	at com.cardealership.util.MySQLDatabase.connect(MySQLDatabase.java:33)
+	at com.cardealership.Main.main(Main.java:42)
+
+Apr 20, 2026 1:27:00 AM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-20 01:27:00
+Exception Type: java.sql.SQLException
+Message: Access denied for user 'root'@'localhost' (using password: YES)
+Additional Info:
+  [0] Operation=connect
+  [1] DatabaseType=MySQL
+Stack Trace:
+java.sql.SQLException: Access denied for user 'root'@'localhost' (using password: YES)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:191)
+	at com.cardealership.util.MySQLDatabase.createConnection(MySQLDatabase.java:139)
+	at com.cardealership.util.MySQLDatabase.connect(MySQLDatabase.java:33)
+	at com.cardealership.Main.main(Main.java:42)
+
+Apr 20, 2026 1:32:04 AM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-20 01:32:04
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''50'' at line 1
+Additional Info:
+  [0] Operation=getDataPrepared
+  [1] DatabaseType=MySQL
+  [2] SQL=SELECT username, action, detail, created_at FROM action_log ORDER BY created_at DESC LIMIT ?
+Stack Trace:
+java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''50'' at line 1
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at com.cardealership.util.MySQLDatabase.getData(MySQLDatabase.java:77)
+	at com.cardealership.database.ActionLogDatabase.getRecent(ActionLogDatabase.java:30)
+	at com.cardealership.Main.handleLogs(Main.java:225)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:82)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:101)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:871)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:847)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+Apr 20, 2026 1:35:44 AM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-20 01:35:44
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''50'' at line 1
+Additional Info:
+  [0] Operation=getDataPrepared
+  [1] DatabaseType=MySQL
+  [2] SQL=SELECT username, action, detail, created_at FROM action_log ORDER BY created_at DESC LIMIT ?
+Stack Trace:
+java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''50'' at line 1
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at com.cardealership.util.MySQLDatabase.getData(MySQLDatabase.java:77)
+	at com.cardealership.database.ActionLogDatabase.getRecent(ActionLogDatabase.java:30)
+	at com.cardealership.Main.handleLogs(Main.java:225)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:82)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:101)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:871)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:847)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+Apr 20, 2026 1:36:06 AM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-20 01:36:06
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''50'' at line 1
+Additional Info:
+  [0] Operation=getDataPrepared
+  [1] DatabaseType=MySQL
+  [2] SQL=SELECT username, action, detail, created_at FROM action_log ORDER BY created_at DESC LIMIT ?
+Stack Trace:
+java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''50'' at line 1
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at com.cardealership.util.MySQLDatabase.getData(MySQLDatabase.java:77)
+	at com.cardealership.database.ActionLogDatabase.getRecent(ActionLogDatabase.java:30)
+	at com.cardealership.Main.handleLogs(Main.java:225)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:82)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:101)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:871)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:847)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+

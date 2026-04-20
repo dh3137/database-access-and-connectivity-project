@@ -133,11 +133,14 @@ src/main/java/com/cardealership/
   service/UserService.java — Authenticates users: hashes the password and compares to DB.
 
 src/main/webapp/
+  index.html              — Public landing page. No login needed. Car grid with filters and shimmer loading.
   login.html              — Login form. POSTs to /api/login.
   dashboard.html          — Admin view. Shows car table + Add/Edit/Delete + activity log.
   cars.html               — Employee/customer view. Read-only car list.
-  vehicle-details.html    — Detail page for a single car. Works for all roles.
-  css/style.css           — All shared styles.
+  vehicle-details.html    — Public car detail page. Works without login; shows Dashboard link if logged in. Lazy-fetches Wikipedia image if no imageUrl stored in DB.
+  css/style.css           — All shared styles (includes public-page, public-nav, staff-btn styles).
+
+db.properties             — Per-developer MySQL credentials. Key is the OS username (System.getProperty("user.name")).
 ```
 
 ---
@@ -149,8 +152,9 @@ src/main/webapp/
 | POST | `/api/login` | Anyone | Authenticate, set session cookie |
 | GET | `/api/logout` | Logged in | Destroy session, redirect to login |
 | GET | `/api/me` | Logged in | Returns current user's info (id, username, role, fullName) |
-| GET | `/api/cars` | Logged in | Returns all cars as JSON array |
-| GET | `/api/cars/{id}` | Logged in | Returns one car as JSON |
+| GET | `/api/cars` | Anyone | Returns all cars as JSON array (public) |
+| GET | `/api/cars/{id}` | Anyone | Returns one car as JSON (public) |
+| GET | `/api/carimage` | Anyone | Fetches a year-specific Wikipedia image URL for `?make=&model=&year=` (uses generator=search, prefers JPEG) |
 | POST | `/api/cars` | ADMIN only | Add a new car |
 | PUT | `/api/cars/{id}` | ADMIN only | Edit an existing car |
 | DELETE | `/api/cars/{id}` | ADMIN only | Delete a car |

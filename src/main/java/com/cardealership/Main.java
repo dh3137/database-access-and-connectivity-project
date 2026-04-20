@@ -68,12 +68,13 @@ public class Main {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        server.createContext("/api/login",  Main::handleLogin);
-        server.createContext("/api/logout", Main::handleLogout);
-        server.createContext("/api/me",     Main::handleMe);
-        server.createContext("/api/cars",   Main::handleCars);
-        server.createContext("/api/logs",   Main::handleLogs);
-        server.createContext("/",           Main::handleStatic);
+        server.createContext("/api/login",    Main::handleLogin);
+        server.createContext("/api/logout",   Main::handleLogout);
+        server.createContext("/api/me",       Main::handleMe);
+        server.createContext("/api/cars",     Main::handleCars);
+        server.createContext("/api/logs",     Main::handleLogs);
+        server.createContext("/api/carimage", Main::handleCarImage);
+        server.createContext("/",             Main::handleStatic);
 
         server.setExecutor(Executors.newFixedThreadPool(4));
         server.start();
@@ -145,17 +146,14 @@ public class Main {
     private static void handleCars(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
-            if (user == null) {
-                sendJson(ex, 401, "{\"error\":\"Unauthorized\"}");
-                return;
-            }
 
             String method = ex.getRequestMethod();
             String[] parts = ex.getRequestURI().getPath().split("/");
             boolean hasId = parts.length >= 4 && !parts[3].isEmpty();
 
-            // Write operations — ADMIN only
+            // Write operations — require ADMIN session
             if ("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
+                if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
                 if (!"ADMIN".equals(user.getRole())) {
                     sendJson(ex, 403, "{\"error\":\"Forbidden\"}");
                     return;
@@ -241,10 +239,111 @@ public class Main {
         }
     }
 
+    // GET /api/carimage?make=Toyota&model=Corolla&year=2020
+    // Queries Wikipedia for the best matching car image URL and returns {"url":"..."}
+    private static void handleCarImage(HttpExchange ex) throws IOException {
+        try {
+            String query = ex.getRequestURI().getQuery();
+            Map<String, String> params = parseQuery(query);
+            String make  = params.getOrDefault("make",  "").trim();
+            String model = params.getOrDefault("model", "").trim();
+            String year  = params.getOrDefault("year",  "").trim();
+
+            if (make.isEmpty() || model.isEmpty()) {
+                sendJson(ex, 400, "{\"error\":\"make and model are required\"}");
+                return;
+            }
+
+            String imageUrl = fetchWikipediaImage(make, model, year);
+            if (imageUrl != null) {
+                sendJson(ex, 200, "{\"url\":\"" + escapeJson(imageUrl) + "\"}");
+            } else {
+                sendJson(ex, 404, "{\"error\":\"No image found\"}");
+            }
+        } catch (Exception e) {
+            System.err.println("[carimage] ERROR: " + e.getMessage());
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // Tries to find a year-specific Wikipedia car image using the search generator.
+    // Searches for "YEAR MAKE MODEL" first, then falls back to "MAKE MODEL".
+    // Using generator=search means we search article titles and fetch their images
+    // in one request — so "2013 Toyota Camry" can match a generation-specific article.
+    private static String fetchWikipediaImage(String make, String model, String year) {
+        String[] queries = year.isEmpty()
+            ? new String[]{ make + " " + model }
+            : new String[]{ year + " " + make + " " + model, make + " " + model };
+
+        for (String q : queries) {
+            try {
+                String encoded = java.net.URLEncoder.encode(q, StandardCharsets.UTF_8);
+                // generator=search finds articles matching the query and returns their images —
+                // more likely to hit a year/generation-specific article than a direct title lookup
+                String apiUrl = "https://en.wikipedia.org/w/api.php"
+                    + "?action=query"
+                    + "&generator=search"
+                    + "&gsrsearch=" + encoded
+                    + "&gsrlimit=5"
+                    + "&prop=pageimages"
+                    + "&pithumbsize=1200"
+                    + "&pilimit=5"
+                    + "&format=json";
+
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection)
+                    java.net.URI.create(apiUrl).toURL().openConnection();
+                conn.setRequestProperty("User-Agent", "AutoPrime/1.0 (car-dealership-project)");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+
+                String resp = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                conn.disconnect();
+
+                // Prefer a result whose thumbnail source is a photograph (not a logo/icon).
+                // Wikipedia logos tend to be small PNGs; car photos tend to be JPEGs.
+                // We scan all "source" values and pick the first JPEG, otherwise first any.
+                String firstAny = null;
+                int searchFrom = 0;
+                while (true) {
+                    int srcIdx = resp.indexOf("\"source\":\"", searchFrom);
+                    if (srcIdx < 0) break;
+                    int start = srcIdx + 10;
+                    int end   = resp.indexOf('"', start);
+                    if (end <= start) break;
+                    String candidate = resp.substring(start, end).replace("\\/", "/");
+                    searchFrom = end + 1;
+                    String lower = candidate.toLowerCase();
+                    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.contains(".jpg/")) {
+                        return candidate; // best match — JPEG photo
+                    }
+                    if (firstAny == null) firstAny = candidate;
+                }
+                if (firstAny != null) return firstAny;
+
+            } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    private static Map<String, String> parseQuery(String query) {
+        Map<String, String> map = new HashMap<>();
+        if (query == null || query.isEmpty()) return map;
+        for (String pair : query.split("&")) {
+            String[] kv = pair.split("=", 2);
+            if (kv.length == 2) {
+                map.put(
+                    URLDecoder.decode(kv[0], StandardCharsets.UTF_8),
+                    URLDecoder.decode(kv[1], StandardCharsets.UTF_8)
+                );
+            }
+        }
+        return map;
+    }
+
     // Serve static files from src/main/webapp/
     private static void handleStatic(HttpExchange ex) throws IOException {
         String uriPath = ex.getRequestURI().getPath();
-        if ("/".equals(uriPath)) uriPath = "/login.html";
+        if ("/".equals(uriPath)) uriPath = "/index.html";
 
         // Block directory traversal
         Path file = Paths.get(STATIC_DIR + uriPath).normalize();
