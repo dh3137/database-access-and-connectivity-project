@@ -196,3 +196,87 @@ java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check th
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
+Apr 21, 2026 12:36:49 PM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-21 12:36:49
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: Unknown database 'car_dealership'
+Additional Info:
+  [0] Operation=connect
+  [1] DatabaseType=MySQL
+Stack Trace:
+java.sql.SQLSyntaxErrorException: Unknown database 'car_dealership'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(Unknown Source)
+	at java.sql/java.sql.DriverManager.getConnection(Unknown Source)
+	at com.cardealership.util.MySQLDatabase.createConnection(MySQLDatabase.java:139)
+	at com.cardealership.util.MySQLDatabase.connect(MySQLDatabase.java:33)
+	at com.cardealership.Main.main(Main.java:62)
+
+Apr 21, 2026 12:38:30 PM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-21 12:38:30
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: Unknown database 'car_dealership'
+Additional Info:
+  [0] Operation=connect
+  [1] DatabaseType=MySQL
+Stack Trace:
+java.sql.SQLSyntaxErrorException: Unknown database 'car_dealership'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:160)
+	at com.cardealership.util.MySQLDatabase.createConnection(MySQLDatabase.java:139)
+	at com.cardealership.util.MySQLDatabase.connect(MySQLDatabase.java:33)
+	at com.cardealership.Main.main(Main.java:62)
+
+Apr 21, 2026 12:53:21 PM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-21 12:53:21
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: Unknown database 'car_dealership'
+Additional Info:
+  [0] Operation=connect
+  [1] DatabaseType=MySQL
+Stack Trace:
+java.sql.SQLSyntaxErrorException: Unknown database 'car_dealership'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:160)
+	at com.cardealership.util.MySQLDatabase.createConnection(MySQLDatabase.java:139)
+	at com.cardealership.util.MySQLDatabase.connect(MySQLDatabase.java:33)
+	at com.cardealership.Main.main(Main.java:62)
+
+Apr 21, 2026 1:54:53 PM com.cardealership.DLException log
+SEVERE: Timestamp: 2026-04-21 13:54:53
+Exception Type: java.sql.SQLSyntaxErrorException
+Message: Unknown database 'car_dealership'
+Additional Info:
+  [0] Operation=connect
+  [1] DatabaseType=MySQL
+Stack Trace:
+java.sql.SQLSyntaxErrorException: Unknown database 'car_dealership'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:837)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:420)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:160)
+	at com.cardealership.util.MySQLDatabase.createConnection(MySQLDatabase.java:139)
+	at com.cardealership.util.MySQLDatabase.connect(MySQLDatabase.java:33)
+	at com.cardealership.Main.main(Main.java:62)
+
