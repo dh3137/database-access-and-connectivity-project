@@ -51,22 +51,17 @@
     }
   </style>
 </head>
-<body>
+<body class="public-page">
 
-<div class="admin-shell">
+<header class="public-nav">
+  <a href="/" class="public-nav-logo">◈ AutoPrime</a>
+  <div id="nav-actions"></div>
+</header>
 
-  <aside class="sidebar">
-    <div class="sidebar-logo">AutoPrime</div>
-    <div class="user-info" id="user-name"></div>
-    <a id="vehicles-link" href="#">Vehicles</a>
-    <a href="/api/logout" style="margin-top:auto;">Logout</a>
-  </aside>
-
-  <main class="admin-main">
-    <div class="page-wrap">
+<div class="public-detail-wrap">
 
       <div style="margin-bottom:20px;">
-        <a id="back-link" href="#" class="back-link">← Back to Vehicles</a>
+        <a id="back-link" href="/" class="back-link">← Back to Vehicles</a>
       </div>
 
       <div class="car-heading">
@@ -86,26 +81,31 @@
         <div class="desc-block" id="desc-block" style="display:none;"></div>
       </div>
 
-    </div>
-  </main>
-
 </div>
 
 <script>
   async function init() {
-    const meRes = await fetch("/api/me", { credentials: "include" });
-    const me = await meRes.json();
-    if (me.error) { location.href = "/login.html"; return; }
+    // Check if user is logged in — optional, only affects nav
+    let me = null;
+    try {
+      const meRes = await fetch("/api/me", { credentials: "include" });
+      const data = await meRes.json();
+      if (!data.error) me = data;
+    } catch (_) {}
 
-    document.getElementById("user-name").textContent = me.fullName;
-    const backHref = me.role === "ADMIN" ? "/dashboard.html" : "/cars.html";
-    document.getElementById("vehicles-link").href = backHref;
-    document.getElementById("back-link").href = backHref;
+    const navActions = document.getElementById("nav-actions");
+    if (me) {
+      const dashHref = me.role === "ADMIN" ? "/dashboard.html" : "/cars.html";
+      navActions.innerHTML = `<a href="${dashHref}" class="staff-btn">Dashboard</a>`;
+      document.getElementById("back-link").href = dashHref;
+    } else {
+      navActions.innerHTML = `<a href="/login.html" class="staff-btn">Staff Login</a>`;
+    }
 
     const id = new URLSearchParams(location.search).get("id");
     if (!id) { showError("No car ID specified."); return; }
 
-    const carRes = await fetch(`/api/cars/${id}`, { credentials: "include" });
+    const carRes = await fetch(`/api/cars/${id}`);
     const car = await carRes.json();
     if (car.error) { showError(car.error); return; }
 
@@ -118,10 +118,18 @@
 
     // Car image
     const imgWrap = document.getElementById("img-wrap");
-    const imgSrc = car.imageUrl && car.imageUrl.trim()
-      ? car.imageUrl
-      : `https://source.unsplash.com/800x400/?${encodeURIComponent(car.make + ' ' + car.model + ' car')}`;
-    imgWrap.innerHTML = `<img src="${escHtml(imgSrc)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}" onerror="this.parentElement.innerHTML='<span class=\\'img-placeholder\\'>🚗</span>'" />`;
+    if (car.imageUrl && car.imageUrl.trim()) {
+      imgWrap.innerHTML = `<img src="${escHtml(car.imageUrl)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}" onerror="this.parentElement.innerHTML='<span class=\\'img-placeholder\\'>🚗</span>'" />`;
+    } else {
+      // Lazy-fetch from Wikipedia
+      try {
+        const r = await fetch(`/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`);
+        const d = await r.json();
+        if (d.url) {
+          imgWrap.innerHTML = `<img src="${escHtml(d.url)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}" onerror="this.parentElement.innerHTML='<span class=\\'img-placeholder\\'>🚗</span>'" />`;
+        }
+      } catch (_) {}
+    }
 
     // Specs
     const rows = [

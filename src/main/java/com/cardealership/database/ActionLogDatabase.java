@@ -24,9 +24,8 @@ public class ActionLogDatabase {
 
     public List<String[]> getRecent(int limit) throws DLException {
         List<String[]> rows = new ArrayList<>();
-        String sql = "SELECT username, action, detail, created_at FROM action_log ORDER BY created_at DESC LIMIT ?";
+        String sql = "SELECT username, action, detail, created_at FROM action_log ORDER BY created_at DESC LIMIT " + limit;
         ArrayList<String> values = new ArrayList<>();
-        values.add(String.valueOf(limit));
         String[][] result = database.getData(sql, values);
 
         for (int i = 1; i < result.length; i++) {

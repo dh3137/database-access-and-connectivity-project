@@ -710,3 +710,47 @@ textarea { resize: vertical; min-height: 72px; }
 
 /* Page wrap for detail views */
 .page-wrap { max-width: 640px; }
+
+/* ── Public Pages (index, vehicle-details when not logged in) ── */
+body.public-page {
+  background: var(--bg);
+}
+
+.public-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.public-nav-logo {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.staff-btn {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.staff-btn:hover { color: var(--text); border-color: var(--muted); }
+
+.public-detail-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+}
