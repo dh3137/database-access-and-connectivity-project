@@ -1,10 +1,11 @@
 package com.cardealership.database;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cardealership.DLException;
 import com.cardealership.model.Car;
 import com.cardealership.util.MySQLDatabase;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CarDatabase {
 

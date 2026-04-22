@@ -1,9 +1,10 @@
 package com.cardealership.database;
 
-import com.cardealership.DLException;
-import com.cardealership.util.MySQLDatabase;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.cardealership.DLException;
+import com.cardealership.util.MySQLDatabase;
 
 public class ActionLogDatabase {
 
