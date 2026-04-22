@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vehicle Details — AutoPrime</title>
+  <title>Vehicle Details — VELOCE</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
     /* Car image */
     .car-image-wrap {
       width: 100%;
       height: 280px;
-      background: #e2e8f0;
+      background: #1a1a1a;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -25,7 +25,7 @@
     }
     .car-image-wrap .img-placeholder {
       font-size: 5rem;
-      color: #94a3b8;
+      color: rgba(245,244,240,0.22);
     }
 
     /* Specs table */
@@ -54,7 +54,7 @@
 <body class="public-page">
 
 <header class="public-nav">
-  <a href="/" class="public-nav-logo">◈ AutoPrime</a>
+  <a href="/" class="public-nav-logo" style="font-family:'Playfair Display',Georgia,serif;font-style:italic;">◈ VELOCE</a>
   <div id="nav-actions"></div>
 </header>
 
@@ -109,7 +109,7 @@
     const car = await carRes.json();
     if (car.error) { showError(car.error); return; }
 
-    document.title = `${car.year} ${car.make} ${car.model} — AutoPrime`;
+    document.title = `${car.year} ${car.make} ${car.model} — VELOCE`;
     document.getElementById("heading").textContent = `${car.year} ${car.make} ${car.model}`;
 
     const badgeClass = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[car.status] || 'badge-available';
