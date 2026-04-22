@@ -15,6 +15,8 @@ logs/
 
 # Claude Code local files
 .claude/
+tools/
+workflows/
 
 # Large media files (store locally, not in git)
 *.mp4
