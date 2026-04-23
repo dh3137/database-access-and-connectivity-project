@@ -1,8 +1,0 @@
-# Copy this file to db.properties and fill in your local values.
-# Run `whoami` in your terminal to find your OS username.
-
-YOUR_USERNAME.host=localhost
-YOUR_USERNAME.port=3306
-YOUR_USERNAME.database=car_dealership
-YOUR_USERNAME.username=root
-YOUR_USERNAME.password=YOUR_PASSWORD_HERE

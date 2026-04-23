@@ -5,7 +5,7 @@
 AutoPrime is a car dealership web application built for the ISTE 330 (Database Access and Connectivity) course at RIT. It demonstrates how a Java backend connects to a MySQL database and serves data to a browser in real time.
 
 The app has three user roles:
-- **ADMIN** — can view, add, edit, and delete cars. Sees the activity log.
+- **ADMIN** — can view, add, edit, and delete vehicles. Sees the vehicle change log.
 - **EMPLOYEE** — can view the car list and car details. Read-only.
 - **CUSTOMER** — same as employee. Read-only.
 
@@ -30,11 +30,40 @@ No frameworks. No Spring. No Tomcat. No npm. Everything runs with one Maven comm
 
 ## How to Run
 
+### 1. Set up the database (first time only)
+
+```bash
+/usr/local/mysql/bin/mysql -u root -p < database/schema.sql
+/usr/local/mysql/bin/mysql -u root -p car_dealership < database/sample-data.sql
+```
+
+### 2. Configure your credentials
+
+Copy `db.properties.example` to `db.properties` and fill in your OS username and MySQL password:
+
+```properties
+YOUR_OS_USERNAME.host=localhost
+YOUR_OS_USERNAME.port=3306
+YOUR_OS_USERNAME.database=car_dealership
+YOUR_OS_USERNAME.username=root
+YOUR_OS_USERNAME.password=your_mysql_password
+```
+
+The key prefix must match `System.getProperty("user.name")` — i.e. whatever your Mac/laptop username is (e.g. `ivankarlo`).
+
+### 3. Start the server
+
 ```bash
 mvn compile exec:java
 ```
 
 Then open `http://localhost:8080` in your browser.
+
+### 4. Reset the database to sample data
+
+```bash
+/usr/local/mysql/bin/mysql -u root -p car_dealership < database/sample-data.sql
+```
 
 ---
 
@@ -42,21 +71,20 @@ Then open `http://localhost:8080` in your browser.
 
 All passwords are `password123`.
 
-| Username | Role | Name |
+| Username | Role | Linked to |
 |---|---|---|
-| ivan | ADMIN | Ivan Karlo |
-| danis | ADMIN | Danis Harmandić |
-| jurica | ADMIN | Jurica Jamić |
-| tomo | ADMIN | Tomislav Tešija |
-| branko | ADMIN | Branko Mihaljević |
-| employee1 | EMPLOYEE | Jane Employee |
-| customer1 | CUSTOMER | John Customer |
+| ivan | ADMIN | Employee: Ivan Karlo |
+| danis | ADMIN | Employee: Danis Harmandić |
+| jurica | ADMIN | Employee: Jurica Jamić |
+| tomo | ADMIN | Employee: Tomislav Tešija |
+| branko | EMPLOYEE | Employee: Branko Mihaljević |
+| john | CUSTOMER | Customer: John Customer |
+| ana | CUSTOMER | Customer: Ana Horvat |
+| marko | CUSTOMER | Customer: Marko Kovačić |
 
 ---
 
-## How Storage Works (Important)
-
-This is the part that confuses everyone at first.
+## How Storage Works
 
 ### There are TWO separate things: the SQL files and the live database.
 
@@ -68,49 +96,15 @@ MySQL (live)             ← where the app actually reads and writes at runtime
 
 They are **not linked**. The SQL files do not update automatically when you use the app. The app talks directly to MySQL.
 
-### What happens when you add a Mercedes in the dashboard?
+### What happens when you add a car in the dashboard?
 
-1. You click "Add Car" and fill in the form.
-2. The browser sends a `POST /api/cars` request to the Java server.
-3. `Main.java` receives it and calls `CarDatabase.saveCar()`.
-4. `CarDatabase` opens a JDBC connection to MySQL and runs:
-   ```sql
-   INSERT INTO cars (make, model, year, price) VALUES (?, ?, ?, ?)
-   ```
-5. MySQL stores the row. The Java server sends back `{"ok":true}`.
-6. The dashboard reloads the table from `GET /api/cars`, which runs `SELECT * FROM cars`.
-7. The Mercedes appears.
+1. Browser sends `POST /api/cars` with a JSON body including `modelId`, `year`, `price`, `vin`, etc.
+2. `Main.java` parses it and calls `CarDatabase.saveCar()`.
+3. `CarDatabase` runs `INSERT INTO Vehicles (model_id, year, price, ...) VALUES (?, ?, ?, ...)`.
+4. MySQL stores the row. Server sends back `{"ok":true}`.
+5. Dashboard reloads from `GET /api/cars`, which does a full JOIN query across Vehicles + Models + Manufacturers + VehicleImages.
 
-**The Mercedes is only in MySQL.** It is NOT written to `sample-data.sql`. That file is unchanged.
-
-### So why does the Mercedes still show after I restart the server?
-
-Because the server restarts, but MySQL keeps running. The data lives in MySQL, not in the Java process. The server just reconnects and reads the same rows.
-
-### What if I want to reset everything back to the original 4 cars?
-
-Run this in your terminal:
-
-```bash
-/usr/local/mysql/bin/mysql -u root -p'<your password>' car_dealership -e "DELETE FROM cars;"
-/usr/local/mysql/bin/mysql -u root -p'<your password>' car_dealership < database/sample-data.sql
-```
-
-That wipes the cars table and reloads the seed data from the file.
-
-### What if I add a car to `sample-data.sql`?
-
-Edit the file, add a line like:
-```sql
-('Mercedes', 'C200', 2023, 42000.00),
-```
-
-Then run:
-```bash
-/usr/local/mysql/bin/mysql -u root -p'<your password>' car_dealership < database/sample-data.sql
-```
-
-Because the file uses `INSERT IGNORE`, it skips rows that already exist and only adds new ones. Restart the server (or just refresh the dashboard) and the new car will appear.
+**The car is only in MySQL.** It is NOT written to `sample-data.sql`.
 
 ---
 
@@ -118,149 +112,106 @@ Because the file uses `INSERT IGNORE`, it skips rows that already exist and only
 
 ```
 database/
-  schema.sql              — CREATE TABLE statements. Run once when setting up.
-  sample-data.sql         — INSERT IGNORE seed data. Re-run anytime to add new rows.
+  schema.sql              — 16 CREATE TABLE statements. Run once when setting up.
+  sample-data.sql         — Seed data for all tables. Re-run to reset.
 
 src/main/java/com/cardealership/
-  Main.java               — The entire HTTP server. All API routes live here.
-  util/DatabaseConnection.java  — Opens JDBC connections to MySQL. Credentials live here.
-  model/Car.java          — Plain Java object representing a car row.
-  model/User.java         — Plain Java object representing a user row.
-  dao/CarDatabase.java    — All SQL for cars: SELECT, INSERT, UPDATE, DELETE.
-  dao/UserDatabase.java        — SQL for users: find by username.
-  dao/ActionLogDatabase.java   — SQL for the action_log table: insert and read entries.
-  service/CarService.java — Business logic for cars (validation before hitting the DAO).
-  service/UserService.java — Authenticates users: hashes the password and compares to DB.
+  Main.java               — HTTP server. All API routes, session handling, JSON serialization.
+  DLException.java        — Custom exception wrapping JDBC errors with context.
+  util/MySQLDatabase.java — JDBC connection pool helper (getData / setData).
+  model/Car.java          — Flat Java object for a vehicle + make/model strings from JOINs.
+  model/User.java         — Java object for a Users row (id, username, role, empId, customerId).
+  database/CarDatabase.java     — SQL for vehicles: SELECT with JOINs, INSERT, UPDATE, DELETE.
+  database/UserDatabase.java    — SQL for users: authenticate (username+SHA256), getUserByUsername, saveUser.
+  database/ActionLogDatabase.java — SQL for VehicleChangeLog: save and read change entries.
 
 src/main/webapp/
-  index.html              — Public landing page. No login needed. Car grid with filters and shimmer loading.
+  index.html              — Public landing page. Hero video, classic navbar/footer, rounded showcase cards, and customer inventory view.
   login.html              — Login form. POSTs to /api/login.
-  dashboard.html          — Admin view. Shows car table + Add/Edit/Delete + activity log.
-  cars.html               — Employee/customer view. Read-only car list.
-  vehicle-details.html    — Public car detail page. Works without login; shows Dashboard link if logged in. Lazy-fetches Wikipedia image if no imageUrl stored in DB.
-  css/style.css           — All shared styles (includes public-page, public-nav, staff-btn styles).
+  dashboard.html          — Admin view. Shows full car table (including sold/reserved), Add/Edit/Delete, and change log.
+  vehicle-details.html    — Public car detail page. Lazy-fetches Wikipedia image if no imageUrl and adjusts CTAs for reserved/sold vehicles.
+  css/style.css           — All shared styles.
 
-db.properties             — Per-developer MySQL credentials. Key is the OS username (System.getProperty("user.name")).
+db.properties             — Per-developer MySQL credentials (gitignored).
+db.properties.example     — Template showing how to set up db.properties.
 ```
 
 ---
 
 ## API Endpoints
 
-| Method | Path | Who | What |
+| Method | Path | Auth | What |
 |---|---|---|---|
 | POST | `/api/login` | Anyone | Authenticate, set session cookie |
 | GET | `/api/logout` | Logged in | Destroy session, redirect to login |
-| GET | `/api/me` | Logged in | Returns current user's info (id, username, role, fullName) |
-| GET | `/api/cars` | Anyone | Returns all cars as JSON array (public) |
-| GET | `/api/cars/{id}` | Anyone | Returns one car as JSON (public) |
-| GET | `/api/carimage` | Anyone | Fetches a year-specific Wikipedia image URL for `?make=&model=&year=` (uses generator=search, prefers JPEG) |
-| POST | `/api/cars` | ADMIN only | Add a new car |
-| PUT | `/api/cars/{id}` | ADMIN only | Edit an existing car |
-| DELETE | `/api/cars/{id}` | ADMIN only | Delete a car |
-| GET | `/api/logs` | ADMIN only | Returns last 50 action log entries |
+| GET | `/api/me` | Logged in | Returns `{id, username, role, empId, customerId}` |
+| GET | `/api/cars` | Anyone | All vehicles as JSON array (JOINed with make/model/image, status normalized to `AVAILABLE` / `RESERVED` / `SOLD`) |
+| GET | `/api/cars/{id}` | Anyone | Single vehicle as JSON with normalized uppercase status |
+| POST | `/api/cars` | ADMIN | Add a new vehicle (requires `modelId`) |
+| PUT | `/api/cars/{id}` | ADMIN | Edit an existing vehicle |
+| DELETE | `/api/cars/{id}` | ADMIN | Delete a vehicle |
+| GET | `/api/logs` | ADMIN | Last 50 VehicleChangeLog entries |
+| GET | `/api/carimage` | Anyone | Wikipedia image URL for `?make=&model=&year=` |
 
 ---
 
-## MySQL Tables
+## Database Schema (16 Tables)
 
-### `cars`
-| Column | Type | Notes |
-|---|---|---|
-| id | INT AUTO_INCREMENT | Primary key |
-| make | VARCHAR(50) | e.g. Toyota |
-| model | VARCHAR(50) | e.g. Corolla |
-| year | INT | e.g. 2023 |
-| price | DECIMAL(10,2) | e.g. 25000.00 |
+### Vehicle Catalog
 
-### `users`
-| Column | Type | Notes |
-|---|---|---|
-| id | INT AUTO_INCREMENT | Primary key |
-| username | VARCHAR(50) UNIQUE | Login username |
-| password | VARCHAR(255) | SHA-256 hex of the plain password |
-| role | ENUM | ADMIN, EMPLOYEE, or CUSTOMER |
-| full_name | VARCHAR(100) | Display name shown in sidebar |
+| Table | Purpose |
+|---|---|
+| `Manufacturers` | Brand info: name, country, founded_year, website_url |
+| `Models` | Model info per manufacturer: model_name, body_type, segment |
+| `Vehicles` | Actual inventory: model_id FK, year, color, mileage, price, vin, status, description |
+| `VehicleImages` | Images per vehicle: image_url, is_primary flag |
 
-### `action_log`
-| Column | Type | Notes |
-|---|---|---|
-| id | INT AUTO_INCREMENT | Primary key |
-| username | VARCHAR(50) | Who did the action |
-| action | VARCHAR(100) | LOGIN, ADD_CAR, EDIT_CAR, DELETE_CAR |
-| detail | VARCHAR(255) | Human-readable description |
-| created_at | TIMESTAMP | Auto-set to current time |
+A "car" in the app = `Vehicles` JOIN `Models` JOIN `Manufacturers` LEFT JOIN `VehicleImages (is_primary=TRUE)`.
+
+### People
+
+| Table | Purpose |
+|---|---|
+| `Customers` | first_name, last_name, email, phone, address |
+| `Employees` | first_name, last_name, email, phone, hire_date, is_active |
+
+### Authentication
+
+| Table | Purpose |
+|---|---|
+| `Users` | username, password (SHA-256), role ENUM(ADMIN/EMPLOYEE/CUSTOMER), nullable FK to emp_id OR customer_id |
+
+### Access Control
+
+| Table | Purpose |
+|---|---|
+| `Roles` | Role definitions (Admin, Salesperson, Employee) |
+| `Permissions` | Permission definitions (Add Vehicle, Record Sale, etc.) |
+| `EmployeeRoles` | Many-to-many: which employee has which role |
+| `RolePermissions` | Many-to-many: which role has which permission |
+
+### Transactions
+
+| Table | Purpose |
+|---|---|
+| `Sales` | vehicle_id, customer_id, emp_id, sale_price, payment_method |
+| `Reservations` | vehicle_id, customer_id, emp_id, expiry_date, status, deposit_amount |
+| `TestDrives` | vehicle_id, customer_id, emp_id, scheduled_date, status |
+
+### Audit & Maintenance
+
+| Table | Purpose |
+|---|---|
+| `MaintenanceHistory` | Per-vehicle service records: service_type, cost, performed_by |
+| `VehicleChangeLog` | Audit trail: who changed what on which vehicle and when |
 
 ---
 
-## Planned Features
+## Key Design Notes
 
-Features planned for the next phase of development. Ordered by priority.
-
-### 1. Car Status (Available / Sold / Reserved)
-Add a `status` column to the `cars` table: `ENUM('AVAILABLE', 'SOLD', 'RESERVED')`.  
-- Admins can change status from the dashboard (dropdown in the Edit modal).  
-- Car list highlights status with a colored badge (green = available, red = sold, yellow = reserved).  
-- Customers and employees see status on the detail page.  
-- Prevents selling a car that's already been sold.
-
-### 2. Search and Filter Cars
-A live search bar and filter panel above the car table that lets any user filter by:
-- Make (text search)
-- Year range (from / to)
-- Price range (min / max)
-- Status (if feature #1 is implemented)
-
-Filtering runs in the browser against the already-loaded list — no extra DB query needed.
-
-### 3. Inventory Statistics Panel
-An at-a-glance summary for admins at the top of the dashboard:
-- Total cars in inventory
-- Total inventory value (sum of all prices)
-- Breakdown by status (X available, Y sold, Z reserved)
-- Breakdown by make (5 Toyota, 3 BMW, …)
-
-All calculated with a single SQL `GROUP BY` query and rendered as simple stat cards.
-
-### 4. User Management (Admin Only)
-A dedicated page (`/users.html`) that lets admins:
-- View all users (username, full name, role)
-- Add a new user (sets a temporary password)
-- Change a user's role
-- Delete a user
-
-New API endpoints: `GET /api/users`, `POST /api/users`, `PUT /api/users/{id}`, `DELETE /api/users/{id}` — all ADMIN only.
-
-### 5. Change Password
-A form available to every logged-in user on a profile page (`/profile.html`):
-- Enter current password, new password, confirm new password
-- Server validates the current password, then stores the SHA-256 of the new one
-- Activity log records a `CHANGE_PASSWORD` event
-
-### 6. Sortable Table Columns
-Click any column header in the car table to sort ascending/descending by that column.  
-Sort state is tracked in a JS variable and applied to the in-memory array — no extra DB query.
-
-### 7. Pagination
-When the inventory grows large, show 20 cars per page with Previous / Next controls.  
-Page number stored in a JS variable; slicing the array in the browser (no backend changes needed).
-
-### 8. Export to CSV
-A button in the admin dashboard that downloads the current car list as a `.csv` file.  
-Generated entirely in the browser from the already-loaded JSON — no new endpoint needed.  
-Useful for importing into Excel or Google Sheets for presentations.
-
-### 9. Customer Inquiry Form
-A contact form visible to customers on the car detail page:
-- Fields: name, email, message
-- Stores the inquiry in a new `inquiries` table (car_id, name, email, message, created_at)
-- Admins see pending inquiries in a tab on the dashboard
-- New API: `POST /api/inquiries` (any role), `GET /api/inquiries` (ADMIN only)
-
-### 10. Improved Design and Responsive Layout
-A visual overhaul using a consistent design system:
-- Proper color palette, typography, and spacing tokens in CSS custom properties
-- Responsive layout — works on tablet and mobile (flex/grid, no fixed widths)
-- Designed sidebar with collapse support on small screens
-- Smooth transitions on modal open/close, row hover states
-- Status badges, empty-state illustrations, loading skeletons
+- `Car.java` is a **flat read model** — `make` and `model` strings are populated by JOINs and are read-only. To write a vehicle, you must supply `modelId` (FK to Models).
+- `User.java` links to either `Employees` (for ADMIN/EMPLOYEE roles) or `Customers` (for CUSTOMER role) via nullable FKs. Never both.
+- Vehicle CRUD operations are logged to `VehicleChangeLog` with the employee's `emp_id`. Login events are only logged to the console (not to the DB).
+- The database stores status as the exact ENUM strings `Available`, `Reserved`, `Sold`, but the API normalizes them to uppercase (`AVAILABLE`, `RESERVED`, `SOLD`) for the frontend.
+- Customer-facing inventory surfaces (`index.html`, `cars.html`) show `Available` and `Reserved` vehicles; `Sold` vehicles remain visible in the admin dashboard only.
+- Reserved vehicles stay visible to customers and use seller-contact messaging rather than being treated as fully unavailable.

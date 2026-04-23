@@ -2,31 +2,31 @@ package com.cardealership.model;
 
 public class Car {
 
-    private int id;
-    private String make;
-    private String model;
+    private int id;           // vehicle_id
+    private int manufacturerId;
+    private int modelId;
+    private String make;      // Manufacturers.name  (read-only, populated by JOIN)
+    private String model;     // Models.model_name   (read-only, populated by JOIN)
     private int year;
     private double price;
-    private String status;      // AVAILABLE | SOLD | RESERVED
+    private String status;    // Available | Reserved | Sold
     private String color;
     private int mileage;
-    private String imageUrl;
+    private String vin;
+    private String imageUrl;  // primary image from VehicleImages (populated by JOIN)
     private String description;
+    private String segment;
 
-    public Car() {
-    }
-
-    public Car(int id, String make, String model, int year, double price) {
-        this.id = id;
-        this.make = make;
-        this.model = model;
-        this.year = year;
-        this.price = price;
-        this.status = "AVAILABLE";
-    }
+    public Car() {}
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public int getManufacturerId() { return manufacturerId; }
+    public void setManufacturerId(int manufacturerId) { this.manufacturerId = manufacturerId; }
+
+    public int getModelId() { return modelId; }
+    public void setModelId(int modelId) { this.modelId = modelId; }
 
     public String getMake() { return make; }
     public void setMake(String make) { this.make = make; }
@@ -49,9 +49,15 @@ public class Car {
     public int getMileage() { return mileage; }
     public void setMileage(int mileage) { this.mileage = mileage; }
 
+    public String getVin() { return vin; }
+    public void setVin(String vin) { this.vin = vin; }
+
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getSegment() { return segment; }
+    public void setSegment(String segment) { this.segment = segment; }
 }

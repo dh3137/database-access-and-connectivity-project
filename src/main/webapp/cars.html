@@ -39,7 +39,6 @@
         <select id="f-status" onchange="applyFilters()">
           <option value="">All statuses</option>
           <option value="AVAILABLE">Available</option>
-          <option value="SOLD">Sold</option>
           <option value="RESERVED">Reserved</option>
         </select>
         <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
@@ -96,7 +95,9 @@
     const minYear  = parseInt(document.getElementById("f-min-year").value)  || 0;
     const maxYear  = parseInt(document.getElementById("f-max-year").value)  || 9999;
 
-    const filtered = allCars.filter(c => {
+    const visibleCars = allCars.filter(c => c.status !== "SOLD");
+
+    const filtered = visibleCars.filter(c => {
       if (search && !c.make.toLowerCase().includes(search) && !c.model.toLowerCase().includes(search)) return false;
       if (status && c.status !== status) return false;
       if (c.price < minPrice || c.price > maxPrice) return false;
