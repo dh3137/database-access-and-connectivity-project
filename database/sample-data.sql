@@ -14,60 +14,31 @@ VALUES
     (3, 'A4'),
     (4, '320d');
 
--- Vehicles
-INSERT INTO Vehicles (model_id, year, color, mileage, price, vin, status, description) VALUES
-    -- Economy
-    (1,  2023, 'Scarlet Red',     8000,  16900.00, 'JTDKB3EU7N3123401', 'Available', 'Toyota Yaris, fuel-efficient city car'),
-    (1,  2022, 'Ice Silver',     21000,  14500.00, 'JTDKB3EU6M3123402', 'Available', 'Low mileage, single owner'),
-    (2,  2023, 'Pearl White',    12000,  18500.00, 'JTDBR32E720081235', 'Available', 'Well maintained, one owner'),
-    (2,  2021, 'Graphite Grey',  39000,  15800.00, 'JTDBR32E520081236', 'Available', 'Full service history'),
-    (3,  2022, 'Deep Black',     28000,  17200.00, 'WVWZZZ1KZ6W612345', 'Available', 'Full service history'),
-    (3,  2020, 'Tornado Red',    52000,  13900.00, 'WVWZZZ1KZ4W612346', 'Available', 'Excellent condition'),
-    (4,  2023, 'Lunar Silver',    5000,  19900.00, 'JHMFC2F54PX000101', 'Available', 'Honda Civic, sporty and efficient'),
-    (4,  2021, 'Rallye Red',     34000,  16500.00, 'JHMFC2F52MX000102', 'Available', 'One careful owner'),
-    -- Sport
-    (5,  2023, 'Sao Paulo Yellow', 3000, 89900.00, 'WBS42AH07PCF12301', 'Available', 'BMW M4, Competition Package, full M spec'),
-    (5,  2022, 'Alpine White',   18000,  82000.00, 'WBS42AH06NCF12302', 'Available', 'Carbon fibre interior, M exhaust'),
-    (6,  2023, 'GT Silver',       2000,  72500.00, 'WP0CB2A93PS700101', 'Available', 'Porsche 718 Boxster, PDK gearbox'),
-    (6,  2021, 'Gentian Blue',   14000,  64000.00, 'WP0CB2A91MS700102', 'Available', 'Sports Chrono Package'),
-    (7,  2023, 'Championship White',1200,47500.00, 'JHMFL5H82PX000201', 'Available', 'Honda Civic Type R, track-ready'),
-    (8,  2022, 'Supersonic Red',  8000,  38000.00, 'JF1ZNBA15N8702301', 'Available', 'Toyota GR86, naturally aspirated'),
-    -- Luxury
-    (9,  2024, 'Obsidian Black',  1500, 125000.00, 'WDD2220561A000101', 'Available', 'Mercedes S-Class, AMG Line, Burmester audio'),
-    (9,  2022, 'Polar White',    22000, 102000.00, 'WDD2220561A000102', 'Available', 'Panoramic roof, rear seat entertainment'),
-    (10, 2023, 'Daytona Grey',    4000,  98000.00, 'WAUZZZ4H8AN000201', 'Available', 'Audi A8, quattro, Matrix LED'),
-    (11, 2023, 'Cashmere Silver', 6000,  92000.00, 'WBA7J41070CL00101', 'Available', 'BMW 7 Series, Sky Lounge panoramic roof'),
-    (12, 2022, 'Chalk',          15000,  88000.00, 'WP0AA2A76NS000401', 'Available', 'Porsche Panamera, Sport Turismo'),
-    (13, 2020, 'Glacier White',  45000,  35000.00, 'WAUZZZ8K9DA123456', 'Sold',      'Sport package included'),
-    (14, 2023, 'Sapphire Blue',   5000,  31500.00, 'WBA8E11050K123456', 'Available', 'Nearly new, still under warranty'),
-    -- Exotic
-    (15, 2021, 'Rosso Corsa',     3500, 279000.00, 'ZFF80NJA0M0264101', 'Available', 'Ferrari 488 GTB, Scuderia shields, carbon pack'),
-    (15, 2020, 'Giallo Modena',   9000, 255000.00, 'ZFF80NJA0L0264102', 'Available', 'Ferrari 488 GTB, low mileage supercar'),
-    (16, 2023, 'Arancio Borealis',1800, 245000.00, 'ZHWUC1ZF8PLA00101', 'Available', 'Lamborghini Huracan Evo, forged carbon'),
-    (17, 2022, 'Volcano Orange',  4500, 310000.00, 'SBM14DCA4NW006001', 'Available', 'McLaren 720S, Track Pack, Senna seats'),
-    (18, 2023, 'Rosso Ferrari',   2200, 295000.00, 'ZFF94HLA0P0001001', 'Available', 'Ferrari F8 Tributo, 710 hp, carbon fibre'),
-    (19, 2022, 'Grigio Titans',   8000, 320000.00, 'ZHWUR2ZF1NLA09101', 'Available', 'Lamborghini Urus Performante, ceramic brakes'),
-    -- SUV
-    (20, 2023, 'Carbon Black',    7000,  72000.00, 'WBAJP0C52PB000101', 'Available', 'BMW X5 xDrive40i, M Sport Package'),
-    (20, 2021, 'Mineral White',  31000,  58000.00, 'WBAJP0C50MB000102', 'Available', 'Panoramic roof, third row seating'),
-    (21, 2023, 'Selenite Grey',   4500,  79000.00, 'WDC1670731A000201', 'Available', 'Mercedes GLE 450, AMG Line, air suspension'),
-    (22, 2022, 'Jet Black',      18000,  85000.00, 'WP1AA2AY8NDA00101', 'Available', 'Porsche Cayenne Turbo, Sport Chrono'),
-    (23, 2023, 'Navarra Blue',    3000,  88000.00, 'WAUZZZ4MXPD000301', 'Available', 'Audi Q8 e-tron, 55 TFSI quattro'),
-    (24, 2022, 'Magnetic Grey',  27000,  32000.00, 'JTMRFREV5MD000401', 'Available', 'Toyota RAV4 Hybrid, all-wheel drive'),
-    (25, 2023, 'Reflex Silver',   9000,  38500.00, 'WVGZZZ5NZPW000501', 'Available', 'VW Tiguan R-Line, panoramic sunroof'),
-    (26, 2021, 'Sonic Grey',     42000,  27500.00, 'JHMRW2H53MX000601', 'Available', 'Honda CR-V Hybrid, excellent MPG');
+INSERT INTO Vehicles (vin, model_id, year, price, status, color, mileage, description)
+VALUES
+    ('JTDBR32E720081235', 1, 2023, 18500.00, 'Available', 'Super White', 15000, 'Excellent fuel economy and reliability.'),
+    ('WVWZZZ1KZ6W612345', 2, 2022, 17200.00, 'Reserved', 'Deep Black', 22000, 'A classic hatchback in pristine condition.'),
+    ('WAUZZZ8K9DA123456', 3, 2021, 35000.00, 'Sold', 'Ibis White', 45000, 'Luxury sedan with full service history.'),
+    ('WBA8E11050K123456', 4, 2024, 31500.00, 'Available', 'Alpine White', 500, 'Brand new model with high performance package.');
 
+<<<<<<< HEAD
+INSERT INTO Customers (firstName, lastName, email, phone)
+VALUES
+    ('John', 'Customer', 'john.customer@example.com', '+385911112223'),
+    ('Ana', 'Horvat', 'ana.horvat@example.com', '+385981234567'),
+    ('Marko', 'Kovacic', 'marko.kovacic@example.com', '+385991234568');
+=======
 -- VehicleImages (unique URL per vehicle, fetched from Unsplash 2026-04-24)
 INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     -- Economy: Toyota Yaris (model 1) — 2 unique photos
     (1,  'https://images.unsplash.com/photo-1742742646347-4f708c0afca4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (2,  'https://images.unsplash.com/photo-1742742646348-32384aeaefec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Economy: Toyota Corolla (model 2) — 2 unique photos
-    (3,  'https://images.unsplash.com/photo-1691994866119-14c702835475?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
-    (4,  'https://images.unsplash.com/photo-1691994877641-36e673ad4236?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (3,  'https://images.unsplash.com/photo-1711978477980-a0f1a05039a0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fFRveW90YSUyMENvcm9sbGElMjAyMDIzfGVufDB8fDB8fHww', TRUE),
+    (4,  'https://images.unsplash.com/photo-1763268265028-1631360c07dd?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
     -- Economy: VW Golf (model 3) — 2 unique photos
-    (5,  'https://images.unsplash.com/photo-1645307621773-1e8d3d0e2482?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
-    (6,  'https://images.unsplash.com/photo-1678120597905-b2f3a982b625?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (5,  'https://images.unsplash.com/photo-1724620961935-ee922e2dfad5?q=80&w=2572&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
+    (6,  'https://images.unsplash.com/photo-1683444126212-50c0aa2a421b?q=80&w=1738&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
     -- Economy: Honda Civic (model 4) — 2 unique photos
     (7,  'https://images.unsplash.com/photo-1711226876715-53a1882660e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (8,  'https://images.unsplash.com/photo-1711226876657-3801d4a4e0ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
@@ -75,8 +46,8 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     (9,  'https://images.unsplash.com/photo-1728060838342-cb9744a27d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (10, 'https://images.unsplash.com/photo-1634214564170-893240d3b789?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Sport: Porsche 718 Boxster (model 6) — 2 unique photos
-    (11, 'https://images.unsplash.com/photo-1721572345790-507985e4317a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
-    (12, 'https://images.unsplash.com/photo-1560691647-7085e5cebcfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (11, 'https://images.unsplash.com/photo-1632245889029-e406faaa34cd?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
+    (12, 'https://images.unsplash.com/photo-1632245872256-49c78a46c400?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
     -- Sport: Honda Civic Type R (model 7)
     (13, 'https://images.unsplash.com/photo-1641921966529-7a887417a8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Sport: Toyota GR86 (model 8)
@@ -85,7 +56,7 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     (15, 'https://images.unsplash.com/photo-1706977384830-df8b515e6b70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (16, 'https://images.unsplash.com/photo-1698816688678-a3f838fd4fe0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Luxury: Audi A8 (model 10)
-    (17, 'https://images.unsplash.com/photo-1693945423710-626e031eef83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (17, 'https://t3.ftcdn.net/jpg/04/45/55/36/240_F_445553697_1xwHRCxI6lL6ZzA3uicOmOgAY6mgAg4E.jpg', TRUE),
     -- Luxury: BMW 7 Series (model 11)
     (18, 'https://images.unsplash.com/photo-1627936354732-ffbe552799d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Luxury: Porsche Panamera (model 12)
@@ -104,7 +75,7 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     -- Exotic: Ferrari F8 Tributo (model 18)
     (26, 'https://images.unsplash.com/photo-1655593972695-919eb269b0df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Exotic: Lamborghini Urus (model 19)
-    (27, 'https://images.unsplash.com/photo-1569398890582-1943b9a5c94b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (27, 'https://images.unsplash.com/photo-1627140290942-7c8f9f56e870?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8TGFtYm9yZ2hpbmklMjBVcnVzJTIwMjAyMnxlbnwwfHwwfHx8MA%3D%3D', TRUE),
     -- SUV: BMW X5 (model 20) — 2 unique photos
     (28, 'https://images.unsplash.com/photo-1615908397724-6dc711db34a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (29, 'https://images.unsplash.com/photo-1717082842911-9e55aeaf80cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
@@ -121,11 +92,7 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     -- SUV: Honda CR-V (model 26)
     (35, 'https://images.unsplash.com/photo-1616559650863-a043ce0188fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE);
 
--- Customers
-INSERT INTO Customers (first_name, last_name, email, phone) VALUES
-    ('John',  'Customer', 'john.customer@example.com', '+385911112223'),
-    ('Ana',   'Horvat',   'ana.horvat@example.com',    '+385981234567'),
-    ('Marko', 'Kovacic',  'marko.kovacic@example.com', '+385991234568');
+
 
 INSERT INTO Employees (firstName, lastName, email, username, password_hash)
 VALUES
