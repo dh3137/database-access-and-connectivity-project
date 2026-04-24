@@ -3,136 +3,637 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vehicles — AutoPrime</title>
+  <title>VELOCE — All Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    tbody tr { cursor: pointer; }
+    :root {
+      --v-orange:      #FF6B2B;
+      --v-orange-dim:  rgba(255, 107, 43, 0.15);
+      --v-black:       #080808;
+      --v-dark:        #111111;
+      --v-white:       #F5F4F0;
+    }
+
+    body.public-page { background: var(--v-black); }
+
+    .v-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 60px;
+      background: rgba(8, 8, 8, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(245, 244, 240, 0.06);
+      gap: 24px;
+    }
+
+    .v-nav__logo {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+      text-decoration: none;
+    }
+
+    .v-nav__logo span { color: var(--v-orange); }
+
+    .v-nav__staff {
+      font-family: 'Inter', sans-serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245, 244, 240, 0.45);
+      text-decoration: none;
+      border: 1px solid rgba(245, 244, 240, 0.18);
+      padding: 8px 18px;
+      border-radius: 2px;
+      transition: color 140ms, border-color 140ms;
+    }
+
+    .v-nav__staff:hover {
+      color: var(--v-white);
+      border-color: rgba(245, 244, 240, 0.5);
+    }
+
+    .inv-header {
+      padding: 140px 60px 56px;
+      background: var(--v-black);
+      border-bottom: 1px solid rgba(245, 244, 240, 0.06);
+    }
+
+    .inv-header__label {
+      font-family: 'Inter', sans-serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .inv-header__title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 900;
+      color: var(--v-white);
+      margin: 0 0 8px;
+      line-height: 1.05;
+    }
+
+    .inv-header__count {
+      font-family: 'Inter', sans-serif;
+      font-size: .8rem;
+      color: rgba(245, 244, 240, 0.35);
+      letter-spacing: .06em;
+      margin-top: 12px;
+    }
+
+    .inv-filters {
+      background: var(--v-dark);
+      padding: 20px 60px;
+      border-bottom: 1px solid rgba(245, 244, 240, 0.06);
+    }
+
+    .v-inv-filter {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid rgba(245,244,240,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .v-inv-search {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      border-right: 1px solid rgba(245,244,240,0.08);
+      padding: 0 16px;
+      gap: 10px;
+      background: rgba(245,244,240,0.03);
+    }
+
+    .v-inv-search-icon {
+      font-size: 1.15rem;
+      color: rgba(245,244,240,0.22);
+      flex-shrink: 0;
+    }
+
+    .v-inv-search input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      color: var(--v-white);
+      padding: 14px 0;
+    }
+
+    .v-inv-search input::placeholder { color: rgba(245,244,240,0.25); }
+
+    .v-inv-controls {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .v-inv-controls select,
+    .v-inv-controls input[type="number"] {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-right: 1px solid rgba(245,244,240,0.08);
+      font-family: 'Inter', sans-serif;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,0.5);
+      padding: 14px 18px;
+      outline: none;
+      cursor: pointer;
+      transition: color 140ms, background 140ms;
+    }
+
+    .v-inv-controls input[type="number"] {
+      width: 110px;
+      text-transform: none;
+      letter-spacing: 0;
+      -moz-appearance: textfield;
+    }
+
+    .v-inv-controls input[type="number"]::-webkit-inner-spin-button,
+    .v-inv-controls input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .v-inv-controls input::placeholder { color: rgba(245,244,240,0.25); font-size: .76rem; }
+
+    .v-inv-controls select:hover,
+    .v-inv-controls input:hover  { color: var(--v-white); background: rgba(245,244,240,0.03); }
+
+    .v-inv-controls select option { background: #1a1a1a; color: var(--v-white); }
+
+    .v-inv-reset {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,0.25);
+      padding: 14px 18px;
+      transition: color 140ms;
+      white-space: nowrap;
+    }
+
+    .v-inv-reset:hover { color: var(--v-orange); }
+
+    @media (max-width: 900px) {
+      .v-inv-filter { flex-direction: column; }
+      .v-inv-search { border-right: none; border-bottom: 1px solid rgba(245,244,240,0.08); }
+      .v-inv-controls { flex-wrap: wrap; }
+      .v-inv-controls select,
+      .v-inv-controls input[type="number"] { flex: 1; min-width: 120px; }
+    }
+
+    .inv-grid-wrap {
+      background: var(--v-black);
+      padding: 48px 60px 80px;
+    }
+
+    .inv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    /* Car card styles */
+    .v-car-card {
+      position: relative;
+      min-height: 360px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #0f0f0f;
+      cursor: pointer;
+      box-shadow: 0 24px 60px rgba(0,0,0,.36);
+      transition: transform 260ms ease, box-shadow 260ms ease;
+    }
+
+    .v-car-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 36px 80px rgba(0,0,0,.5);
+    }
+
+    .v-car-card-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform 400ms ease;
+    }
+
+    .v-car-card:hover .v-car-card-img { transform: scale(1.04); }
+
+    .v-car-card-img-placeholder {
+      width: 100%;
+      height: 220px;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(245, 244, 240, 0.12);
+      font-size: 2rem;
+    }
+
+    .v-car-card-body { padding: 20px 22px 24px; }
+
+    .v-car-card-make {
+      font-family: 'Inter', sans-serif;
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 4px;
+    }
+
+    .v-car-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--v-white);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .v-car-card-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: .74rem;
+      color: rgba(245, 244, 240, 0.42);
+      margin-bottom: 16px;
+    }
+
+    .v-car-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .v-car-card-price {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--v-white);
+    }
+
+    .v-car-card-note {
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      color: rgba(245, 244, 240, 0.35);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .v-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .v-badge-available { background: rgba(72, 199, 142, 0.15); color: #48C78E; }
+    .v-badge-sold      { background: rgba(245, 244, 240, 0.08); color: rgba(245, 244, 240, 0.4); }
+    .v-badge-reserved  { background: rgba(255, 214, 0, 0.12);  color: #FFD600; }
+
+    /* Shimmer */
+    .v-shimmer-card {
+      border-radius: 22px;
+      overflow: hidden;
+      background: #0f0f0f;
+      min-height: 360px;
+    }
+
+    .v-shimmer {
+      background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    .v-shimmer-img  { height: 220px; }
+    .v-shimmer-body { padding: 20px 22px; }
+    .v-shimmer-line { height: 14px; border-radius: 3px; margin-bottom: 10px; }
+    .v-shimmer-line.short { width: 55%; }
+
+    .v-empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: .88rem;
+      color: rgba(245, 244, 240, 0.3);
+    }
+
+    /* Footer */
+    .v-footer {
+      background: var(--v-dark);
+      border-top: 1px solid rgba(245, 244, 240, 0.06);
+      padding: 48px 60px 56px;
+    }
+
+    .v-footer__inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .v-footer__logo {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+      margin-bottom: 12px;
+    }
+
+    .v-footer__logo span { color: var(--v-orange); }
+
+    .v-footer__text,
+    .v-footer__meta {
+      font-family: 'Inter', sans-serif;
+      font-size: .76rem;
+      color: rgba(245, 244, 240, 0.3);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .v-nav          { padding: 18px 24px; }
+      .inv-header     { padding: 110px 24px 40px; }
+      .inv-filters    { padding: 20px 24px; }
+      .inv-grid-wrap  { padding: 36px 24px 60px; }
+      .inv-grid       { grid-template-columns: repeat(2, 1fr); }
+      .v-footer       { padding: 32px 24px 40px; }
+    }
+
+    @media (max-width: 560px) {
+      .inv-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
-<body>
+<body class="public-page">
 
-<div class="admin-shell">
+<nav class="v-nav">
+  <a href="index.html" class="v-nav__logo">VEL<span>O</span>CE</a>
+  <button class="v-theme-toggle" onclick="toggleTheme()" aria-label="Switch to light mode">☀</button>
+  <a href="login.html" class="v-nav__staff">Staff Login</a>
+</nav>
 
-  <aside class="sidebar">
-    <div class="sidebar-logo">AutoPrime</div>
-    <div class="user-info" id="user-name"></div>
-    <a href="/cars.html" class="active">Vehicles</a>
-    <a href="/api/logout" style="margin-top:auto;">Logout</a>
-  </aside>
-
-  <main class="admin-main">
-
-    <div class="page-header">
-      <div>
-        <div class="page-title">Vehicle Inventory</div>
-        <div class="page-subtitle">Click any row to view full vehicle details.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-header-title">All Vehicles</span>
-      </div>
-
-      <div class="filter-bar">
-        <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
-        <select id="f-status" onchange="applyFilters()">
-          <option value="">All statuses</option>
-          <option value="AVAILABLE">Available</option>
-          <option value="RESERVED">Reserved</option>
-        </select>
-        <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
-        <input type="number" id="f-max-price" placeholder="Max $"     oninput="applyFilters()" />
-        <input type="number" id="f-min-year"  placeholder="From year" oninput="applyFilters()" />
-        <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Make</th>
-              <th>Model</th>
-              <th>Year</th>
-              <th>Color</th>
-              <th>Mileage</th>
-              <th>Price</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="car-rows">
-            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </main>
+<div class="inv-header">
+  <span class="inv-header__label">◈ Our Inventory</span>
+  <h1 class="inv-header__title">All Inventory</h1>
+  <div class="inv-header__count" id="count"></div>
 </div>
+
+<div class="inv-filters">
+  <div class="v-inv-filter">
+    <div class="v-inv-search">
+      <span class="v-inv-search-icon">⌕</span>
+      <input type="text" id="f-search" placeholder="Search make or model…" autocomplete="off" />
+    </div>
+    <div class="v-inv-controls">
+      <select id="f-sort">
+        <option value="">Sort: Featured</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="year-desc">Year: Newest</option>
+        <option value="year-asc">Year: Oldest</option>
+        <option value="mileage-asc">Mileage: Lowest</option>
+      </select>
+      <select id="f-status">
+        <option value="">All Status</option>
+        <option value="AVAILABLE">Available</option>
+        <option value="RESERVED">Reserved</option>
+      </select>
+      <select id="f-type">
+        <option value="">All Types</option>
+        <option value="Economy">Economy</option>
+        <option value="Sport">Sport</option>
+        <option value="Luxury">Luxury</option>
+        <option value="Exotic">Exotic</option>
+        <option value="SUV">SUV</option>
+      </select>
+      <input type="number" id="f-min-price" placeholder="Min price" />
+      <input type="number" id="f-max-price" placeholder="Max price" />
+      <input type="number" id="f-min-year"  placeholder="From year" min="1900" max="2099" />
+      <input type="number" id="f-max-year"  placeholder="To year"   min="1900" max="2099" />
+      <button class="v-inv-reset" id="f-reset" title="Clear filters">✕ Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="inv-grid-wrap">
+  <div class="inv-grid" id="car-grid">
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+  </div>
+</div>
+
+<footer class="v-footer">
+  <div class="v-footer__inner">
+    <div class="v-footer__brand">
+      <div class="v-footer__logo">VEL<span>O</span>CE</div>
+      <p class="v-footer__text">
+        Crafted as an ISTE 330 group project for database access and connectivity, with a classic showroom voice and a modern inventory experience.
+      </p>
+    </div>
+    <div class="v-footer__meta">
+      <p>AutoPrime inventory experience</p>
+      <p>Customer collection and admin dashboard kept separate by vehicle availability</p>
+    </div>
+  </div>
+</footer>
 
 <script>
   let allCars = [];
 
-  async function init() {
-    const meRes = await fetch("/api/me", { credentials: "include" });
-    const me = await meRes.json();
-    if (me.error) { location.href = "/login.html"; return; }
-    document.getElementById("user-name").textContent = me.fullName;
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
-    const carsRes = await fetch("/api/cars", { credentials: "include" });
-    const cars = await carsRes.json();
-    if (cars.error) { location.href = "/login.html"; return; }
-    allCars = cars;
-    applyFilters();
+  async function init() {
+    const params = new URLSearchParams(location.search);
+    const typeParam = params.get('type');
+    if (typeParam) {
+      const sel = document.getElementById('f-type');
+      if (sel) sel.value = typeParam;
+    }
+    try {
+      const res  = await fetch('/api/cars');
+      const cars = await res.json();
+      if (cars.error) throw new Error(cars.error);
+      allCars = cars;
+      applyFilters();
+    } catch (_) {
+      document.getElementById('car-grid').innerHTML =
+        '<div class="v-empty-state">Could not load vehicles. Please try again later.</div>';
+    }
+
+    const search   = document.getElementById('f-search');
+    const sort     = document.getElementById('f-sort');
+    const status   = document.getElementById('f-status');
+    const type     = document.getElementById('f-type');
+    const minPrice = document.getElementById('f-min-price');
+    const maxPrice = document.getElementById('f-max-price');
+    const minYear  = document.getElementById('f-min-year');
+    const maxYear  = document.getElementById('f-max-year');
+    const reset    = document.getElementById('f-reset');
+
+    let debounceTimer;
+    function debounced() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(applyFilters, 220);
+    }
+
+    search?.addEventListener('input', debounced);
+    minPrice?.addEventListener('input', debounced);
+    maxPrice?.addEventListener('input', debounced);
+    minYear?.addEventListener('input', debounced);
+    maxYear?.addEventListener('input', debounced);
+    sort?.addEventListener('change', applyFilters);
+    status?.addEventListener('change', applyFilters);
+    type?.addEventListener('change', applyFilters);
+
+    reset?.addEventListener('click', () => {
+      [search, minPrice, maxPrice, minYear, maxYear].forEach(el => { if (el) el.value = ''; });
+      [sort, status, type].forEach(el => { if (el) el.value = ''; });
+      applyFilters();
+    });
   }
 
   function applyFilters() {
-    const search   = document.getElementById("f-search").value.trim().toLowerCase();
-    const status   = document.getElementById("f-status").value;
-    const minPrice = parseFloat(document.getElementById("f-min-price").value) || 0;
-    const maxPrice = parseFloat(document.getElementById("f-max-price").value) || Infinity;
-    const minYear  = parseInt(document.getElementById("f-min-year").value)  || 0;
-    const maxYear  = parseInt(document.getElementById("f-max-year").value)  || 9999;
+    const search   = (document.getElementById('f-search').value   || '').trim().toLowerCase();
+    const sortVal  =  document.getElementById('f-sort').value     || '';
+    const status   =  document.getElementById('f-status').value   || '';
+    const type     =  document.getElementById('f-type').value     || '';
+    const minPrice = parseFloat(document.getElementById('f-min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('f-max-price').value) || Infinity;
+    const minYear  = parseInt(document.getElementById('f-min-year').value)    || 0;
+    const maxYear  = parseInt(document.getElementById('f-max-year').value)    || 9999;
 
-    const visibleCars = allCars.filter(c => c.status !== "SOLD");
-
-    const filtered = visibleCars.filter(c => {
-      if (search && !c.make.toLowerCase().includes(search) && !c.model.toLowerCase().includes(search)) return false;
+    let cars = allCars.filter(c => {
+      if (c.status === 'SOLD') return false;
+      if (search && !(c.make||'').toLowerCase().includes(search) && !(c.model||'').toLowerCase().includes(search)) return false;
       if (status && c.status !== status) return false;
+      if (type   && c.segment !== type)  return false;
       if (c.price < minPrice || c.price > maxPrice) return false;
       if (c.year  < minYear  || c.year  > maxYear)  return false;
       return true;
     });
 
-    const tbody = document.getElementById("car-rows");
-    if (filtered.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:var(--muted);padding:32px;'>No vehicles match your filters.</td></tr>";
-      return;
-    }
+    if (sortVal === 'price-asc')      cars = [...cars].sort((a,b) => a.price - b.price);
+    else if (sortVal === 'price-desc') cars = [...cars].sort((a,b) => b.price - a.price);
+    else if (sortVal === 'year-desc')  cars = [...cars].sort((a,b) => b.year  - a.year);
+    else if (sortVal === 'year-asc')   cars = [...cars].sort((a,b) => a.year  - b.year);
+    else if (sortVal === 'mileage-asc') cars = [...cars].sort((a,b) => (a.mileage||0) - (b.mileage||0));
 
-    tbody.innerHTML = filtered.map(car => `
-      <tr onclick="location.href='/vehicle-details.html?id=${car.id}'">
-        <td class="muted">${car.id}</td>
-        <td><strong>${car.make}</strong></td>
-        <td>${car.model}</td>
-        <td>${car.year}</td>
-        <td class="muted">${car.color || '—'}</td>
-        <td class="muted">${car.mileage ? car.mileage.toLocaleString() + ' km' : '—'}</td>
-        <td>$${car.price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
-        <td>${statusBadge(car.status)}</td>
-      </tr>
-    `).join("");
+    const n = cars.length;
+    document.getElementById('count').textContent = n + ' vehicle' + (n !== 1 ? 's' : '') + ' available';
+    renderGrid(cars);
   }
 
-  function statusBadge(s) {
-    const cls = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[s] || 'badge-available';
-    const label = s ? s.charAt(0) + s.slice(1).toLowerCase() : 'Available';
-    return `<span class="badge ${cls}">${label}</span>`;
+  function renderGrid(cars) {
+    const grid = document.getElementById('car-grid');
+    if (!cars.length) {
+      grid.innerHTML = '<div class="v-empty-state">No vehicles match your filters.</div>';
+      return;
+    }
+    grid.innerHTML = cars.map(car => {
+      const imgHtml = car.imageUrl && car.imageUrl.trim()
+        ? `<img class="v-car-card-img" src="${esc(car.imageUrl)}" alt="${esc(car.year + ' ' + car.make + ' ' + car.model)}"
+               data-make="${esc(car.make)}" data-model="${esc(car.model)}" data-year="${car.year}" data-id="${car.id}"
+               data-fallback="pending" />`
+        : `<div class="v-car-card-img-placeholder"
+               data-make="${esc(car.make)}" data-model="${esc(car.model)}" data-year="${car.year}" data-id="${car.id}">—</div>`;
+
+      const bCls = { AVAILABLE:'v-badge-available', SOLD:'v-badge-sold', RESERVED:'v-badge-reserved' }[car.status] || 'v-badge-available';
+      const bTxt = car.status ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : 'Available';
+      const note = car.status === 'RESERVED'
+        ? '<div class="v-car-card-note">Currently reserved. Contact the seller to confirm availability.</div>'
+        : '';
+
+      return `
+        <div class="v-car-card" onclick="location.href='/vehicle-details.html?id=${car.id}'">
+          ${imgHtml}
+          <div class="v-car-card-body">
+            <div class="v-car-card-make">${esc(car.make)}</div>
+            <div class="v-car-card-title">${esc(car.year + ' ' + car.model)}</div>
+            <div class="v-car-card-sub">${esc(car.color || '')}${car.mileage ? ' · ' + car.mileage.toLocaleString() + ' km' : ''}</div>
+            <div class="v-car-card-footer">
+              <span class="v-car-card-price">$${car.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+              <span class="v-badge ${bCls}">${bTxt}</span>
+            </div>
+            ${note}
+          </div>
+        </div>`;
+    }).join('');
+
+    async function loadWikiImage(el, make, model, year, id) {
+      try {
+        const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}&vehicleId=${id||''}`);
+        const d = await r.json();
+        if (d.url && el.parentElement) {
+          const img = document.createElement('img');
+          img.className = 'v-car-card-img';
+          img.src = d.url;
+          img.alt = `${year} ${make} ${model}`;
+          el.replaceWith(img);
+        }
+      } catch (_) {}
+    }
+
+    grid.querySelectorAll('.v-car-card-img-placeholder[data-make]').forEach(el => {
+      const { make, model, year, id } = el.dataset;
+      loadWikiImage(el, make, model, year, id);
+    });
+
+    grid.querySelectorAll('img[data-fallback="pending"]').forEach(img => {
+      const { make, model, year, id } = img.dataset;
+      img.onerror = () => {
+        img.onerror = null;
+        const placeholder = document.createElement('div');
+        placeholder.className = 'v-car-card-img-placeholder';
+        Object.assign(placeholder.dataset, { make, model, year, id });
+        placeholder.textContent = '—';
+        img.replaceWith(placeholder);
+        loadWikiImage(placeholder, make, model, year, id);
+      };
+      img.removeAttribute('data-fallback');
+    });
   }
 
   init();
 </script>
-
+<script src="js/theme.js"></script>
 </body>
 </html>

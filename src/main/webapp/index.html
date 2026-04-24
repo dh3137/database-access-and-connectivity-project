@@ -318,45 +318,134 @@
       letter-spacing: .06em;
     }
 
-    /* Filter bar — dark */
-    .v-filter-bar {
+    /* Inventory filter bar */
+    .v-inv-filter {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 36px;
-    }
-
-    .v-filter-bar input,
-    .v-filter-bar select {
-      padding: 9px 14px;
-      background: rgba(245, 244, 240, 0.05);
-      border: 1px solid rgba(245, 244, 240, 0.1);
+      align-items: center;
+      gap: 0;
+      margin-bottom: 40px;
+      border: 1px solid rgba(245,244,240,0.08);
       border-radius: 2px;
-      font-family: 'Inter', sans-serif;
-      font-size: .82rem;
-      color: var(--v-white);
+      overflow: hidden;
+    }
+
+    .v-inv-search {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      border-right: 1px solid rgba(245,244,240,0.08);
+      padding: 0 16px;
+      gap: 10px;
+      background: rgba(245,244,240,0.03);
+    }
+
+    .v-inv-search-icon {
+      font-size: 1.1rem;
+      color: rgba(245,244,240,0.25);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .v-inv-search input {
+      flex: 1;
+      background: transparent;
+      border: none;
       outline: none;
-      transition: border-color 140ms ease, background 140ms ease;
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 400;
+      color: var(--v-white);
+      letter-spacing: .02em;
+      padding: 14px 0;
     }
 
-    .v-filter-bar input::placeholder { color: rgba(245, 244, 240, 0.25); }
-
-    .v-filter-bar input:focus,
-    .v-filter-bar select:focus {
-      border-color: var(--v-orange);
-      background: rgba(255, 107, 43, 0.06);
+    .v-inv-search input::placeholder {
+      color: rgba(245,244,240,0.22);
+      letter-spacing: .04em;
     }
 
-    .v-filter-bar select option { background: #1a1a1a; color: var(--v-white); }
+    .v-inv-controls {
+      display: flex;
+      align-items: center;
+    }
 
-    .v-filter-bar input[type="text"]   { flex: 1; min-width: 200px; }
-    .v-filter-bar input[type="number"] { width: 110px; }
+    .v-inv-controls select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: none;
+      border-right: 1px solid rgba(245,244,240,0.08);
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,0.5);
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: color 150ms ease, background 150ms ease;
+    }
+
+    .v-inv-controls select:focus,
+    .v-inv-controls select:hover { color: var(--v-white); background: rgba(245,244,240,0.04); }
+
+    .v-inv-controls select option { background: #111; color: var(--v-white); }
+
+    .v-inv-reset {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,0.25);
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: color 150ms ease;
+      white-space: nowrap;
+    }
+
+    .v-inv-reset:hover { color: var(--v-orange); }
+
+    @media (max-width: 680px) {
+      .v-inv-filter { flex-direction: column; }
+      .v-inv-search { border-right: none; border-bottom: 1px solid rgba(245,244,240,0.08); width: 100%; }
+      .v-inv-controls { width: 100%; }
+      .v-inv-controls select { flex: 1; }
+    }
 
     /* Car grid */
     .v-car-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 22px;
+    }
+
+    .v-see-all {
+      display: flex;
+      justify-content: center;
+      margin-top: 48px;
+    }
+
+    .v-see-all a {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      border: 1px solid var(--v-orange);
+      padding: 14px 36px;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .v-see-all a:hover {
+      background: var(--v-orange);
+      color: var(--v-black);
     }
 
     .v-car-card {
@@ -599,7 +688,7 @@
     .v-brand-logo--porsche    { -webkit-mask-image: url('https://cdn.simpleicons.org/porsche'); mask-image: url('https://cdn.simpleicons.org/porsche'); }
     .v-brand-logo--ferrari    { -webkit-mask-image: url('https://cdn.simpleicons.org/ferrari'); mask-image: url('https://cdn.simpleicons.org/ferrari'); }
     .v-brand-logo--lamborghini{ -webkit-mask-image: url('https://cdn.simpleicons.org/lamborghini'); mask-image: url('https://cdn.simpleicons.org/lamborghini'); }
-    .v-brand-logo--mercedes   { -webkit-mask-image: url('https://cdn.simpleicons.org/mercedes'); mask-image: url('https://cdn.simpleicons.org/mercedes'); }
+    .v-brand-logo--rolls-royce   { -webkit-mask-image: url('https://cdn.simpleicons.org/rollsroyce'); mask-image: url('https://cdn.simpleicons.org/rollsroyce'); }
     .v-brand-logo--toyota     { -webkit-mask-image: url('https://cdn.simpleicons.org/toyota'); mask-image: url('https://cdn.simpleicons.org/toyota'); }
     .v-brand-logo--volkswagen { -webkit-mask-image: url('https://cdn.simpleicons.org/volkswagen'); mask-image: url('https://cdn.simpleicons.org/volkswagen'); }
     .v-brand-logo--honda      { -webkit-mask-image: url('https://cdn.simpleicons.org/honda'); mask-image: url('https://cdn.simpleicons.org/honda'); }
@@ -673,12 +762,14 @@
       letter-spacing: .1em;
       text-transform: uppercase;
       color: var(--v-white);
+      text-shadow: 0 1px 6px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.7);
     }
 
     .v-cat-count {
       font-family: 'Inter', sans-serif;
       font-size: .7rem;
-      color: rgba(245,244,240,.28);
+      color: rgba(245,244,240,.55);
+      text-shadow: 0 1px 4px rgba(0,0,0,.9);
     }
 
     /* ══════════════════════════════════════════
@@ -806,8 +897,9 @@
       gap: 10px;
       padding: 28px 22px;
       height: 100%;
-      background: linear-gradient(to top, rgba(8,8,8,.85) 0%, rgba(8,8,8,.2) 60%, transparent 100%);
+      background: transparent;
     }
+
 
     /* ══════════════════════════════════════════
        FEATURED VEHICLES
@@ -859,8 +951,9 @@
 
     .v-feat-img {
       width: 100%;
-      height: 220px;
+      height: 260px;
       object-fit: cover;
+      object-position: center 55%;
       display: block;
       filter: brightness(.88);
       transition: filter 220ms ease;
@@ -868,7 +961,7 @@
 
     .v-feat-img-placeholder {
       width: 100%;
-      height: 220px;
+      height: 260px;
       background: #181818;
       display: flex;
       align-items: center;
@@ -1276,6 +1369,7 @@
     <a href="#trust-heading" class="v-nav__link">Heritage</a>
     <a href="#site-footer" class="v-nav__link">Project</a>
   </div>
+  <button class="v-theme-toggle" onclick="toggleTheme()" aria-label="Switch to light mode">☀</button>
   <a href="/login.html" class="v-nav__staff">Staff Login</a>
 </nav>
 
@@ -1310,7 +1404,7 @@
 <div class="v-brands" aria-label="Featured marques">
   <span class="v-brand-logo v-brand-logo--bmw"         title="BMW"         aria-label="BMW"></span>
   <span class="v-brand-logo v-brand-logo--audi"        title="Audi"        aria-label="Audi"></span>
-  <span class="v-brand-logo v-brand-logo--mercedes"    title="Mercedes-Benz" aria-label="Mercedes-Benz"></span>
+  <span class="v-brand-logo v-brand-logo--rolls-royce"    title="Rolls-Royce" aria-label="Rolls-Royce"></span>
   <span class="v-brand-logo v-brand-logo--porsche"     title="Porsche"     aria-label="Porsche"></span>
   <span class="v-brand-logo v-brand-logo--ferrari"     title="Ferrari"     aria-label="Ferrari"></span>
   <span class="v-brand-logo v-brand-logo--lamborghini" title="Lamborghini" aria-label="Lamborghini"></span>
@@ -1322,38 +1416,38 @@
 
 <!-- ══ CATEGORIES ══ -->
 <section class="v-categories" aria-labelledby="cat-heading">
-  <div class="v-section-label">◈ Browse By Type</div>
-  <h2 class="v-section-heading" id="cat-heading">Find Your Class</h2>
+  <div class="v-section-label" data-reveal="up">◈ Browse By Type</div>
+  <h2 class="v-section-heading" id="cat-heading" data-reveal="up" style="--reveal-delay:80ms">Find Your Class</h2>
   <div class="v-cat-grid">
-    <button class="v-cat-tile" data-filter="Economy" onclick="filterByType('Economy')">
+    <button class="v-cat-tile" data-filter="Economy" onclick="filterByType('Economy')" data-reveal="up" style="--reveal-delay:100ms">
       <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
       <div class="v-cat-tile-inner">
         <span class="v-cat-name">Economy</span>
         <span class="v-cat-count" id="count-Economy">— vehicles</span>
       </div>
     </button>
-    <button class="v-cat-tile" data-filter="Sport" onclick="filterByType('Sport')">
+    <button class="v-cat-tile" data-filter="Sport" onclick="filterByType('Sport')" data-reveal="up" style="--reveal-delay:160ms">
       <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
       <div class="v-cat-tile-inner">
         <span class="v-cat-name">Sport</span>
         <span class="v-cat-count" id="count-Sport">— vehicles</span>
       </div>
     </button>
-    <button class="v-cat-tile" data-filter="Luxury" onclick="filterByType('Luxury')">
+    <button class="v-cat-tile" data-filter="Luxury" onclick="filterByType('Luxury')" data-reveal="up" style="--reveal-delay:220ms">
       <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
       <div class="v-cat-tile-inner">
         <span class="v-cat-name">Luxury</span>
         <span class="v-cat-count" id="count-Luxury">— vehicles</span>
       </div>
     </button>
-    <button class="v-cat-tile" data-filter="Exotic" onclick="filterByType('Exotic')">
-      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1617531653332-bd46c16f5a1f?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
+    <button class="v-cat-tile" data-filter="Exotic" onclick="filterByType('Exotic')" data-reveal="up" style="--reveal-delay:280ms">
+      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1687993320698-456243eb9a3d?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" aria-hidden="true" loading="lazy" />
       <div class="v-cat-tile-inner">
         <span class="v-cat-name">Exotic</span>
         <span class="v-cat-count" id="count-Exotic">— vehicles</span>
       </div>
     </button>
-    <button class="v-cat-tile" data-filter="SUV" onclick="filterByType('SUV')">
+    <button class="v-cat-tile" data-filter="SUV" onclick="filterByType('SUV')" data-reveal="up" style="--reveal-delay:340ms">
       <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
       <div class="v-cat-tile-inner">
         <span class="v-cat-name">SUV</span>
@@ -1370,20 +1464,20 @@
        alt=""
        aria-hidden="true"
        loading="lazy" />
-  <div class="v-section-label">◈ Our Promise</div>
-  <h2 class="v-section-heading" id="trust-heading"><em>Why</em> VELOCE</h2>
+  <div class="v-section-label" data-reveal="up">◈ Our Promise</div>
+  <h2 class="v-section-heading" id="trust-heading" data-reveal="up" style="--reveal-delay:60ms"><em>Why</em> VELOCE</h2>
   <div class="v-trust-grid">
-    <div class="v-trust-col">
+    <div class="v-trust-col" data-reveal="up" style="--reveal-delay:100ms">
       <span class="v-trust-icon">◈</span>
       <div class="v-trust-title">No Hidden Fees</div>
       <p class="v-trust-body">Transparent pricing, every time. What you see is what you pay — no destination charges, no documentation surprises.</p>
     </div>
-    <div class="v-trust-col">
+    <div class="v-trust-col" data-reveal="up" style="--reveal-delay:200ms">
       <span class="v-trust-icon">⟡</span>
       <div class="v-trust-title">Verified Inventory</div>
       <p class="v-trust-body">Every vehicle is inspected, documented, and history-checked before it reaches our floor. You buy with certainty.</p>
     </div>
-    <div class="v-trust-col">
+    <div class="v-trust-col" data-reveal="up" style="--reveal-delay:300ms">
       <span class="v-trust-icon">✦</span>
       <div class="v-trust-title">White Glove Service</div>
       <p class="v-trust-body">From your first inquiry to key handover, a dedicated advisor guides every step. We work around your schedule.</p>
@@ -1394,9 +1488,9 @@
 <!-- ══ CAR TURNTABLE ══ -->
 <section class="v-turntable" id="turntable" aria-label="360° vehicle showcase">
   <div class="v-turntable__left">
-    <span class="v-turntable__eyebrow">◈ 360° View</span>
-    <h2 class="v-turntable__headline">Built for<br>Those Who<br><em>Demand More.</em></h2>
-    <p class="v-turntable__body">Every vehicle in the VELOCE collection is hand-selected for mechanical integrity, provenance, and driving character. We don't sell cars — we place legends.</p>
+    <span class="v-turntable__eyebrow" data-reveal="left">◈ 360° View</span>
+    <h2 class="v-turntable__headline" data-reveal="left" style="--reveal-delay:80ms">Built for<br>Those Who<br><em>Demand More.</em></h2>
+    <p class="v-turntable__body" data-reveal="left" style="--reveal-delay:160ms">Every vehicle in the VELOCE collection is hand-selected for mechanical integrity, provenance, and driving character. We don't sell cars — we place legends.</p>
     <div class="v-turntable__specs">
       <div>
         <span class="v-tt-spec-label">◈ Model</span>
@@ -1422,26 +1516,26 @@
   </div>
 </section>
 
-<!-- ══ FEATURED VEHICLES ══ -->
+<!-- ══ POPULAR BRANDS ══ -->
 <section class="v-featured" aria-labelledby="featured-heading">
   <div class="v-featured-header">
     <div>
-      <div class="v-section-label">◈ Hand-Picked Selection</div>
-      <h2 class="v-section-heading" style="margin-bottom:0" id="featured-heading">Featured Vehicles</h2>
+      <div class="v-section-label" data-reveal="up">◈ Most Sought After</div>
+      <h2 class="v-section-heading" style="margin-bottom:0" id="featured-heading" data-reveal="up" style="--reveal-delay:60ms">Popular Makes</h2>
     </div>
-    <a href="#catalogue" class="v-explore-link" onclick="document.getElementById('catalogue').scrollIntoView({behavior:'smooth'});return false;">Explore All →</a>
+    <a href="cars.html" class="v-explore-link" data-reveal="fade" style="--reveal-delay:120ms">See More →</a>
   </div>
-  <div class="v-feat-grid" id="featuredGrid">
-    <!-- populated by JS after allCars loads -->
+  <div class="v-feat-grid" id="popularGrid">
+    <!-- filled by renderPopular() -->
   </div>
 </section>
 
 <!-- ══ PRESS & REVIEWS ══ -->
 <section class="v-reviews" aria-labelledby="reviews-heading">
-  <div class="v-section-label">◈ Press &amp; Reviews</div>
-  <h2 class="v-section-heading" id="reviews-heading">Latest from<br><em>the Road</em></h2>
+  <div class="v-section-label" data-reveal="up">◈ Press &amp; Reviews</div>
+  <h2 class="v-section-heading" id="reviews-heading" data-reveal="up" style="--reveal-delay:60ms">Latest from<br><em>the Road</em></h2>
   <div class="v-reviews-grid">
-    <article class="v-review-card">
+    <article class="v-review-card" data-reveal="up" style="--reveal-delay:100ms">
       <img class="v-review-card-bg"
            src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80"
            alt="" aria-hidden="true" loading="lazy" />
@@ -1452,7 +1546,7 @@
         <a href="#" class="v-review-link">Read Review →</a>
       </div>
     </article>
-    <article class="v-review-card">
+    <article class="v-review-card" data-reveal="up" style="--reveal-delay:200ms">
       <img class="v-review-card-bg"
            src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80"
            alt="" aria-hidden="true" loading="lazy" />
@@ -1463,7 +1557,7 @@
         <a href="#" class="v-review-link">Read Review →</a>
       </div>
     </article>
-    <article class="v-review-card">
+    <article class="v-review-card" data-reveal="up" style="--reveal-delay:300ms">
       <img class="v-review-card-bg"
            src="https://images.unsplash.com/photo-1621135802920-133df287f89c?w=800&q=80"
            alt="" aria-hidden="true" loading="lazy" />
@@ -1488,21 +1582,27 @@
 <!-- ══ CATALOGUE ══ -->
 <section class="v-catalogue">
 
-  <div class="v-catalogue-header">
-    <span class="v-catalogue-count" id="count"></span>
-  </div>
-
-  <div class="v-filter-bar">
-    <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
-    <select id="f-status" onchange="applyFilters()">
-      <option value="">All statuses</option>
-      <option value="AVAILABLE">Available</option>
-      <option value="RESERVED">Reserved</option>
-    </select>
-    <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
-    <input type="number" id="f-max-price" placeholder="Max $"     oninput="applyFilters()" />
-    <input type="number" id="f-min-year"  placeholder="From year" oninput="applyFilters()" />
-    <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
+  <div class="v-inv-filter" id="inv-filter">
+    <div class="v-inv-search">
+      <span class="v-inv-search-icon">⌕</span>
+      <input type="text" id="inv-search" placeholder="Search make or model…" autocomplete="off" />
+    </div>
+    <div class="v-inv-controls">
+      <select id="inv-sort">
+        <option value="">Sort: Featured</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="year-desc">Year: Newest</option>
+        <option value="year-asc">Year: Oldest</option>
+        <option value="mileage-asc">Mileage: Lowest</option>
+      </select>
+      <select id="inv-status">
+        <option value="">All Status</option>
+        <option value="AVAILABLE">Available</option>
+        <option value="RESERVED">Reserved</option>
+      </select>
+      <button class="v-inv-reset" id="inv-reset" title="Clear filters">✕ Reset</button>
+    </div>
   </div>
 
   <div class="v-car-grid" id="car-grid">
@@ -1513,6 +1613,10 @@
     <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
     <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
     <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+  </div>
+
+  <div class="v-see-all">
+    <a href="cars.html">See All Inventory →</a>
   </div>
 
 </section>
@@ -1603,8 +1707,8 @@
       const cars = await res.json();
       if (cars.error) throw new Error(cars.error);
       allCars = cars;
-      renderFeatured(cars);
       updateCategoryCounts(cars);
+      renderPopular(cars);
       applyFilters();
     } catch (_) {
       document.getElementById('car-grid').innerHTML =
@@ -1612,29 +1716,112 @@
     }
   }
 
-  function applyFilters() {
-    const search   = document.getElementById('f-search').value.trim().toLowerCase();
-    const status   = document.getElementById('f-status').value;
-    const minPrice = parseFloat(document.getElementById('f-min-price').value) || 0;
-    const maxPrice = parseFloat(document.getElementById('f-max-price').value) || Infinity;
-    const minYear  = parseInt(document.getElementById('f-min-year').value)  || 0;
-    const maxYear  = parseInt(document.getElementById('f-max-year').value)  || 9999;
+  const POPULAR_MAKES = ['McLaren', 'Ferrari', 'Porsche'];
+  const MAKE_TAGLINES = {
+    'McLaren': 'Track-bred. Road-legal.',
+    'Ferrari': 'Passion engineered into every curve.',
+    'Porsche': 'Perfected over six decades.'
+  };
+  const MAKE_ORIGINS = {
+    'McLaren': 'British Supercar',
+    'Ferrari': 'Italian Icon',
+    'Porsche': 'German Precision'
+  };
 
-    const visibleCars = allCars.filter(c => c.status !== 'SOLD');
+  function renderPopular(cars) {
+    const grid = document.getElementById('popularGrid');
+    if (!grid) return;
 
-    const filtered = visibleCars.filter(c => {
-      if (search && !c.make.toLowerCase().includes(search) && !c.model.toLowerCase().includes(search)) return false;
-      if (status && c.status !== status) return false;
-      if (activeSegmentFilter && c.segment !== activeSegmentFilter) return false;
-      if (c.price < minPrice || c.price > maxPrice) return false;
-      if (c.year  < minYear  || c.year  > maxYear)  return false;
-      return true;
+    const picks = POPULAR_MAKES.map(make => {
+      return cars.find(c => c.make && c.make.toLowerCase() === make.toLowerCase());
+    }).filter(Boolean);
+
+    if (!picks.length) { grid.innerHTML = ''; return; }
+
+    grid.innerHTML = picks.map((car, i) => {
+      const tagline  = MAKE_TAGLINES[car.make] || '';
+      const origin   = MAKE_ORIGINS[car.make] || '';
+      const imgId    = `pop-img-${car.id}`;
+      const delay    = 80 + i * 80;
+      return `
+        <div class="v-feat-card" data-reveal="up" style="--reveal-delay:${delay}ms" onclick="location.href='/vehicle-details.html?id=${car.id}'">
+          <div class="v-feat-img-placeholder" id="${imgId}">—</div>
+          <div class="v-feat-body">
+            <div class="v-feat-eyebrow">${esc(origin)}</div>
+            <div class="v-feat-make">${esc(car.make)}</div>
+            <div class="v-feat-title">${esc(car.model)}</div>
+            <div class="v-feat-year">${esc(tagline)}</div>
+            <div class="v-feat-footer">
+              <span class="v-feat-price">$${car.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+              <span class="v-feat-arrow">→</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    if (window.revealRefresh) window.revealRefresh();
+
+    picks.forEach(car => {
+      const placeholder = document.getElementById(`pop-img-${car.id}`);
+      if (!placeholder) return;
+      const url = `/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}&vehicleId=${car.id}`;
+      fetch(url).then(r => r.json()).then(d => {
+        if (d.url && placeholder.parentElement) {
+          const img = document.createElement('img');
+          img.className = 'v-feat-img';
+          img.src = d.url;
+          img.alt = `${car.year} ${car.make} ${car.model}`;
+          img.onerror = () => {};
+          placeholder.replaceWith(img);
+        }
+      }).catch(() => {});
     });
-
-    const n = filtered.length;
-    document.getElementById('count').textContent = n + ' vehicle' + (n !== 1 ? 's' : '');
-    renderGrid(filtered);
   }
+
+  function applyFilters() {
+    const query  = (document.getElementById('inv-search')?.value  || '').trim().toLowerCase();
+    const sort   =  document.getElementById('inv-sort')?.value    || '';
+    const status =  document.getElementById('inv-status')?.value  || '';
+
+    let cars = allCars.filter(c => c.status !== 'SOLD');
+
+    if (query)  cars = cars.filter(c =>
+      (c.make  || '').toLowerCase().includes(query) ||
+      (c.model || '').toLowerCase().includes(query)
+    );
+    if (status) cars = cars.filter(c => c.status === status);
+
+    if (sort === 'price-asc')     cars = [...cars].sort((a,b) => a.price    - b.price);
+    else if (sort === 'price-desc') cars = [...cars].sort((a,b) => b.price  - a.price);
+    else if (sort === 'year-desc')  cars = [...cars].sort((a,b) => b.year   - a.year);
+    else if (sort === 'year-asc')   cars = [...cars].sort((a,b) => a.year   - b.year);
+    else if (sort === 'mileage-asc') cars = [...cars].sort((a,b) => (a.mileage||0) - (b.mileage||0));
+
+    if (!query && !status && !sort) cars = cars.slice(0, 6);
+
+    renderGrid(cars);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const search = document.getElementById('inv-search');
+    const sort   = document.getElementById('inv-sort');
+    const status = document.getElementById('inv-status');
+    const reset  = document.getElementById('inv-reset');
+
+    let debounceTimer;
+    search?.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(applyFilters, 220);
+    });
+    sort?.addEventListener('change', applyFilters);
+    status?.addEventListener('change', applyFilters);
+    reset?.addEventListener('click', () => {
+      if (search) search.value = '';
+      if (sort)   sort.value   = '';
+      if (status) status.value = '';
+      applyFilters();
+    });
+  });
 
   function renderGrid(cars) {
     const grid = document.getElementById('car-grid');
@@ -1644,10 +1831,14 @@
     }
     grid.innerHTML = cars.map(car => {
       const imgHtml = car.imageUrl && car.imageUrl.trim()
-        ? `<img class="v-car-card-img" src="${esc(car.imageUrl)}" alt="${esc(car.year + ' ' + car.make + ' ' + car.model)}"
-             onerror="this.outerHTML='<div class=\\'v-car-card-img-placeholder\\'>—</div>'" />`
+        ? `<img class="v-car-card-img"
+               src="${esc(car.imageUrl)}"
+               alt="${esc(car.year + ' ' + car.make + ' ' + car.model)}"
+               data-make="${esc(car.make)}" data-model="${esc(car.model)}"
+               data-year="${car.year}" data-vid="${car.id}"
+               data-fallback="pending" />`
         : `<div class="v-car-card-img-placeholder"
-               data-make="${esc(car.make)}" data-model="${esc(car.model)}" data-year="${car.year}">—</div>`;
+               data-make="${esc(car.make)}" data-model="${esc(car.model)}" data-year="${car.year}" data-vid="${car.id}">—</div>`;
 
       const bCls = { AVAILABLE:'v-badge-available', SOLD:'v-badge-sold', RESERVED:'v-badge-reserved' }[car.status] || 'v-badge-available';
       const bTxt = car.status ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : 'Available';
@@ -1671,10 +1862,10 @@
         </div>`;
     }).join('');
 
-    grid.querySelectorAll('.v-car-card-img-placeholder[data-make]').forEach(async el => {
-      const { make, model, year } = el.dataset;
+    async function loadWikiImage(el, make, model, year, vid) {
       try {
-        const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`);
+        const url = `/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}&vehicleId=${vid || ''}`;
+        const r = await fetch(url);
         const d = await r.json();
         if (d.url) {
           const img = document.createElement('img');
@@ -1684,18 +1875,34 @@
           el.replaceWith(img);
         }
       } catch (_) {}
+    }
+
+    grid.querySelectorAll('.v-car-card-img-placeholder[data-make]').forEach(el => {
+      const { make, model, year, vid } = el.dataset;
+      loadWikiImage(el, make, model, year, vid);
     });
+
+    grid.querySelectorAll('img[data-fallback="pending"]').forEach(img => {
+      const { make, model, year, vid } = img.dataset;
+      img.onerror = () => {
+        img.onerror = null;
+        const placeholder = document.createElement('div');
+        placeholder.className = 'v-car-card-img-placeholder';
+        Object.assign(placeholder.dataset, { make, model, year, vid });
+        placeholder.textContent = '—';
+        img.replaceWith(placeholder);
+        loadWikiImage(placeholder, make, model, year, vid);
+      };
+      img.removeAttribute('data-fallback');
+    });
+
+    if (window.revealRefresh) window.revealRefresh();
   }
 
   let activeSegmentFilter = null;
 
   function filterByType(type) {
-    activeSegmentFilter = activeSegmentFilter === type ? null : type;
-    document.querySelectorAll('.v-cat-tile').forEach(btn => {
-      btn.classList.toggle('v-cat-tile--active', btn.dataset.filter === activeSegmentFilter);
-    });
-    document.getElementById('catalogue').scrollIntoView({ behavior: 'smooth' });
-    applyFilters();
+    location.href = 'cars.html?type=' + encodeURIComponent(type);
   }
 
   function updateCategoryCounts(cars) {
@@ -1706,49 +1913,6 @@
       if (!el) return;
       const n = visibleCars.filter(c => c.segment && c.segment === t).length;
       el.textContent = n + ' vehicle' + (n !== 1 ? 's' : '');
-    });
-  }
-
-  function renderFeatured(cars) {
-    const grid = document.getElementById('featuredGrid');
-    if (!grid) return;
-    const available = cars.filter(c => !c.status || c.status === 'AVAILABLE').slice(0, 3);
-    if (!available.length) { grid.style.display = 'none'; return; }
-    grid.innerHTML = available.map(car => {
-      const imgHtml = car.imageUrl && car.imageUrl.trim()
-        ? `<img class="v-feat-img" src="${esc(car.imageUrl)}" alt="${esc(car.year + ' ' + car.make + ' ' + car.model)}"
-             onerror="this.outerHTML='<div class=\\'v-feat-img-placeholder\\'>—</div>'" />`
-        : `<div class="v-feat-img-placeholder"
-               data-feat-make="${esc(car.make)}" data-feat-model="${esc(car.model)}" data-feat-year="${car.year}">—</div>`;
-      return `
-        <div class="v-feat-card" onclick="location.href='/vehicle-details.html?id=${car.id}'">
-          ${imgHtml}
-          <div class="v-feat-body">
-            <div class="v-feat-eyebrow">Featured</div>
-            <div class="v-feat-make">${esc(car.make)}</div>
-            <div class="v-feat-title">${esc(car.model)}</div>
-            <div class="v-feat-year">${car.year}${car.color ? ' · ' + esc(car.color) : ''}</div>
-            <div class="v-feat-footer">
-              <span class="v-feat-price">$${car.price.toLocaleString('en-US', {minimumFractionDigits:2})}</span>
-              <span class="v-feat-arrow">→</span>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-
-    grid.querySelectorAll('.v-feat-img-placeholder[data-feat-make]').forEach(async el => {
-      const make = el.dataset.featMake, model = el.dataset.featModel, year = el.dataset.featYear;
-      try {
-        const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`);
-        const d = await r.json();
-        if (d.url) {
-          const img = document.createElement('img');
-          img.className = 'v-feat-img';
-          img.src = d.url;
-          img.alt = `${year} ${make} ${model}`;
-          el.replaceWith(img);
-        }
-      } catch (_) {}
     });
   }
 
@@ -1774,5 +1938,7 @@
   init();
 </script>
 
+<script src="js/theme.js"></script>
+<script src="js/reveal.js" defer></script>
 </body>
 </html>

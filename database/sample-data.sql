@@ -47,7 +47,7 @@ INSERT INTO Models (manufacturer_id, model_name, body_type, segment) VALUES
     (2,  'Tiguan',         'SUV',       'SUV'),
     (5,  'CR-V',           'SUV',       'SUV');
 
--- Vehicles  (no VehicleImages rows — Wikipedia API fetches images dynamically)
+-- Vehicles
 INSERT INTO Vehicles (model_id, year, color, mileage, price, vin, status, description) VALUES
     -- Economy
     (1,  2023, 'Scarlet Red',     8000,  16900.00, 'JTDKB3EU7N3123401', 'Available', 'Toyota Yaris, fuel-efficient city car'),
@@ -89,6 +89,70 @@ INSERT INTO Vehicles (model_id, year, color, mileage, price, vin, status, descri
     (24, 2022, 'Magnetic Grey',  27000,  32000.00, 'JTMRFREV5MD000401', 'Available', 'Toyota RAV4 Hybrid, all-wheel drive'),
     (25, 2023, 'Reflex Silver',   9000,  38500.00, 'WVGZZZ5NZPW000501', 'Available', 'VW Tiguan R-Line, panoramic sunroof'),
     (26, 2021, 'Sonic Grey',     42000,  27500.00, 'JHMRW2H53MX000601', 'Available', 'Honda CR-V Hybrid, excellent MPG');
+
+-- VehicleImages (unique URL per vehicle, fetched from Unsplash 2026-04-24)
+INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
+    -- Economy: Toyota Yaris (model 1) — 2 unique photos
+    (1,  'https://images.unsplash.com/photo-1742742646347-4f708c0afca4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (2,  'https://images.unsplash.com/photo-1742742646348-32384aeaefec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Economy: Toyota Corolla (model 2) — 2 unique photos
+    (3,  'https://images.unsplash.com/photo-1691994866119-14c702835475?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (4,  'https://images.unsplash.com/photo-1691994877641-36e673ad4236?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Economy: VW Golf (model 3) — 2 unique photos
+    (5,  'https://images.unsplash.com/photo-1645307621773-1e8d3d0e2482?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (6,  'https://images.unsplash.com/photo-1678120597905-b2f3a982b625?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Economy: Honda Civic (model 4) — 2 unique photos
+    (7,  'https://images.unsplash.com/photo-1711226876715-53a1882660e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (8,  'https://images.unsplash.com/photo-1711226876657-3801d4a4e0ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Sport: BMW M4 (model 5) — 2 unique photos
+    (9,  'https://images.unsplash.com/photo-1728060838342-cb9744a27d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (10, 'https://images.unsplash.com/photo-1634214564170-893240d3b789?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Sport: Porsche 718 Boxster (model 6) — 2 unique photos
+    (11, 'https://images.unsplash.com/photo-1721572345790-507985e4317a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (12, 'https://images.unsplash.com/photo-1560691647-7085e5cebcfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Sport: Honda Civic Type R (model 7)
+    (13, 'https://images.unsplash.com/photo-1641921966529-7a887417a8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Sport: Toyota GR86 (model 8)
+    (14, 'https://images.unsplash.com/photo-1729009491967-63901999a656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Luxury: Mercedes S-Class (model 9) — 2 unique photos
+    (15, 'https://images.unsplash.com/photo-1706977384830-df8b515e6b70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (16, 'https://images.unsplash.com/photo-1698816688678-a3f838fd4fe0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Luxury: Audi A8 (model 10)
+    (17, 'https://images.unsplash.com/photo-1693945423710-626e031eef83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Luxury: BMW 7 Series (model 11)
+    (18, 'https://images.unsplash.com/photo-1627936354732-ffbe552799d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Luxury: Porsche Panamera (model 12)
+    (19, 'https://images.unsplash.com/photo-1656751556025-002685d0f3b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Luxury: Audi A4 (model 13)
+    (20, 'https://images.unsplash.com/photo-1670686189004-3f824f40027e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Luxury: BMW 320d (model 14)
+    (21, 'https://images.unsplash.com/photo-1750670950984-d4095aec9e81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Exotic: Ferrari 488 GTB (model 15) — 2 unique photos
+    (22, 'https://images.unsplash.com/photo-1634824162531-a9f139a1d43a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (23, 'https://images.unsplash.com/photo-1634823929885-b12342dfc408?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Exotic: Lamborghini Huracan (model 16)
+    (24, 'https://images.unsplash.com/photo-1696581082291-5230d4de01c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Exotic: McLaren 720S (model 17)
+    (25, 'https://images.unsplash.com/photo-1689596323441-94fe62ac5f0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Exotic: Ferrari F8 Tributo (model 18)
+    (26, 'https://images.unsplash.com/photo-1655593972695-919eb269b0df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- Exotic: Lamborghini Urus (model 19)
+    (27, 'https://images.unsplash.com/photo-1569398890582-1943b9a5c94b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: BMW X5 (model 20) — 2 unique photos
+    (28, 'https://images.unsplash.com/photo-1615908397724-6dc711db34a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (29, 'https://images.unsplash.com/photo-1717082842911-9e55aeaf80cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: Mercedes GLE (model 21)
+    (30, 'https://images.unsplash.com/photo-1677764822912-4f99e9326243?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: Porsche Cayenne (model 22)
+    (31, 'https://images.unsplash.com/photo-1738780151621-98ca2d4fad93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: Audi Q8 (model 23)
+    (32, 'https://images.unsplash.com/photo-1584558303984-0ac08c41ddc5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: Toyota RAV4 (model 24)
+    (33, 'https://images.unsplash.com/photo-1597799980291-19f88b1cf1c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: VW Tiguan (model 25)
+    (34, 'https://images.unsplash.com/photo-1653310555014-bb4ac201b4a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    -- SUV: Honda CR-V (model 26)
+    (35, 'https://images.unsplash.com/photo-1616559650863-a043ce0188fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE);
 
 -- Customers
 INSERT INTO Customers (first_name, last_name, email, phone) VALUES
@@ -159,3 +223,16 @@ INSERT INTO VehicleChangeLog (vehicle_id, emp_id, change_type, field_changed, ne
     (5, 2, 'UPDATE', 'status', 'Reserved'),
     (20,1, 'UPDATE', 'status', 'Sold'),
     (21,4, 'INSERT', NULL,     NULL);
+
+-- Reviews (model-level, team-authored)
+INSERT INTO Reviews (model_id, author_name, rating, review_text, source) VALUES
+    (1,  'Ivan Karlo',   5, 'The Honda Civic is our top pick for value-conscious buyers. Excellent fuel economy, a refined cabin, and Honda''s legendary reliability make it a standout in the compact class.', 'TEAM'),
+    (1,  'Team AutoPrime', 4, 'Smooth ride quality and intuitive infotainment. The turbocharged 1.5L punches above its weight — great for daily commutes and weekend road trips alike.', 'TEAM'),
+    (5,  'Ivan Karlo',   5, 'The Mustang GT delivers raw American muscle with surprising everyday usability. The 5.0L V8 soundtrack alone is worth the price of admission.', 'TEAM'),
+    (5,  'Team AutoPrime', 4, 'Sharp handling and aggressive styling set this apart from the competition. We recommend the Performance Pack for drivers who want the full experience.', 'TEAM'),
+    (9,  'Team AutoPrime', 5, 'The 3 Series defines what a sport sedan should be. Perfect weight distribution, responsive steering, and a cabin that balances luxury with driver focus.', 'TEAM'),
+    (9,  'Ivan Karlo',   5, 'Every detail in the 3 Series interior feels intentional. The iDrive system is one of the best in the business, and the driving dynamics are class-leading.', 'TEAM'),
+    (15, 'Team AutoPrime', 5, 'The Huracán is a daily-driveable supercar in the truest sense. The naturally aspirated V10 is intoxicating, and Lamborghini''s build quality has never been better.', 'TEAM'),
+    (20, 'Ivan Karlo',   4, 'The RAV4 strikes the perfect balance between practicality and comfort. Generous cargo space, strong safety scores, and Toyota reliability make it our top SUV recommendation.', 'TEAM'),
+    (20, 'Team AutoPrime', 4, 'Great traction in mixed conditions and a smooth highway ride. The hybrid variant offers impressive fuel savings with no compromise in utility.', 'TEAM'),
+    (22, 'Team AutoPrime', 5, 'The Model Y redefines what an SUV can be. Instantaneous torque, over-the-air updates, and a minimalist cabin that feels genuinely futuristic.', 'TEAM');

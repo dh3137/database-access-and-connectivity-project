@@ -215,3 +215,40 @@ A "car" in the app = `Vehicles` JOIN `Models` JOIN `Manufacturers` LEFT JOIN `Ve
 - The database stores status as the exact ENUM strings `Available`, `Reserved`, `Sold`, but the API normalizes them to uppercase (`AVAILABLE`, `RESERVED`, `SOLD`) for the frontend.
 - Customer-facing inventory surfaces (`index.html`, `cars.html`) show `Available` and `Reserved` vehicles; `Sold` vehicles remain visible in the admin dashboard only.
 - Reserved vehicles stay visible to customers and use seller-contact messaging rather than being treated as fully unavailable.
+
+---
+
+## Planned Features & Improvements
+
+### Implemented
+- Scroll-reveal animations (IntersectionObserver + CSS, re-animates on every scroll) — `js/reveal.js`
+- Light / dark mode toggle — `js/theme.js`, persists to `localStorage`, respects system preference
+- Unified filter bar on `index.html` and `cars.html` (search, sort, status, type, price range, year range)
+
+### Lead Capture / Buying Flow
+- **Contact form modal** — name, email, phone, message pre-filled with car name. `POST /api/enquiry` stores to DB. Admin sees enquiries in dashboard.
+- **"Reserve this car" button** — flips vehicle status AVAILABLE → RESERVED directly from the detail page. Admin can confirm or release from dashboard.
+- **Appointment scheduler** — date/time picker writes to the existing `TestDrives` table. Admin sees upcoming viewings.
+- **WhatsApp quick-contact** — `href="https://wa.me/..."` with pre-written message including the car name. Zero backend needed.
+
+### Vehicle Details Page
+- **Image gallery** — if a vehicle has multiple `VehicleImages` rows, render a horizontal strip below the hero; click to swap main image.
+- **Similar vehicles strip** — 3 cards at the bottom filtered by same segment or ±20% price. Keeps users browsing.
+- **Specs comparison** — pick a second car from a dropdown, see a side-by-side spec table.
+- **Share button** — copies URL or opens native share sheet (`navigator.share`).
+- **Loading skeletons** — shimmer placeholders while the car data fetches (already on cars.html, missing here).
+- **360° / video slot** — placeholder section for a YouTube unlisted embed or turntable video.
+
+### Inventory Page (cars.html)
+- **Active filter chips** — pill badges below the bar showing active filters (e.g. `× Sport`, `× < $50k`). Click to remove individually.
+- **Price range slider** — dual-handle slider replacing the two number inputs. More tactile, higher-end feel.
+- **Lazy-load / pagination** — show 12 per page with "Load more" for when inventory grows.
+
+### Homepage (index.html)
+- **Stats bar** — animated counters: "47 vehicles · 12 makes · Est. 2024". Builds credibility fast.
+- **Testimonials carousel** — pull team reviews from the Reviews table as a scrolling strip.
+- **"Arriving soon" teaser** — blurred-out cards for manually flagged upcoming vehicles with an email-capture "Notify me" CTA.
+
+### Cross-Cutting
+- **Accessibility pass** — keyboard navigation, visible focus rings, ARIA labels on all interactive elements.
+- **Loading skeletons on vehicle-details.html** — match the shimmer pattern already used on cars.html.

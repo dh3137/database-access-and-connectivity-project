@@ -2,6 +2,8 @@ package com.cardealership;
 
 import com.cardealership.database.ActionLogDatabase;
 import com.cardealership.database.CarDatabase;
+import com.cardealership.database.EnquiryDatabase;
+import com.cardealership.database.ReviewDatabase;
 import com.cardealership.database.UserDatabase;
 import com.cardealership.model.Car;
 import com.cardealership.model.User;
@@ -53,6 +55,9 @@ public class Main {
     private static final CarDatabase carDatabase = new CarDatabase(database);
     private static final UserDatabase userDatabase = new UserDatabase(database);
     private static final ActionLogDatabase actionLogDatabase = new ActionLogDatabase(database);
+    private static final ReviewDatabase reviewDatabase = new ReviewDatabase(database);
+    private static final EnquiryDatabase enquiryDatabase = new EnquiryDatabase(database);
+
 
     // Serve static files from src/main/webapp (works when run from project root via mvn exec:java)
     private static final String STATIC_DIR = "src/main/webapp";
@@ -72,8 +77,11 @@ public class Main {
         server.createContext("/api/logout",   Main::handleLogout);
         server.createContext("/api/me",       Main::handleMe);
         server.createContext("/api/cars",     Main::handleCars);
-        server.createContext("/api/logs",     Main::handleLogs);
-        server.createContext("/api/carimage", Main::handleCarImage);
+        server.createContext("/api/logs",       Main::handleLogs);
+        server.createContext("/api/carimage",   Main::handleCarImage);
+        server.createContext("/api/models",     Main::handleModels);
+        server.createContext("/api/enquiry",    Main::handleEnquiry);
+        server.createContext("/api/enquiries",  Main::handleEnquiries);
         server.createContext("/",             Main::handleStatic);
 
         server.setExecutor(Executors.newFixedThreadPool(4));
@@ -152,7 +160,7 @@ public class Main {
             boolean hasId = parts.length >= 4 && !parts[3].isEmpty();
 
             // Write operations — require ADMIN session
-            if ("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
+            if ("POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method) || "DELETE".equals(method)) {
                 if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
                 if (!"ADMIN".equals(user.getRole())) {
                     sendJson(ex, 403, "{\"error\":\"Forbidden\"}");
@@ -166,19 +174,42 @@ public class Main {
                 if (deleted) logVehicleChange(id, user.getEmpId(), "DELETE", null, null);
                 sendJson(ex, deleted ? 200 : 404, deleted ? "{\"ok\":true}" : "{\"error\":\"Car not found\"}");
 
+            } else if ("PATCH".equals(method) && hasId) {
+                int id = Integer.parseInt(parts[3]);
+                String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                String status = jsonString(body, "status");
+                if (status.isBlank()) { sendJson(ex, 400, "{\"error\":\"status is required\"}"); return; }
+                String dbStatus = toDatabaseStatus(status);
+                boolean updated = carDatabase.updateCarStatus(id, dbStatus);
+                if (updated) logVehicleChange(id, user.getEmpId(), "UPDATE", "status", dbStatus);
+                sendJson(ex, updated ? 200 : 404, updated ? "{\"ok\":true,\"status\":\"" + toApiStatus(dbStatus) + "\"}" : "{\"error\":\"Car not found\"}");
+
             } else if ("PUT".equals(method) && hasId) {
                 int id = Integer.parseInt(parts[3]);
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Car car = parseCarJson(body);
                 car.setId(id);
+                if (car.getModelId() <= 0 && car.getMake() != null && car.getModel() != null) {
+                    int resolved = carDatabase.findModelId(car.getMake(), car.getModel());
+                    if (resolved > 0) car.setModelId(resolved);
+                }
                 validateCar(car, true);
                 boolean updated = carDatabase.updateCar(car);
-                if (updated) logVehicleChange(id, user.getEmpId(), "UPDATE", "vehicle", String.valueOf(id));
+                if (updated) {
+                    logVehicleChange(id, user.getEmpId(), "UPDATE", "vehicle", String.valueOf(id));
+                    if (car.getImageUrl() != null && !car.getImageUrl().isBlank()) {
+                        carDatabase.upsertVehicleImage(id, car.getImageUrl());
+                    }
+                }
                 sendJson(ex, updated ? 200 : 404, updated ? carToJson(car) : "{\"error\":\"Car not found\"}");
 
             } else if ("POST".equals(method) && !hasId) {
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Car car = parseCarJson(body);
+                if (car.getModelId() <= 0 && car.getMake() != null && car.getModel() != null) {
+                    int resolved = carDatabase.findModelId(car.getMake(), car.getModel());
+                    if (resolved > 0) car.setModelId(resolved);
+                }
                 validateCar(car, false);
                 boolean added = carDatabase.saveCar(car);
                 if (added) logVehicleChange(car.getModelId(), user.getEmpId(), "INSERT", null, null);
@@ -245,22 +276,34 @@ public class Main {
         }
     }
 
-    // GET /api/carimage?make=Toyota&model=Corolla&year=2020
-    // Queries Wikipedia for the best matching car image URL and returns {"url":"..."}
+    // GET /api/carimage?make=Toyota&model=Corolla&year=2020[&vehicleId=5]
     private static void handleCarImage(HttpExchange ex) throws IOException {
         try {
             String query = ex.getRequestURI().getQuery();
             Map<String, String> params = parseQuery(query);
-            String make  = params.getOrDefault("make",  "").trim();
-            String model = params.getOrDefault("model", "").trim();
-            String year  = params.getOrDefault("year",  "").trim();
+            String make      = params.getOrDefault("make",  "").trim();
+            String model     = params.getOrDefault("model", "").trim();
+            String year      = params.getOrDefault("year",  "").trim();
+            String vehicleIdStr = params.getOrDefault("vehicleId", "").trim();
 
             if (make.isEmpty() || model.isEmpty()) {
                 sendJson(ex, 400, "{\"error\":\"make and model are required\"}");
                 return;
             }
 
-            String imageUrl = fetchWikipediaImage(make, model, year);
+            // 1. Check DB cache first
+            String imageUrl = null;
+            if (!vehicleIdStr.isEmpty()) {
+                try {
+                    imageUrl = carDatabase.getVehicleImageUrl(Integer.parseInt(vehicleIdStr));
+                } catch (Exception ignored) {}
+            }
+
+            // 2. Wikipedia fallback
+            if (imageUrl == null) {
+                imageUrl = fetchWikipediaImage(make, model, year);
+            }
+
             if (imageUrl != null) {
                 sendJson(ex, 200, "{\"url\":\"" + escapeJson(imageUrl) + "\"}");
             } else {
@@ -268,6 +311,114 @@ public class Main {
             }
         } catch (Exception e) {
             System.err.println("[carimage] ERROR: " + e.getMessage());
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // POST /api/enquiry  body: JSON {vehicleId, name, email, phone, message}  (public)
+    private static void handleEnquiry(HttpExchange ex) throws IOException {
+        try {
+            if (!"POST".equals(ex.getRequestMethod())) {
+                sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
+                return;
+            }
+            String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            String name    = jsonString(body, "name").trim();
+            String email   = jsonString(body, "email").trim();
+            String phone   = jsonString(body, "phone").trim();
+            String message = jsonString(body, "message").trim();
+            String vidStr  = jsonString(body, "vehicleId").trim();
+
+            if (name.isEmpty() || email.isEmpty()) {
+                sendJson(ex, 400, "{\"error\":\"name and email are required\"}");
+                return;
+            }
+            if (!email.contains("@")) {
+                sendJson(ex, 400, "{\"error\":\"invalid email address\"}");
+                return;
+            }
+
+            int vehicleId = 0;
+            try { vehicleId = Integer.parseInt(vidStr); } catch (NumberFormatException ignored) {}
+
+            boolean saved = enquiryDatabase.saveEnquiry(vehicleId, name, email, phone, message);
+            sendJson(ex, saved ? 201 : 500, saved ? "{\"ok\":true}" : "{\"error\":\"Could not save enquiry\"}");
+        } catch (Exception e) {
+            System.err.println("[enquiry] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // GET /api/enquiries  (ADMIN only) → recent 50 enquiries as JSON array
+    private static void handleEnquiries(HttpExchange ex) throws IOException {
+        try {
+            User user = getSessionUser(ex);
+            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
+            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+
+            String[][] rows = enquiryDatabase.getRecent(50);
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = 0; i < rows.length; i++) {
+                if (i > 0) sb.append(",");
+                String[] r = rows[i];
+                // columns: enquiry_id(0) name(1) email(2) phone(3) message(4) submitted_at(5) is_read(6) vehicle_label(7)
+                sb.append(String.format(
+                    "{\"id\":\"%s\",\"name\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\",\"message\":\"%s\",\"time\":\"%s\",\"isRead\":%s,\"vehicle\":\"%s\"}",
+                    escapeJson(r[0] != null ? r[0] : ""),
+                    escapeJson(r[1] != null ? r[1] : ""),
+                    escapeJson(r[2] != null ? r[2] : ""),
+                    escapeJson(r[3] != null ? r[3] : ""),
+                    escapeJson(r[4] != null ? r[4] : ""),
+                    escapeJson(r[5] != null ? r[5] : ""),
+                    "1".equals(r[6]) || "true".equalsIgnoreCase(r[6]) ? "true" : "false",
+                    escapeJson(r[7] != null ? r[7] : "General")
+                ));
+            }
+            sb.append("]");
+            sendJson(ex, 200, sb.toString());
+        } catch (Exception e) {
+            System.err.println("[enquiries] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // GET /api/models/{id}/reviews
+    private static void handleModels(HttpExchange ex) throws IOException {
+        try {
+            String path = ex.getRequestURI().getPath();
+            // expected: /api/models/{id}/reviews
+            String[] parts = path.split("/");
+            if (parts.length < 5 || !"reviews".equals(parts[4])) {
+                sendJson(ex, 404, "{\"error\":\"Not found\"}");
+                return;
+            }
+            int modelId = Integer.parseInt(parts[3]);
+            double avg = reviewDatabase.getAverageRating(modelId);
+            java.util.List<java.util.Map<String, Object>> reviews = reviewDatabase.getReviewsByModelId(modelId);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("{\"averageRating\":").append(String.format("%.2f", avg));
+            sb.append(",\"reviews\":[");
+            for (int i = 0; i < reviews.size(); i++) {
+                if (i > 0) sb.append(",");
+                java.util.Map<String, Object> r = reviews.get(i);
+                sb.append("{")
+                  .append("\"reviewId\":").append(r.get("reviewId")).append(",")
+                  .append("\"authorName\":\"").append(escapeJson((String) r.get("authorName"))).append("\",")
+                  .append("\"rating\":").append(r.get("rating")).append(",")
+                  .append("\"reviewText\":\"").append(escapeJson((String) r.get("reviewText"))).append("\",")
+                  .append("\"source\":\"").append(escapeJson((String) r.get("source"))).append("\",")
+                  .append("\"createdAt\":\"").append(escapeJson((String) r.get("createdAt"))).append("\"")
+                  .append("}");
+            }
+            sb.append("]}");
+            sendJson(ex, 200, sb.toString());
+        } catch (NumberFormatException e) {
+            sendJson(ex, 400, "{\"error\":\"Invalid model id\"}");
+        } catch (Exception e) {
+            System.err.println("[models] ERROR: " + e.getMessage());
             sendJson(ex, 500, "{\"error\":\"Server error\"}");
         }
     }
@@ -330,6 +481,7 @@ public class Main {
         }
         return null;
     }
+
 
     private static Map<String, String> parseQuery(String query) {
         Map<String, String> map = new HashMap<>();

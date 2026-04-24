@@ -335,6 +335,77 @@
       color: rgba(245,244,240,.7);
     }
 
+    /* ── REVIEWS ── */
+    .vd-reviews {
+      margin-top: 60px;
+    }
+
+    .vd-reviews-avg {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .vd-reviews-score {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--v-white);
+      line-height: 1;
+    }
+
+    .vd-reviews-stars {
+      color: var(--v-orange);
+      font-size: 1.1rem;
+      letter-spacing: .06em;
+    }
+
+    .vd-reviews-count {
+      font-size: .7rem;
+      color: rgba(245,244,240,.28);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .vd-review-card {
+      border-top: 1px solid rgba(245,244,240,.06);
+      padding: 28px 0;
+    }
+
+    .vd-review-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .vd-review-author {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--v-white);
+      letter-spacing: .04em;
+    }
+
+    .vd-review-date {
+      font-size: .65rem;
+      color: rgba(245,244,240,.22);
+      letter-spacing: .06em;
+    }
+
+    .vd-review-rating {
+      color: var(--v-orange);
+      font-size: .9rem;
+      margin-bottom: 10px;
+      letter-spacing: .04em;
+    }
+
+    .vd-review-text {
+      font-size: .86rem;
+      line-height: 1.74;
+      color: rgba(245,244,240,.42);
+    }
+
     /* ── ERROR ── */
     .vd-error {
       padding: 120px 60px;
@@ -381,6 +452,7 @@
   <a href="/" class="vd-nav-logo">VEL<span>O</span>CE</a>
   <div class="vd-nav-right">
     <a href="/" class="vd-back" id="back-link">← Inventory</a>
+    <button class="v-theme-toggle" onclick="toggleTheme()" aria-label="Switch to light mode">☀</button>
     <a href="/login.html" class="vd-nav-btn" id="nav-action-btn">Staff Login</a>
   </div>
 </nav>
@@ -392,9 +464,9 @@
   </div>
   <div class="vd-hero-gradient"></div>
   <div class="vd-hero-content">
-    <div class="vd-hero-make" id="hero-make"></div>
-    <h1 class="vd-hero-title" id="hero-title">Loading…</h1>
-    <span class="vd-hero-status" id="hero-status"></span>
+    <div class="vd-hero-make" id="hero-make" data-reveal="up"></div>
+    <h1 class="vd-hero-title" id="hero-title" data-reveal="up" style="--reveal-delay:80ms">Loading…</h1>
+    <span class="vd-hero-status" id="hero-status" data-reveal="up" style="--reveal-delay:140ms"></span>
   </div>
 </section>
 
@@ -409,6 +481,18 @@
     <div id="desc-section" style="display:none" class="vd-desc-wrap">
       <h2 class="vd-desc-heading">About this Vehicle</h2>
       <p class="vd-desc-text" id="desc-text"></p>
+    </div>
+
+    <div class="vd-reviews" id="reviews-section" style="display:none">
+      <span class="vd-section-label">◈ Expert Reviews</span>
+      <div class="vd-reviews-avg">
+        <div class="vd-reviews-score" id="reviews-score">—</div>
+        <div>
+          <div class="vd-reviews-stars" id="reviews-stars"></div>
+          <div class="vd-reviews-count" id="reviews-count"></div>
+        </div>
+      </div>
+      <div id="reviews-list"></div>
     </div>
   </div>
 
@@ -503,14 +587,18 @@
       });
     }
 
-    if (car.imageUrl && car.imageUrl.trim()) {
-      await trySetHeroImg(car.imageUrl).catch(() => {});
-    } else {
+    async function fetchWikiFallback() {
       try {
-        const r = await fetch(`/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`);
+        const r = await fetch(`/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}&vehicleId=${car.id}`);
         const d = await r.json();
         if (d.url) await trySetHeroImg(d.url).catch(() => {});
       } catch (_) {}
+    }
+
+    if (car.imageUrl && car.imageUrl.trim()) {
+      await trySetHeroImg(car.imageUrl).catch(fetchWikiFallback);
+    } else {
+      await fetchWikiFallback();
     }
 
     // Specs grid
@@ -555,7 +643,37 @@
       document.getElementById('desc-section').style.display = 'block';
     }
 
+    // Reviews
+    if (car.modelId) {
+      try {
+        const rr = await fetch(`/api/models/${car.modelId}/reviews`);
+        const rd = await rr.json();
+        if (rd.reviews && rd.reviews.length > 0) {
+          const avg = parseFloat(rd.averageRating) || 0;
+          document.getElementById('reviews-score').textContent = avg.toFixed(1);
+          document.getElementById('reviews-stars').textContent = starsHtml(avg);
+          document.getElementById('reviews-count').textContent = rd.reviews.length + ' review' + (rd.reviews.length !== 1 ? 's' : '');
+          document.getElementById('reviews-list').innerHTML = rd.reviews.map(rv => `
+            <div class="vd-review-card">
+              <div class="vd-review-meta">
+                <span class="vd-review-author">${esc(rv.authorName)}</span>
+                <span class="vd-review-date">${esc(rv.createdAt ? rv.createdAt.slice(0,10) : '')}</span>
+              </div>
+              <div class="vd-review-rating">${starsHtml(parseInt(rv.rating, 10))}</div>
+              <p class="vd-review-text">${esc(rv.reviewText)}</p>
+            </div>
+          `).join('');
+          document.getElementById('reviews-section').style.display = 'block';
+        }
+      } catch (_) {}
+    }
+
     document.getElementById('vd-main').style.display = 'grid';
+  }
+
+  function starsHtml(rating) {
+    const full = Math.round(rating);
+    return '★'.repeat(full) + '☆'.repeat(Math.max(0, 5 - full));
   }
 
   function showError(msg) {
@@ -574,5 +692,8 @@
 
   init();
 </script>
+
+<script src="js/theme.js"></script>
+<script src="js/reveal.js" defer></script>
 </body>
 </html>
