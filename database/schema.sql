@@ -232,3 +232,32 @@ CREATE INDEX idx_vehicles_status ON Vehicles(status);
 CREATE INDEX idx_vehicles_model  ON Vehicles(model_id);
 CREATE INDEX idx_sales_vehicle   ON Sales(vehicle_id);
 CREATE INDEX idx_users_username  ON Users(username);
+
+-- ─── Reviews ──────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS Reviews (
+  review_id    INT AUTO_INCREMENT PRIMARY KEY,
+  model_id     INT NOT NULL,
+  author_name  VARCHAR(100) NOT NULL,
+  rating       TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  review_text  TEXT NOT NULL,
+  source       ENUM('TEAM','EDMUNDS','KBB') DEFAULT 'TEAM',
+  created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (model_id) REFERENCES Models(model_id) ON DELETE CASCADE
+);
+
+-- ─── Enquiries ────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS Enquiries (
+  enquiry_id   INT PRIMARY KEY AUTO_INCREMENT,
+  vehicle_id   INT,
+  name         VARCHAR(100) NOT NULL,
+  email        VARCHAR(100) NOT NULL,
+  phone        VARCHAR(20),
+  message      TEXT,
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  is_read      BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_enquiries_vehicle
+    FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);

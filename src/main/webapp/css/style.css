@@ -3,6 +3,8 @@
    Design: Dark luxury, editorial hierarchy, refined motion
    ============================================================ */
 
+html { scroll-behavior: smooth; }
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -764,4 +766,163 @@ body.public-page {
   max-width: 700px;
   margin: 0 auto;
   padding: 36px 24px 80px;
+}
+
+/* ── Scroll-reveal ──────────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1),
+              transform 0.85s cubic-bezier(0.16,1,0.3,1);
+  will-change: opacity, transform;
+}
+[data-reveal="up"]    { transform: translateY(40px); }
+[data-reveal="down"]  { transform: translateY(-40px); }
+[data-reveal="left"]  { transform: translateX(-40px); }
+[data-reveal="right"] { transform: translateX(40px); }
+[data-reveal="scale"] { transform: scale(0.92); }
+[data-reveal="fade"]  { transform: none; }
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* stagger siblings with --delay custom prop */
+[data-reveal] { transition-delay: var(--reveal-delay, 0ms); }
+
+/* ── Light mode ─────────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --v-black:      #F2F1ED;
+  --v-dark:       #E8E7E2;
+  --v-white:      #1A1918;
+
+  --navy:         #F2F1ED;
+  --navy-2:       #E8E7E2;
+  --navy-3:       #DEDDD8;
+
+  --bg:           #F5F4F0;
+  --surface:      #ECEAE5;
+  --surface-2:    #E3E1DC;
+
+  --border:       rgba(26,25,24,0.10);
+  --border-2:     rgba(26,25,24,0.18);
+
+  --text:         #1A1918;
+  --text-2:       rgba(26,25,24,0.72);
+  --muted:        rgba(26,25,24,0.45);
+  --muted-2:      rgba(26,25,24,0.28);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow:    0 4px 12px rgba(0,0,0,.10), 0 1px 3px rgba(0,0,0,.07);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.12), 0 2px 6px rgba(0,0,0,.08);
+  --shadow-lg: 0 20px 48px rgba(0,0,0,.16), 0 4px 12px rgba(0,0,0,.10);
+}
+
+[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Public page overrides */
+[data-theme="light"] body.public-page {
+  background: var(--bg);
+}
+
+/* Navbar glass */
+[data-theme="light"] .v-nav {
+  background: rgba(245,244,240,0.92);
+  border-bottom-color: rgba(26,25,24,0.08);
+}
+
+/* Cards */
+[data-theme="light"] .v-car-card {
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+}
+
+[data-theme="light"] .v-car-card-img-placeholder {
+  background: #e8e7e2;
+  color: rgba(26,25,24,0.18);
+}
+
+/* Filter bar */
+[data-theme="light"] .v-inv-filter {
+  border-color: rgba(26,25,24,0.12);
+  background: #fff;
+}
+
+[data-theme="light"] .v-inv-search {
+  background: #fff;
+  border-right-color: rgba(26,25,24,0.10);
+}
+
+[data-theme="light"] .v-inv-search input { color: var(--text); }
+[data-theme="light"] .v-inv-search input::placeholder { color: rgba(26,25,24,0.30); }
+[data-theme="light"] .v-inv-search-icon { color: rgba(26,25,24,0.25); }
+
+[data-theme="light"] .v-inv-controls select,
+[data-theme="light"] .v-inv-controls input[type="number"] {
+  color: rgba(26,25,24,0.55);
+  border-right-color: rgba(26,25,24,0.10);
+}
+
+[data-theme="light"] .v-inv-controls select:hover,
+[data-theme="light"] .v-inv-controls input:hover {
+  color: var(--text);
+  background: rgba(26,25,24,0.03);
+}
+
+[data-theme="light"] .v-inv-reset { color: rgba(26,25,24,0.28); }
+
+/* Catalogue / section backgrounds */
+[data-theme="light"] .v-catalogue,
+[data-theme="light"] .inv-grid-wrap { background: var(--bg); }
+
+[data-theme="light"] .inv-filters,
+[data-theme="light"] .inv-header {
+  background: var(--surface);
+  border-color: rgba(26,25,24,0.07);
+}
+
+[data-theme="light"] .inv-header__title { color: var(--text); }
+[data-theme="light"] .inv-header__count { color: rgba(26,25,24,0.40); }
+
+/* Featured cards */
+[data-theme="light"] .v-feat-card { background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+[data-theme="light"] .v-feat-make,
+[data-theme="light"] .v-feat-title { color: var(--text); }
+[data-theme="light"] .v-feat-year,
+[data-theme="light"] .v-feat-eyebrow { color: rgba(26,25,24,0.50); }
+
+/* Footer */
+[data-theme="light"] .v-footer { background: var(--surface); border-color: rgba(26,25,24,0.07); }
+
+/* Theme toggle button */
+.v-theme-toggle {
+  background: none;
+  border: 1px solid rgba(245,244,240,0.18);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 6px 10px;
+  color: rgba(245,244,240,0.6);
+  transition: color 140ms, border-color 140ms;
+}
+
+.v-theme-toggle:hover {
+  color: var(--v-white, #F5F4F0);
+  border-color: rgba(245,244,240,0.45);
+}
+
+[data-theme="light"] .v-theme-toggle {
+  border-color: rgba(26,25,24,0.18);
+  color: rgba(26,25,24,0.55);
+}
+
+[data-theme="light"] .v-theme-toggle:hover {
+  color: var(--text);
+  border-color: rgba(26,25,24,0.45);
 }

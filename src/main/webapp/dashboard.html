@@ -18,7 +18,7 @@
 <div class="admin-shell">
 
   <aside class="sidebar">
-    <div class="sidebar-logo" style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:1.35rem;letter-spacing:.01em;">◈ VELOCE</div>
+    <a href="/index.html" class="sidebar-logo" style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:1.35rem;letter-spacing:.01em;text-decoration:none;color:inherit;">◈ VELOCE</a>
     <div class="user-info" id="user-name"></div>
     <a href="/dashboard.html" class="active">Vehicles</a>
     <a href="/api/logout" style="margin-top:auto;">Logout</a>
@@ -136,6 +136,7 @@
     </div>
     <div class="modal-body">
       <input type="hidden" id="modal-id" />
+      <input type="hidden" id="modal-model-id" />
 
       <div class="form-grid">
         <div class="form-group">
@@ -303,6 +304,7 @@
     if (!car) return;
     document.getElementById("modal-title").textContent   = "Edit Car";
     document.getElementById("modal-id").value            = car.id;
+    document.getElementById("modal-model-id").value      = car.modelId || "";
     document.getElementById("modal-make").value          = car.make;
     document.getElementById("modal-model").value         = car.model;
     document.getElementById("modal-year").value          = car.year;
@@ -339,13 +341,17 @@
       return;
     }
 
-    const body   = JSON.stringify({ make, model, year, price, status, color, mileage, imageUrl, description });
-    const isEdit = id !== "";
-    const url    = isEdit ? `/api/cars/${id}` : "/api/cars";
-    const method = isEdit ? "PUT" : "POST";
+    const modelId = parseInt(document.getElementById("modal-model-id").value) || 0;
+    const payload = { make, model, year, price, status, color, mileage, imageUrl, description, modelId };
+    const body    = JSON.stringify(payload);
+    const isEdit  = id !== "";
+    const url     = isEdit ? `/api/cars/${id}` : "/api/cars";
+    const method  = isEdit ? "PUT" : "POST";
+    console.log("[saveCar]", method, url, payload);
 
     const res  = await fetch(url, { method, credentials: "include", headers: { "Content-Type": "application/json" }, body });
     const data = await res.json();
+    console.log("[saveCar] response", res.status, data);
 
     if (data.error) { errEl.textContent = data.error; errEl.style.display = "block"; return; }
     closeModal();

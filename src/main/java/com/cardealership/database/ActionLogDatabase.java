@@ -30,10 +30,8 @@ public class ActionLogDatabase {
         String sql = "SELECT vcl.vehicle_id, e.first_name, e.last_name, vcl.change_type, vcl.field_changed, vcl.new_value, vcl.change_date " +
                      "FROM VehicleChangeLog vcl " +
                      "JOIN Employees e ON vcl.emp_id = e.emp_id " +
-                     "ORDER BY vcl.change_date DESC LIMIT ?";
-        ArrayList<String> values = new ArrayList<>();
-        values.add(String.valueOf(limit));
-        String[][] result = database.getData(sql, values);
+                     "ORDER BY vcl.change_date DESC LIMIT " + limit;
+        String[][] result = database.getData(sql, new ArrayList<>());
 
         for (int i = 1; i < result.length; i++) {
             rows.add(result[i]);
