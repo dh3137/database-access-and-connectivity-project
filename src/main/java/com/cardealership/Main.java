@@ -2,8 +2,10 @@ package com.cardealership;
 
 import com.cardealership.database.ActionLogDatabase;
 import com.cardealership.database.CarDatabase;
+import com.cardealership.database.CustomerDatabase;
 import com.cardealership.database.EnquiryDatabase;
 import com.cardealership.database.ReviewDatabase;
+import com.cardealership.database.SalesDatabase;
 import com.cardealership.database.UserDatabase;
 import com.cardealership.model.Car;
 import com.cardealership.model.User;
@@ -57,6 +59,8 @@ public class Main {
     private static final ActionLogDatabase actionLogDatabase = new ActionLogDatabase(database);
     private static final ReviewDatabase reviewDatabase = new ReviewDatabase(database);
     private static final EnquiryDatabase enquiryDatabase = new EnquiryDatabase(database);
+    private static final CustomerDatabase customerDatabase = new CustomerDatabase(database);
+    private static final SalesDatabase salesDatabase = new SalesDatabase(database);
 
 
     // Serve static files from src/main/webapp (works when run from project root via mvn exec:java)
@@ -80,8 +84,12 @@ public class Main {
         server.createContext("/api/logs",       Main::handleLogs);
         server.createContext("/api/carimage",   Main::handleCarImage);
         server.createContext("/api/models",     Main::handleModels);
+        server.createContext("/api/register",   Main::handleRegister);
+        server.createContext("/api/reviews",    Main::handleReviews);
         server.createContext("/api/enquiry",    Main::handleEnquiry);
         server.createContext("/api/enquiries",  Main::handleEnquiries);
+        server.createContext("/api/sales",      Main::handleSales);
+        server.createContext("/api/customers",  Main::handleCustomers);
         server.createContext("/",             Main::handleStatic);
 
         server.setExecutor(Executors.newFixedThreadPool(4));
@@ -129,7 +137,7 @@ public class Main {
         redirect(ex, "/login.html");
     }
 
-    // GET /api/me  → {"id":1,"username":"ivan","role":"ADMIN"}
+    // GET /api/me  → {"id":1,"username":"ivan","role":"ADMIN"[,"firstName":...,"lastName":...,"email":...]}
     private static void handleMe(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
@@ -138,7 +146,19 @@ public class Main {
                 sendJson(ex, 401, "{\"error\":\"Unauthorized\"}");
                 return;
             }
-            sendJson(ex, 200, userToJson(user));
+            String json = userToJson(user);
+            if ("CUSTOMER".equals(user.getRole()) && user.getCustomerId() > 0) {
+                String[] cust = customerDatabase.getCustomerById(user.getCustomerId());
+                if (cust != null) {
+                    // columns: customer_id(0) first_name(1) last_name(2) email(3) phone(4)
+                    json = json.substring(0, json.length() - 1)
+                        + ",\"firstName\":\"" + escapeJson(cust[1] != null ? cust[1] : "") + "\""
+                        + ",\"lastName\":\"" + escapeJson(cust[2] != null ? cust[2] : "") + "\""
+                        + ",\"email\":\"" + escapeJson(cust[3] != null ? cust[3] : "") + "\""
+                        + "}";
+                }
+            }
+            sendJson(ex, 200, json);
         } catch (Exception e) {
             System.err.println("[me] ERROR: " + e.getMessage());
             e.printStackTrace();
@@ -315,13 +335,85 @@ public class Main {
         }
     }
 
-    // POST /api/enquiry  body: JSON {vehicleId, name, email, phone, message}  (public)
+    // POST /api/register  body: JSON {username, password, firstName, lastName, email, phone}  (public)
+    private static void handleRegister(HttpExchange ex) throws IOException {
+        try {
+            if (!"POST".equals(ex.getRequestMethod())) {
+                sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
+                return;
+            }
+            String body      = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            String username  = jsonString(body, "username").trim();
+            String password  = jsonString(body, "password").trim();
+            String firstName = jsonString(body, "firstName").trim();
+            String lastName  = jsonString(body, "lastName").trim();
+            String email     = jsonString(body, "email").trim();
+            String phone     = jsonString(body, "phone").trim();
+
+            if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()) {
+                sendJson(ex, 400, "{\"error\":\"All fields are required\"}");
+                return;
+            }
+            if (!email.contains("@")) {
+                sendJson(ex, 400, "{\"error\":\"Invalid email address\"}");
+                return;
+            }
+            if (userDatabase.getUserByUsername(username) != null) {
+                sendJson(ex, 409, "{\"error\":\"Username already taken\"}");
+                return;
+            }
+            if (customerDatabase.emailExists(email)) {
+                sendJson(ex, 409, "{\"error\":\"An account with this email already exists\"}");
+                return;
+            }
+
+            int customerId = customerDatabase.createCustomer(firstName, lastName, email, phone);
+            if (customerId <= 0) {
+                sendJson(ex, 500, "{\"error\":\"Could not create customer record\"}");
+                return;
+            }
+
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(sha256(password));
+            newUser.setRole("CUSTOMER");
+            newUser.setCustomerId(customerId);
+
+            boolean saved = userDatabase.saveUser(newUser);
+            if (!saved) {
+                sendJson(ex, 500, "{\"error\":\"Could not create user account\"}");
+                return;
+            }
+
+            // Log the new user in immediately
+            User created = userDatabase.authenticate(username, sha256(password));
+            if (created != null) {
+                String token = UUID.randomUUID().toString();
+                sessions.put(token, created);
+                ex.getResponseHeaders().add("Set-Cookie", "session=" + token + "; Path=/; HttpOnly");
+            }
+            sendJson(ex, 201, "{\"ok\":true}");
+        } catch (Exception e) {
+            System.err.println("[register] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // POST /api/enquiry  body: JSON {vehicleId, name, email, phone, message}  (requires CUSTOMER session)
     private static void handleEnquiry(HttpExchange ex) throws IOException {
         try {
             if (!"POST".equals(ex.getRequestMethod())) {
                 sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
                 return;
             }
+
+            User user = getSessionUser(ex);
+            if (user == null || !"CUSTOMER".equals(user.getRole())) {
+                sendJson(ex, 401, "{\"error\":\"Please sign in as a customer to submit an enquiry\"}");
+                return;
+            }
+
             String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             String name    = jsonString(body, "name").trim();
             String email   = jsonString(body, "email").trim();
@@ -341,7 +433,7 @@ public class Main {
             int vehicleId = 0;
             try { vehicleId = Integer.parseInt(vidStr); } catch (NumberFormatException ignored) {}
 
-            boolean saved = enquiryDatabase.saveEnquiry(vehicleId, name, email, phone, message);
+            boolean saved = enquiryDatabase.saveEnquiry(vehicleId, user.getCustomerId(), name, email, phone, message);
             sendJson(ex, saved ? 201 : 500, saved ? "{\"ok\":true}" : "{\"error\":\"Could not save enquiry\"}");
         } catch (Exception e) {
             System.err.println("[enquiry] ERROR: " + e.getMessage());
@@ -356,6 +448,22 @@ public class Main {
             User user = getSessionUser(ex);
             if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
             if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+
+            if ("POST".equalsIgnoreCase(ex.getRequestMethod())) {
+                String query = ex.getRequestURI().getQuery();
+                int enquiryId = 0;
+                if (query != null) {
+                    for (String part : query.split("&")) {
+                        if (part.startsWith("id=")) {
+                            try { enquiryId = Integer.parseInt(part.substring(3)); } catch (NumberFormatException ignored) {}
+                        }
+                    }
+                }
+                if (enquiryId <= 0) { sendJson(ex, 400, "{\"error\":\"Missing id\"}"); return; }
+                enquiryDatabase.markRead(enquiryId);
+                sendJson(ex, 200, "{\"ok\":true}");
+                return;
+            }
 
             String[][] rows = enquiryDatabase.getRecent(50);
             StringBuilder sb = new StringBuilder("[");
@@ -379,6 +487,104 @@ public class Main {
             sendJson(ex, 200, sb.toString());
         } catch (Exception e) {
             System.err.println("[enquiries] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // POST /api/sales  (ADMIN only) — record a sale
+    // GET  /api/sales  (ADMIN only) — list recent sales
+    private static void handleSales(HttpExchange ex) throws IOException {
+        try {
+            User user = getSessionUser(ex);
+            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
+            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+
+            if ("POST".equals(ex.getRequestMethod())) {
+                String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                String vehicleIdStr  = jsonString(body, "vehicleId").trim();
+                String customerIdStr = jsonString(body, "customerId").trim();
+                String salePriceStr  = jsonString(body, "salePrice").trim();
+                String payment       = jsonString(body, "paymentMethod").trim();
+                String notes         = jsonString(body, "notes").trim();
+
+                if (vehicleIdStr.isEmpty() || customerIdStr.isEmpty() || salePriceStr.isEmpty()) {
+                    sendJson(ex, 400, "{\"error\":\"vehicleId, customerId, and salePrice are required\"}");
+                    return;
+                }
+
+                int vehicleId  = Integer.parseInt(vehicleIdStr);
+                int customerId = Integer.parseInt(customerIdStr);
+                double salePrice = Double.parseDouble(salePriceStr);
+                if (payment.isEmpty()) payment = "CASH";
+
+                boolean ok = salesDatabase.recordSale(vehicleId, customerId, user.getEmpId(), salePrice, payment, notes);
+                sendJson(ex, ok ? 201 : 500, ok ? "{\"ok\":true}" : "{\"error\":\"Could not record sale\"}");
+
+            } else if ("GET".equals(ex.getRequestMethod())) {
+                String[][] rows = salesDatabase.getRecentSales(50);
+                StringBuilder sb = new StringBuilder("[");
+                // header row at index 0 from getData(); data starts at 1
+                for (int i = 1; i < rows.length; i++) {
+                    if (i > 1) sb.append(",");
+                    String[] r = rows[i];
+                    // sale_id(0) sale_price(1) payment_method(2) sale_date(3) notes(4) vehicle_label(5) customer_name(6) customer_email(7)
+                    sb.append(String.format(
+                        "{\"saleId\":\"%s\",\"salePrice\":\"%s\",\"paymentMethod\":\"%s\",\"saleDate\":\"%s\",\"notes\":\"%s\",\"vehicle\":\"%s\",\"customer\":\"%s\",\"customerEmail\":\"%s\"}",
+                        escapeJson(r[0] != null ? r[0] : ""),
+                        escapeJson(r[1] != null ? r[1] : ""),
+                        escapeJson(r[2] != null ? r[2] : ""),
+                        escapeJson(r[3] != null ? r[3] : ""),
+                        escapeJson(r[4] != null ? r[4] : ""),
+                        escapeJson(r[5] != null ? r[5] : ""),
+                        escapeJson(r[6] != null ? r[6] : ""),
+                        escapeJson(r[7] != null ? r[7] : "")
+                    ));
+                }
+                sb.append("]");
+                sendJson(ex, 200, sb.toString());
+
+            } else {
+                sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
+            }
+        } catch (Exception e) {
+            System.err.println("[sales] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // GET /api/customers  (ADMIN only) → list all customers as JSON array
+    private static void handleCustomers(HttpExchange ex) throws IOException {
+        try {
+            User user = getSessionUser(ex);
+            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
+            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+
+            if (!"GET".equals(ex.getRequestMethod())) {
+                sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
+                return;
+            }
+
+            String[][] rows = customerDatabase.getAllCustomers();
+            StringBuilder sb = new StringBuilder("[");
+            // header row at index 0; data starts at 1
+            for (int i = 1; i < rows.length; i++) {
+                if (i > 1) sb.append(",");
+                String[] r = rows[i];
+                // customer_id(0) first_name(1) last_name(2) email(3)
+                sb.append(String.format(
+                    "{\"customerId\":\"%s\",\"firstName\":\"%s\",\"lastName\":\"%s\",\"email\":\"%s\"}",
+                    escapeJson(r[0] != null ? r[0] : ""),
+                    escapeJson(r[1] != null ? r[1] : ""),
+                    escapeJson(r[2] != null ? r[2] : ""),
+                    escapeJson(r[3] != null ? r[3] : "")
+                ));
+            }
+            sb.append("]");
+            sendJson(ex, 200, sb.toString());
+        } catch (Exception e) {
+            System.err.println("[customers] ERROR: " + e.getMessage());
             e.printStackTrace();
             sendJson(ex, 500, "{\"error\":\"Server error\"}");
         }
@@ -419,6 +625,37 @@ public class Main {
             sendJson(ex, 400, "{\"error\":\"Invalid model id\"}");
         } catch (Exception e) {
             System.err.println("[models] ERROR: " + e.getMessage());
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // GET /api/reviews  → JSON array of all reviews (public)
+    private static void handleReviews(HttpExchange ex) throws IOException {
+        try {
+            if (!"GET".equals(ex.getRequestMethod())) {
+                sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
+                return;
+            }
+            java.util.List<java.util.Map<String, Object>> reviews = reviewDatabase.getAllReviews();
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = 0; i < reviews.size(); i++) {
+                if (i > 0) sb.append(",");
+                java.util.Map<String, Object> r = reviews.get(i);
+                sb.append("{")
+                  .append("\"reviewId\":").append(r.get("reviewId")).append(",")
+                  .append("\"authorName\":\"").append(escapeJson((String) r.get("authorName"))).append("\",")
+                  .append("\"rating\":").append(r.get("rating")).append(",")
+                  .append("\"reviewText\":\"").append(escapeJson((String) r.get("reviewText"))).append("\",")
+                  .append("\"source\":\"").append(escapeJson((String) r.get("source"))).append("\",")
+                  .append("\"createdAt\":\"").append(escapeJson((String) r.get("createdAt"))).append("\",")
+                  .append("\"modelName\":\"").append(escapeJson((String) r.get("modelName"))).append("\",")
+                  .append("\"manufacturerName\":\"").append(escapeJson((String) r.get("manufacturerName"))).append("\"")
+                  .append("}");
+            }
+            sb.append("]");
+            sendJson(ex, 200, sb.toString());
+        } catch (Exception e) {
+            System.err.println("[reviews] ERROR: " + e.getMessage());
             sendJson(ex, 500, "{\"error\":\"Server error\"}");
         }
     }

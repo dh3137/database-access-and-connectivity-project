@@ -36,6 +36,33 @@ public class ReviewDatabase {
         return reviews;
     }
 
+    public List<Map<String, Object>> getAllReviews() throws DLException {
+        String sql = """
+            SELECT r.review_id, r.author_name, r.rating, r.review_text, r.source, r.created_at,
+                   m.model_name, man.name AS manufacturer_name
+            FROM Reviews r
+            JOIN Models m ON r.model_id = m.model_id
+            JOIN Manufacturers man ON m.manufacturer_id = man.manufacturer_id
+            ORDER BY r.created_at DESC
+            """;
+        String[][] rows = database.getData(sql, new ArrayList<>());
+
+        List<Map<String, Object>> reviews = new ArrayList<>();
+        for (int i = 1; i < rows.length; i++) {
+            Map<String, Object> r = new LinkedHashMap<>();
+            r.put("reviewId",          rows[i][0]);
+            r.put("authorName",        rows[i][1]);
+            r.put("rating",            rows[i][2]);
+            r.put("reviewText",        rows[i][3]);
+            r.put("source",            rows[i][4]);
+            r.put("createdAt",         rows[i][5]);
+            r.put("modelName",         rows[i][6]);
+            r.put("manufacturerName",  rows[i][7]);
+            reviews.add(r);
+        }
+        return reviews;
+    }
+
     public double getAverageRating(int modelId) throws DLException {
         String sql = "SELECT AVG(rating) FROM Reviews WHERE model_id = ?";
         ArrayList<String> params = new ArrayList<>();

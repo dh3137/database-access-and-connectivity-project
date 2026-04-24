@@ -56,6 +56,24 @@ public class MySQLDatabase {
         }
     }
 
+    public int setDataReturnKey(String sql, ArrayList<String> values) throws DLException {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+            bindValues(statement, values, 1);
+            statement.executeUpdate();
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
+            return -1;
+        } catch (DLException e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new DLException(e, "Operation=setDataReturnKey", "DatabaseType=MySQL", "SQL=" + sql);
+        } catch (Exception e) {
+            throw new DLException(e, "Operation=setDataReturnKey", "DatabaseType=MySQL", "SQL=" + sql);
+        }
+    }
+
     public boolean setData(String sql, ArrayList<String> values) throws DLException {
         try (Connection connection = getConnection();
              PreparedStatement statement = prepare(connection, sql, values)) {

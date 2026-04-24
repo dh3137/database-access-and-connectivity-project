@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviews — VELOCE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" />
+  <style>
+    :root {
+      --v-orange:     #FF6B2B;
+      --v-orange-dim: rgba(255,107,43,.15);
+      --v-black:      #080808;
+      --v-dark:       #111111;
+      --v-white:      #F5F4F0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--v-black);
+      color: var(--v-white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .rv-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 60px;
+      background: linear-gradient(to bottom, rgba(8,8,8,.9) 60%, transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .rv-nav-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+      text-decoration: none;
+    }
+    .rv-nav-logo span { color: var(--v-orange); }
+
+    .rv-nav-right { display: flex; align-items: center; gap: 16px; }
+
+    .rv-back {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.45);
+      text-decoration: none;
+      transition: color 150ms;
+    }
+    .rv-back:hover { color: var(--v-white); }
+
+    /* ── HERO HEADER ── */
+    .rv-header {
+      padding: 140px 60px 64px;
+      border-bottom: 1px solid rgba(245,244,240,.08);
+    }
+
+    .rv-header-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 18px;
+    }
+
+    .rv-header-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--v-white);
+      margin-bottom: 14px;
+    }
+    .rv-header-title em { font-style: italic; color: var(--v-orange); }
+
+    .rv-header-sub {
+      font-size: .9rem;
+      color: rgba(245,244,240,.45);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    /* ── FILTERS ── */
+    .rv-filters {
+      padding: 32px 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(245,244,240,.06);
+    }
+
+    .rv-filter-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.35);
+      margin-right: 4px;
+    }
+
+    .rv-filter-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: transparent;
+      color: rgba(245,244,240,.5);
+      border: 1px solid rgba(245,244,240,.15);
+      padding: 7px 16px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 140ms, border-color 140ms, background 140ms;
+    }
+    .rv-filter-btn:hover { color: var(--v-white); border-color: rgba(245,244,240,.4); }
+    .rv-filter-btn.active {
+      color: var(--v-black);
+      background: var(--v-orange);
+      border-color: var(--v-orange);
+    }
+
+    .rv-filter-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(245,244,240,.12);
+      margin: 0 4px;
+    }
+
+    /* ── GRID ── */
+    .rv-grid-wrap {
+      padding: 48px 60px 80px;
+    }
+
+    .rv-count {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.3);
+      margin-bottom: 32px;
+    }
+    .rv-count span { color: var(--v-orange); }
+
+    .rv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2px;
+    }
+
+    /* ── CARD ── */
+    .rv-card {
+      background: var(--v-dark);
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: background 200ms;
+      position: relative;
+      overflow: hidden;
+    }
+    .rv-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--v-orange);
+      transition: height 240ms ease;
+    }
+    .rv-card:hover { background: #161616; }
+    .rv-card:hover::before { height: 100%; }
+
+    .rv-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .rv-card-car {
+      flex: 1;
+    }
+
+    .rv-card-make {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 4px;
+    }
+
+    .rv-card-model {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--v-white);
+      line-height: 1.2;
+    }
+
+    .rv-stars {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .rv-star {
+      font-size: 1rem;
+      color: rgba(245,244,240,.15);
+    }
+    .rv-star.filled { color: var(--v-orange); }
+
+    .rv-card-text {
+      font-size: .88rem;
+      line-height: 1.65;
+      color: rgba(245,244,240,.65);
+      flex: 1;
+    }
+
+    .rv-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid rgba(245,244,240,.07);
+    }
+
+    .rv-card-author {
+      font-size: .72rem;
+      font-weight: 600;
+      color: rgba(245,244,240,.4);
+      letter-spacing: .04em;
+    }
+
+    .rv-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rv-source-badge {
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 4px 9px;
+      border-radius: 2px;
+    }
+    .rv-source-badge.TEAM    { background: var(--v-orange-dim); color: var(--v-orange); }
+    .rv-source-badge.EDMUNDS { background: rgba(80,160,255,.12); color: #50a0ff; }
+    .rv-source-badge.KBB     { background: rgba(100,220,100,.1); color: #64dc64; }
+
+    .rv-card-date {
+      font-size: .68rem;
+      color: rgba(245,244,240,.25);
+    }
+
+    /* ── EMPTY / LOADING ── */
+    .rv-empty {
+      grid-column: 1/-1;
+      padding: 80px 0;
+      text-align: center;
+      color: rgba(245,244,240,.25);
+      font-size: .9rem;
+      letter-spacing: .06em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .rv-nav   { padding: 20px 24px; }
+      .rv-header { padding: 120px 24px 48px; }
+      .rv-filters { padding: 24px; }
+      .rv-grid-wrap { padding: 32px 24px 60px; }
+      .rv-grid { grid-template-columns: 1fr; }
+      .rv-card { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="rv-nav">
+  <a href="index.html" class="rv-nav-logo">VEL<span>O</span>CE</a>
+  <div class="rv-nav-right">
+    <a href="cars.html" class="rv-back">← Browse Cars</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<header class="rv-header">
+  <div class="rv-header-label">◈ Press &amp; Reviews</div>
+  <h1 class="rv-header-title">Voices from<br><em>the Road</em></h1>
+  <p class="rv-header-sub">Expert opinions, real-world impressions, and in-depth assessments from our team and trusted automotive sources.</p>
+</header>
+
+<!-- FILTERS -->
+<div class="rv-filters">
+  <span class="rv-filter-label">Filter</span>
+  <button class="rv-filter-btn active" data-filter="all">All</button>
+  <div class="rv-filter-sep"></div>
+  <button class="rv-filter-btn" data-filter="source:TEAM">Our Team</button>
+  <button class="rv-filter-btn" data-filter="source:EDMUNDS">Edmunds</button>
+  <button class="rv-filter-btn" data-filter="source:KBB">KBB</button>
+  <div class="rv-filter-sep"></div>
+  <button class="rv-filter-btn" data-filter="rating:5">★ 5 Stars</button>
+  <button class="rv-filter-btn" data-filter="rating:4">★ 4+</button>
+  <button class="rv-filter-btn" data-filter="rating:3">★ 3+</button>
+</div>
+
+<!-- GRID -->
+<main class="rv-grid-wrap">
+  <p class="rv-count" id="rv-count">Loading…</p>
+  <div class="rv-grid" id="rv-grid">
+    <div class="rv-empty">Loading reviews…</div>
+  </div>
+</main>
+
+<script>
+  let _allReviews = [];
+  let _activeFilter = 'all';
+
+  async function init() {
+    try {
+      const res = await fetch('/api/reviews');
+      _allReviews = await res.json();
+      render();
+    } catch (err) {
+      document.getElementById('rv-grid').innerHTML = '<div class="rv-empty">Could not load reviews.</div>';
+      document.getElementById('rv-count').textContent = '';
+    }
+  }
+
+  function render() {
+    const filtered = filter(_allReviews, _activeFilter);
+    const count = filtered.length;
+    document.getElementById('rv-count').innerHTML =
+      `<span>${count}</span> review${count !== 1 ? 's' : ''}`;
+    document.getElementById('rv-grid').innerHTML =
+      count === 0
+        ? '<div class="rv-empty">No reviews match the selected filter.</div>'
+        : filtered.map(cardHtml).join('');
+  }
+
+  function filter(reviews, f) {
+    if (f === 'all') return reviews;
+    const [type, val] = f.split(':');
+    if (type === 'source') return reviews.filter(r => r.source === val);
+    if (type === 'rating') return reviews.filter(r => parseInt(r.rating) >= parseInt(val));
+    return reviews;
+  }
+
+  function stars(rating) {
+    const n = parseInt(rating) || 0;
+    return Array.from({length: 5}, (_, i) =>
+      `<span class="rv-star${i < n ? ' filled' : ''}">★</span>`
+    ).join('');
+  }
+
+  function formatDate(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', {month: 'short', year: 'numeric'});
+  }
+
+  function cardHtml(r) {
+    return `
+      <article class="rv-card">
+        <div class="rv-card-header">
+          <div class="rv-card-car">
+            <div class="rv-card-make">${esc(r.manufacturerName)}</div>
+            <div class="rv-card-model">${esc(r.modelName)}</div>
+          </div>
+          <div class="rv-stars">${stars(r.rating)}</div>
+        </div>
+        <p class="rv-card-text">${esc(r.reviewText)}</p>
+        <div class="rv-card-footer">
+          <span class="rv-card-author">${esc(r.authorName)}</span>
+          <div class="rv-card-meta">
+            <span class="rv-source-badge ${esc(r.source)}">${esc(r.source)}</span>
+            <span class="rv-card-date">${formatDate(r.createdAt)}</span>
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.querySelectorAll('.rv-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.rv-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      _activeFilter = btn.dataset.filter;
+      render();
+    });
+  });
+
+  init();
+</script>
+</body>
+</html>

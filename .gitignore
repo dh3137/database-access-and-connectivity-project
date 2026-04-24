@@ -4,9 +4,8 @@
 # Maven build output
 target/
 
-# Database credentials (never commit — copy db.properties.example and fill in your values)
-db.properties
-config.properties
+# config.properties
+
 
 # Runtime logs
 logs/

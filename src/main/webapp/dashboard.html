@@ -101,6 +101,56 @@
       </div>
     </div>
 
+    <!-- Enquiries card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">Customer Enquiries</span>
+        <span style="color:var(--muted);font-size:.78rem;">last 50 submissions</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>From</th>
+              <th>Email</th>
+              <th>Vehicle</th>
+              <th>Message</th>
+              <th>Read</th>
+            </tr>
+          </thead>
+          <tbody id="enq-rows">
+            <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Sales card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">Recent Sales</span>
+        <span style="color:var(--muted);font-size:.78rem;">last 50 completed deals</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Vehicle</th>
+              <th>Customer</th>
+              <th>Sale Price</th>
+              <th>Payment</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="sales-rows">
+            <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Activity log card -->
     <div class="card">
       <div class="card-header">
@@ -200,6 +250,8 @@
     if (me.role !== "ADMIN") { location.href = "/cars.html"; return; }
     document.getElementById("user-name").textContent = me.fullName;
     await loadCars();
+    await loadEnquiries();
+    await loadSales();
     await loadLogs();
   }
 
@@ -269,6 +321,61 @@
   }
 
   function goDetail(id) { location.href = "/vehicle-details.html?id=" + id; }
+
+  async function loadEnquiries() {
+    const res = await fetch("/api/enquiries", { credentials: "include" });
+    const data = await res.json();
+    const tbody = document.getElementById("enq-rows");
+    if (!data || !data.length) {
+      tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:24px;'>No enquiries yet.</td></tr>";
+      return;
+    }
+    tbody.innerHTML = data.map(e => `
+      <tr>
+        <td class="muted" style="white-space:nowrap;font-size:.8rem;">${esc(e.time)}</td>
+        <td><strong>${esc(e.name)}</strong></td>
+        <td class="muted" style="font-size:.83rem;">${esc(e.email)}</td>
+        <td class="muted" style="font-size:.83rem;">${esc(e.vehicle)}</td>
+        <td style="font-size:.83rem;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${esc(e.message)}">${esc(e.message)}</td>
+        <td>${e.isRead === 'true' || e.isRead === true
+          ? '<span class="badge badge-available">Read</span>'
+          : `<button class="action-btn btn-edit" onclick="markRead(${e.id})">Mark Read</button>`}</td>
+      </tr>
+    `).join("");
+  }
+
+  async function markRead(id) {
+    await fetch(`/api/enquiries?id=${id}`, { method: "POST", credentials: "include" });
+    await loadEnquiries();
+  }
+
+  async function loadSales() {
+    const res = await fetch("/api/sales", { credentials: "include" });
+    const data = await res.json();
+    const tbody = document.getElementById("sales-rows");
+    if (!data || !data.length) {
+      tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:24px;'>No sales recorded yet.</td></tr>";
+      return;
+    }
+    tbody.innerHTML = data.map(s => `
+      <tr>
+        <td class="muted" style="white-space:nowrap;font-size:.8rem;">${esc(s.saleDate ? s.saleDate.slice(0,10) : '')}</td>
+        <td><strong>${esc(s.vehicle)}</strong></td>
+        <td>${esc(s.customer)}<br><span style="color:var(--muted);font-size:.78rem;">${esc(s.customerEmail)}</span></td>
+        <td>$${parseFloat(s.salePrice || 0).toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
+        <td><span class="badge badge-available">${esc(s.paymentMethod)}</span></td>
+        <td class="muted" style="font-size:.83rem;">${esc(s.notes)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function esc(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
 
   async function loadLogs() {
     const res = await fetch("/api/logs", { credentials: "include" });

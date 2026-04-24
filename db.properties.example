@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# db.properties.example
+#
+# HOW TO USE:
+#   cp db.properties.example db.properties
+#
+# db.properties is gitignored so it never gets committed.
+# This file is the committed reference — update it when someone joins the team
+# or changes their password, then teammates re-copy it.
+#
+# The key prefix must match your OS username exactly.
+# Find yours by running:  whoami
+# ─────────────────────────────────────────────────────────────────────────────
+
+ivankarlo.host=localhost
+ivankarlo.port=3306
+ivankarlo.database=car_dealership
+ivankarlo.username=root
+ivankarlo.password=LuckaPuckaisBo55and$$
+
+danis.host=localhost
+danis.port=3306
+danis.database=car_dealership
+danis.username=root
+danis.password=Mineaitaci27
+
+jurica.host=localhost
+jurica.port=3306
+jurica.database=car_dealership
+jurica.username=root
+jurica.password=YOUR_PASSWORD_HERE
+
+tesij.host=localhost
+tesij.port=3306
+tesij.database=car_dealership
+tesij.username=root
+tesij.password=tt7405

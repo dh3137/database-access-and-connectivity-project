@@ -406,6 +406,192 @@
       color: rgba(245,244,240,.42);
     }
 
+    /* ── ENQUIRY MODAL ── */
+    .enq-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(8,8,8,.78);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .enq-backdrop.open { display: flex; }
+
+    .enq-modal {
+      background: #111;
+      border: 1px solid rgba(245,244,240,.09);
+      width: 100%;
+      max-width: 500px;
+      padding: 40px;
+      position: relative;
+    }
+
+    .enq-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      background: none;
+      border: none;
+      color: rgba(245,244,240,.35);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 140ms;
+    }
+    .enq-close:hover { color: var(--v-white); }
+
+    .enq-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 6px;
+      letter-spacing: -.01em;
+    }
+
+    .enq-sub {
+      font-size: .78rem;
+      color: rgba(245,244,240,.32);
+      margin-bottom: 28px;
+    }
+
+    .enq-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .enq-field label {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+    }
+
+    .enq-field input,
+    .enq-field textarea {
+      background: #0b0b0b;
+      border: 1px solid rgba(245,244,240,.1);
+      color: var(--v-white);
+      font-family: 'Inter', sans-serif;
+      font-size: .88rem;
+      padding: 11px 14px;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 150ms;
+      width: 100%;
+    }
+    .enq-field input:focus,
+    .enq-field textarea:focus { border-color: var(--v-orange); }
+    .enq-field textarea { min-height: 110px; resize: vertical; }
+
+    .enq-error {
+      display: none;
+      font-size: .8rem;
+      color: #f87171;
+      margin-bottom: 14px;
+    }
+
+    .enq-success {
+      display: none;
+      text-align: center;
+      padding: 24px 0 8px;
+    }
+    .enq-success-icon { font-size: 2.4rem; color: #34d399; margin-bottom: 12px; }
+    .enq-success-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 8px;
+    }
+    .enq-success-msg { font-size: .84rem; color: rgba(245,244,240,.35); }
+
+    /* ── SELL MODAL ── */
+    .sell-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(8,8,8,.78);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .sell-backdrop.open { display: flex; }
+
+    .sell-modal {
+      background: #111;
+      border: 1px solid rgba(245,244,240,.09);
+      width: 100%;
+      max-width: 480px;
+      padding: 40px;
+      position: relative;
+    }
+
+    .sell-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 6px;
+    }
+
+    .sell-sub {
+      font-size: .78rem;
+      color: rgba(245,244,240,.32);
+      margin-bottom: 28px;
+    }
+
+    .sell-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .sell-field label {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+    }
+
+    .sell-field input,
+    .sell-field select,
+    .sell-field textarea {
+      background: #0b0b0b;
+      border: 1px solid rgba(245,244,240,.1);
+      color: var(--v-white);
+      font-family: 'Inter', sans-serif;
+      font-size: .88rem;
+      padding: 11px 14px;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 150ms;
+      width: 100%;
+    }
+    .sell-field select option { background: #111; }
+    .sell-field input:focus,
+    .sell-field select:focus,
+    .sell-field textarea:focus { border-color: var(--v-orange); }
+    .sell-field textarea { min-height: 80px; resize: vertical; }
+
+    .sell-error {
+      display: none;
+      font-size: .8rem;
+      color: #f87171;
+      margin-bottom: 14px;
+    }
+
     /* ── ERROR ── */
     .vd-error {
       padding: 120px 60px;
@@ -502,8 +688,8 @@
       <div class="vd-price-label">◈ Asking Price</div>
       <div class="vd-price-amount" id="price-amount">—</div>
 
-      <a href="mailto:sales@veloce.com" class="vd-cta-primary" id="primary-cta">Enquire Now</a>
-      <a href="tel:+1800000000" class="vd-cta-secondary" id="secondary-cta">Schedule a Viewing</a>
+      <button class="vd-cta-primary" id="primary-cta" onclick="openEnquiry()">Enquire Now</button>
+      <button class="vd-cta-secondary" id="sell-btn" style="display:none" onclick="openSellModal()">Mark as Sold</button>
 
       <hr class="vd-price-divider" />
 
@@ -513,6 +699,78 @@
 
 </div>
 
+<!-- ══ ENQUIRY MODAL ══ -->
+<div class="enq-backdrop" id="enq-backdrop">
+  <div class="enq-modal" role="dialog" aria-modal="true" aria-labelledby="enq-heading">
+    <button class="enq-close" onclick="closeEnquiry()" aria-label="Close">×</button>
+
+    <div id="enq-form-wrap">
+      <div class="enq-heading" id="enq-heading">Send an Enquiry</div>
+      <div class="enq-sub" id="enq-sub">We'll get back to you as soon as possible.</div>
+
+      <div class="enq-field">
+        <label for="enq-name">Your Name *</label>
+        <input type="text" id="enq-name" placeholder="Jane Smith" autocomplete="name" />
+      </div>
+      <div class="enq-field">
+        <label for="enq-email">Email Address *</label>
+        <input type="email" id="enq-email" placeholder="jane@example.com" autocomplete="email" />
+      </div>
+      <div class="enq-field">
+        <label for="enq-phone">Phone <span style="font-weight:400;text-transform:none;letter-spacing:0;color:rgba(245,244,240,.25)">(optional)</span></label>
+        <input type="tel" id="enq-phone" placeholder="+1 555 000 0000" autocomplete="tel" />
+      </div>
+      <div class="enq-field">
+        <label for="enq-msg">Message *</label>
+        <textarea id="enq-msg" placeholder="I'm interested in this vehicle…"></textarea>
+      </div>
+
+      <div class="enq-error" id="enq-error"></div>
+
+      <button class="vd-cta-primary" id="enq-submit" onclick="submitEnquiry()" style="margin-bottom:0;">Send Enquiry</button>
+    </div>
+
+    <div class="enq-success" id="enq-success">
+      <div class="enq-success-icon">✓</div>
+      <div class="enq-success-title">Enquiry Sent</div>
+      <p class="enq-success-msg">Thanks! A member of our team will be in touch shortly.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SELL MODAL ══ -->
+<div class="sell-backdrop" id="sell-backdrop">
+  <div class="sell-modal" role="dialog" aria-modal="true" aria-labelledby="sell-heading">
+    <button class="enq-close" onclick="closeSellModal()" aria-label="Close">×</button>
+    <div class="sell-heading" id="sell-heading">Mark as Sold</div>
+    <div class="sell-sub" id="sell-sub">Record the sale details below.</div>
+
+    <div class="sell-field">
+      <label for="sell-customer">Customer</label>
+      <select id="sell-customer"><option value="">Loading customers…</option></select>
+    </div>
+    <div class="sell-field">
+      <label for="sell-price">Sale Price ($)</label>
+      <input type="number" id="sell-price" step="0.01" min="0" />
+    </div>
+    <div class="sell-field">
+      <label for="sell-payment">Payment Method</label>
+      <select id="sell-payment">
+        <option value="CASH">Cash</option>
+        <option value="FINANCE">Finance</option>
+        <option value="LEASE">Lease</option>
+      </select>
+    </div>
+    <div class="sell-field">
+      <label for="sell-notes">Notes (optional)</label>
+      <textarea id="sell-notes" placeholder="Any additional notes…"></textarea>
+    </div>
+
+    <div class="sell-error" id="sell-error"></div>
+    <button class="vd-cta-primary" id="sell-submit" onclick="submitSale()" style="margin-bottom:0;">Confirm Sale</button>
+  </div>
+</div>
+
 <!-- ══ ERROR ══ -->
 <div class="vd-error" id="vd-error" style="display:none">
   <h1>Vehicle Not Found</h1>
@@ -520,16 +778,101 @@
 </div>
 
 <script>
+  let _currentCar = null;
+  let _me = null;
+
+  async function openEnquiry() {
+    if (!_me || _me.role !== 'CUSTOMER') {
+      const returnUrl = encodeURIComponent(location.href);
+      location.href = `signup.html?return=${returnUrl}`;
+      return;
+    }
+    const modal = document.getElementById('enq-backdrop');
+    if (_currentCar) {
+      document.getElementById('enq-sub').textContent =
+        `Enquiring about: ${_currentCar.year} ${_currentCar.make} ${_currentCar.model}`;
+      const msgEl = document.getElementById('enq-msg');
+      if (!msgEl.value) {
+        msgEl.value = `Hi, I'm interested in the ${_currentCar.year} ${_currentCar.make} ${_currentCar.model}. Please get in touch.`;
+      }
+    }
+    if (_me.firstName || _me.lastName) {
+      document.getElementById('enq-name').value = [_me.firstName, _me.lastName].filter(Boolean).join(' ');
+    }
+    if (_me.email) {
+      document.getElementById('enq-email').value = _me.email;
+    }
+    document.getElementById('enq-form-wrap').style.display = 'block';
+    document.getElementById('enq-success').style.display = 'none';
+    document.getElementById('enq-error').style.display = 'none';
+    modal.classList.add('open');
+    document.getElementById('enq-msg').focus();
+  }
+
+  function closeEnquiry() {
+    document.getElementById('enq-backdrop').classList.remove('open');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('enq-backdrop').addEventListener('click', function(e) {
+      if (e.target === this) closeEnquiry();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeEnquiry();
+    });
+  });
+
+  async function submitEnquiry() {
+    const name    = document.getElementById('enq-name').value.trim();
+    const email   = document.getElementById('enq-email').value.trim();
+    const phone   = document.getElementById('enq-phone').value.trim();
+    const message = document.getElementById('enq-msg').value.trim();
+    const errEl   = document.getElementById('enq-error');
+
+    if (!name || !email || !message) {
+      errEl.textContent = 'Name, email, and message are required.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!email.includes('@')) {
+      errEl.textContent = 'Please enter a valid email address.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById('enq-submit');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const vehicleId = _currentCar ? _currentCar.id : 0;
+    try {
+      const res = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vehicleId, name, email, phone, message }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      document.getElementById('enq-form-wrap').style.display = 'none';
+      document.getElementById('enq-success').style.display = 'block';
+    } catch (e) {
+      errEl.textContent = e.message || 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Send Enquiry';
+    }
+  }
+
   async function init() {
-    let me = null;
     try {
       const r = await fetch('/api/me', { credentials: 'include' });
       const d = await r.json();
-      if (!d.error) me = d;
+      if (!d.error) _me = d;
     } catch (_) {}
 
-    if (me) {
-      const dashHref = me.role === 'ADMIN' ? '/dashboard.html' : '/cars.html';
+    if (_me) {
+      const dashHref = _me.role === 'ADMIN' ? '/dashboard.html' : '/cars.html';
       document.getElementById('back-link').href = dashHref;
       document.getElementById('back-link').textContent = '← Dashboard';
       document.getElementById('nav-action-btn').href = dashHref;
@@ -549,6 +892,7 @@
       return;
     }
 
+    _currentCar = car;
     document.title = `${car.year} ${car.make} ${car.model} — VELOCE`;
 
     // Hero text
@@ -566,13 +910,15 @@
     statusEl.textContent = sLabel;
 
     const primaryCta = document.getElementById('primary-cta');
-    const secondaryCta = document.getElementById('secondary-cta');
     if (car.status === 'RESERVED') {
       primaryCta.textContent = 'Contact the Seller';
-      secondaryCta.textContent = 'Join the Waiting List';
     } else if (car.status === 'SOLD') {
       primaryCta.textContent = 'Request Similar Cars';
-      secondaryCta.textContent = 'Speak With an Advisor';
+      primaryCta.disabled = true;
+    }
+
+    if (_me && _me.role === 'ADMIN' && car.status === 'AVAILABLE') {
+      document.getElementById('sell-btn').style.display = 'block';
     }
 
     // Hero image
@@ -689,6 +1035,93 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
+  async function openSellModal() {
+    const errEl = document.getElementById('sell-error');
+    errEl.style.display = 'none';
+    document.getElementById('sell-sub').textContent = _currentCar
+      ? `Recording sale for: ${_currentCar.year} ${_currentCar.make} ${_currentCar.model}`
+      : 'Record the sale details below.';
+    if (_currentCar) {
+      document.getElementById('sell-price').value = _currentCar.price || '';
+    }
+
+    const sel = document.getElementById('sell-customer');
+    sel.innerHTML = '<option value="">Loading…</option>';
+    try {
+      const r = await fetch('/api/customers', { credentials: 'include' });
+      const data = await r.json();
+      if (Array.isArray(data) && data.length > 0) {
+        sel.innerHTML = data.map(c =>
+          `<option value="${esc(String(c.customerId))}">${esc(c.firstName + ' ' + c.lastName)} — ${esc(c.email)}</option>`
+        ).join('');
+      } else {
+        sel.innerHTML = '<option value="">No customers found</option>';
+      }
+    } catch (_) {
+      sel.innerHTML = '<option value="">Could not load customers</option>';
+    }
+
+    document.getElementById('sell-backdrop').classList.add('open');
+  }
+
+  function closeSellModal() {
+    document.getElementById('sell-backdrop').classList.remove('open');
+  }
+
+  async function submitSale() {
+    const customerId = document.getElementById('sell-customer').value;
+    const salePrice  = document.getElementById('sell-price').value;
+    const payment    = document.getElementById('sell-payment').value;
+    const notes      = document.getElementById('sell-notes').value.trim();
+    const errEl      = document.getElementById('sell-error');
+
+    if (!customerId) {
+      errEl.textContent = 'Please select a customer.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!salePrice || parseFloat(salePrice) <= 0) {
+      errEl.textContent = 'Please enter a valid sale price.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById('sell-submit');
+    btn.disabled = true;
+    btn.textContent = 'Recording…';
+
+    try {
+      const res = await fetch('/api/sales', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vehicleId: _currentCar.id,
+          customerId: parseInt(customerId, 10),
+          salePrice: parseFloat(salePrice),
+          paymentMethod: payment,
+          notes
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Sale could not be recorded.');
+      closeSellModal();
+      location.reload();
+    } catch (e) {
+      errEl.textContent = e.message || 'Something went wrong.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Confirm Sale';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sell-backdrop').addEventListener('click', function(e) {
+      if (e.target === this) closeSellModal();
+    });
+  });
 
   init();
 </script>
