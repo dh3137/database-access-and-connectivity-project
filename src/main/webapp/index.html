@@ -3,156 +3,1500 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoPrime — Premium Vehicle Dealership</title>
+  <title>VELOCE — Premium Automotive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    /* ── Hero ── */
-    .hero {
-      padding: 80px 40px 60px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-    }
-    .hero-logo {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 24px;
-    }
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      font-weight: 800;
-      color: var(--text);
-      line-height: 1.15;
-      margin-bottom: 16px;
-    }
-    .hero p {
-      color: var(--muted);
-      font-size: 1rem;
-      max-width: 480px;
-      margin: 0 auto 32px;
-      line-height: 1.6;
-    }
-    .staff-btn {
-      position: absolute;
-      top: 24px;
-      right: 32px;
+    /* ── VELOCE tokens ── */
+    :root {
+      --v-orange:      #FF6B2B;
+      --v-orange-dim:  rgba(255, 107, 43, 0.15);
+      --v-black:       #080808;
+      --v-dark:        #111111;
+      --v-white:       #F5F4F0;
+      --v-fade:        1500ms;
     }
 
-    /* ── Catalogue ── */
-    .catalogue-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
-    .catalogue-header {
+    /* ── Reset for public page ── */
+    body.public-page { background: var(--v-black); }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .v-hero {
+      position: relative;
+      width: 100%;
+      height: 100dvh;
+      min-height: 560px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    /* Two video elements — crossfade loop */
+    .v-hero__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity var(--v-fade) ease;
+    }
+
+    #vHeroA { opacity: 1; z-index: 1; }
+    #vHeroB { opacity: 0; z-index: 2; }
+
+    /* Gradient overlays */
+    .v-hero__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background:
+        linear-gradient(to top,  rgba(8,8,8,0.92) 0%, rgba(8,8,8,0.3) 40%, transparent 70%),
+        linear-gradient(to right, rgba(8,8,8,0.55) 0%, transparent 60%);
+    }
+
+    /* Content */
+    .v-hero__content {
+      position: relative;
+      z-index: 4;
+      padding: 0 60px 80px;
+      max-width: 720px;
+    }
+
+    .v-hero__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 20px;
+    }
+
+    .v-hero__headline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(3.2rem, 7vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -.02em;
+      color: var(--v-white);
+      margin-bottom: 20px;
+    }
+
+    .v-hero__headline em {
+      font-style: italic;
+      color: var(--v-orange);
+    }
+
+    .v-hero__sub {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(.85rem, 1.4vw, 1rem);
+      font-weight: 300;
+      color: rgba(245, 244, 240, 0.55);
+      letter-spacing: .04em;
+      margin-bottom: 40px;
+      max-width: 360px;
+    }
+
+    .v-hero__cta-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .v-hero__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--v-black);
+      background: var(--v-orange);
+      padding: 14px 28px;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 140ms ease, transform 140ms ease;
+    }
+
+    .v-hero__cta:hover {
+      background: #ff8044;
+      transform: translateY(-2px);
+    }
+
+    .v-hero__cta-ghost {
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(245, 244, 240, 0.5);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(245, 244, 240, 0.25);
+      padding-bottom: 2px;
+      transition: color 140ms ease, border-color 140ms ease;
+    }
+
+    .v-hero__cta-ghost:hover {
+      color: var(--v-white);
+      border-color: var(--v-white);
+    }
+
+    /* Nav overlay */
+    .v-nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 5;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
-      gap: 12px;
-      flex-wrap: wrap;
+      padding: 28px 60px;
+      gap: 24px;
     }
-    .catalogue-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
-    .catalogue-count { font-size: .82rem; color: var(--muted); }
 
-    /* Filter bar reused from style.css */
-    .catalogue-filters { margin-bottom: 28px; }
+    .v-nav__logo {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+      text-decoration: none;
+    }
 
-    /* ── Car grid ── */
-    .car-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .car-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-    }
-    .car-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-    .car-card-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      display: block;
-      background: var(--surface-3);
-    }
-    .car-card-img-placeholder {
-      width: 100%;
-      height: 180px;
+    .v-nav__logo span { color: var(--v-orange); }
+
+    .v-nav__links {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--surface-3);
-      font-size: 3rem;
+      gap: 24px;
+      flex: 1;
+      min-width: 0;
     }
-    .car-card-body { padding: 16px 18px; }
-    .car-card-title { font-weight: 700; color: var(--text); font-size: .97rem; margin-bottom: 4px; }
-    .car-card-sub   { font-size: .8rem; color: var(--muted); margin-bottom: 12px; }
-    .car-card-footer {
+
+    .v-nav__link {
+      font-family: 'Inter', sans-serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(245, 244, 240, 0.72);
+      text-decoration: none;
+      transition: color 140ms ease;
+      white-space: nowrap;
+    }
+
+    .v-nav__link:hover { color: var(--v-white); }
+
+    .v-nav__staff {
+      font-family: 'Inter', sans-serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245, 244, 240, 0.45);
+      text-decoration: none;
+      border: 1px solid rgba(245, 244, 240, 0.18);
+      padding: 8px 18px;
+      border-radius: 2px;
+      transition: color 140ms, border-color 140ms;
+    }
+
+    .v-nav__staff:hover {
+      color: var(--v-white);
+      border-color: rgba(245, 244, 240, 0.5);
+    }
+
+    /* Scroll indicator */
+    .v-hero__scroll {
+      position: absolute;
+      bottom: 40px;
+      right: 60px;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .v-hero__scroll span {
+      font-family: 'Inter', sans-serif;
+      font-size: .6rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(245, 244, 240, 0.3);
+      writing-mode: vertical-rl;
+    }
+
+    .v-hero__scroll-line {
+      width: 1px;
+      height: 48px;
+      background: rgba(245, 244, 240, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .v-hero__scroll-line::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--v-orange);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%   { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION DIVIDER
+    ══════════════════════════════════════════ */
+    .v-divider {
+      background: var(--v-black);
+      padding: 64px 60px 0;
+    }
+
+    .v-divider__inner {
+      border-top: 1px solid rgba(245, 244, 240, 0.08);
+      padding-top: 52px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .v-divider__label {
+      font-family: 'Inter', sans-serif;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+    }
+
+    .v-divider__title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--v-white);
+      letter-spacing: -.02em;
+    }
+
+    /* ══════════════════════════════════════════
+       CATALOGUE (dark treatment)
+    ══════════════════════════════════════════ */
+    .v-catalogue {
+      background: var(--v-black);
+      padding: 40px 60px 80px;
+    }
+
+    .v-catalogue-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    .car-card-price { font-weight: 800; color: var(--accent); font-size: 1rem; }
 
-    .empty-state {
+    .v-catalogue-count {
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      color: rgba(245, 244, 240, 0.3);
+      letter-spacing: .06em;
+    }
+
+    /* Filter bar — dark */
+    .v-filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .v-filter-bar input,
+    .v-filter-bar select {
+      padding: 9px 14px;
+      background: rgba(245, 244, 240, 0.05);
+      border: 1px solid rgba(245, 244, 240, 0.1);
+      border-radius: 2px;
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      color: var(--v-white);
+      outline: none;
+      transition: border-color 140ms ease, background 140ms ease;
+    }
+
+    .v-filter-bar input::placeholder { color: rgba(245, 244, 240, 0.25); }
+
+    .v-filter-bar input:focus,
+    .v-filter-bar select:focus {
+      border-color: var(--v-orange);
+      background: rgba(255, 107, 43, 0.06);
+    }
+
+    .v-filter-bar select option { background: #1a1a1a; color: var(--v-white); }
+
+    .v-filter-bar input[type="text"]   { flex: 1; min-width: 200px; }
+    .v-filter-bar input[type="number"] { width: 110px; }
+
+    /* Car grid */
+    .v-car-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .v-car-card {
+      position: relative;
+      min-height: 360px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #0f0f0f;
+      cursor: pointer;
+      box-shadow: 0 24px 60px rgba(0,0,0,.36);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .v-car-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 30px 72px rgba(0,0,0,.48);
+    }
+
+    .v-car-card-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.82);
+      transition: filter 220ms ease, transform 220ms ease;
+    }
+
+    .v-car-card:hover .v-car-card-img {
+      filter: brightness(0.95);
+      transform: scale(1.03);
+    }
+
+    .v-car-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.72) 26%, rgba(0,0,0,.22) 58%, rgba(0,0,0,.06) 100%);
+      pointer-events: none;
+    }
+
+    .v-car-card-img-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,.08), transparent 38%),
+        linear-gradient(135deg, #181818 0%, #0e0e0e 100%);
+      font-size: 2.5rem;
+      color: rgba(245, 244, 240, 0.15);
+    }
+
+    .v-car-card-body {
+      position: absolute;
+      inset: auto 0 0;
+      z-index: 1;
+      padding: 22px 22px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v-car-card-make {
+      font-family: 'Inter', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(245, 244, 240, 0.72);
+      margin-bottom: 6px;
+    }
+
+    .v-car-card-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.45rem;
+      color: var(--v-white);
+      margin-bottom: 6px;
+      line-height: 1.2;
+      max-width: 13ch;
+    }
+
+    .v-car-card-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: .76rem;
+      color: rgba(245, 244, 240, 0.72);
+      margin-bottom: 14px;
+    }
+
+    .v-car-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .v-car-card-price {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--v-white);
+    }
+
+    .v-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+
+    .v-badge-available { background: rgba(5, 150, 105, 0.16); color: #c7f9e6; border-color: rgba(199,249,230,.16); }
+    .v-badge-sold      { background: rgba(220, 38, 38, 0.18); color: #ffd4d4; border-color: rgba(255,212,212,.14); }
+    .v-badge-reserved  { background: rgba(217, 119, 6, 0.18); color: #ffe2b0; border-color: rgba(255,226,176,.16); }
+
+    .v-car-card-note {
+      margin-top: 12px;
+      font-size: .74rem;
+      line-height: 1.5;
+      color: rgba(245, 244, 240, 0.76);
+    }
+
+    .v-empty-state {
       grid-column: 1 / -1;
       text-align: center;
-      padding: 60px 0;
-      color: var(--muted);
-      font-size: .9rem;
+      padding: 80px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      color: rgba(245, 244, 240, 0.2);
     }
 
-    /* Loading shimmer */
-    .shimmer {
-      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    /* Shimmer — dark */
+    .v-shimmer {
+      background: linear-gradient(90deg,
+        rgba(255,255,255,.03) 25%,
+        rgba(255,255,255,.07) 50%,
+        rgba(255,255,255,.03) 75%);
       background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: var(--radius);
+      animation: vShimmer 1.6s infinite;
     }
-    @keyframes shimmer { to { background-position: -200% 0; } }
-    .shimmer-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
+
+    @keyframes vShimmer { to { background-position: -200% 0; } }
+
+    .v-shimmer-card {
+      background: #0f0f0f;
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 360px;
+    }
+
+    .v-shimmer-img  { height: 240px; }
+    .v-shimmer-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+    .v-shimmer-line { height: 13px; border-radius: 1px; }
+    .v-shimmer-line.short { width: 50%; }
+
+    .v-footer {
+      background: #070707;
+      border-top: 1px solid rgba(245, 244, 240, 0.08);
+      padding: 34px 60px 42px;
+    }
+
+    .v-footer__inner {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .v-footer__brand {
+      max-width: 460px;
+    }
+
+    .v-footer__logo {
+      display: inline-block;
+      margin-bottom: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+    }
+
+    .v-footer__logo span { color: var(--v-orange); }
+
+    .v-footer__text,
+    .v-footer__meta {
+      font-size: .76rem;
+      line-height: 1.7;
+      color: rgba(245, 244, 240, 0.54);
+    }
+
+    .v-footer__meta {
+      text-align: right;
+      max-width: 260px;
+    }
+
+    /* ══════════════════════════════════════════
+       BRAND LOGOS STRIP
+    ══════════════════════════════════════════ */
+    .v-brands {
+      background: #0d0d0d;
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 28px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .v-brand-logo {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      background-color: rgba(245,244,240,.28);
+      transition: background-color 220ms ease;
+      cursor: default;
+      flex-shrink: 0;
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+    }
+    .v-brand-logo:hover { background-color: var(--v-orange); }
+
+    .v-brand-logo--bmw        { -webkit-mask-image: url('https://cdn.simpleicons.org/bmw'); mask-image: url('https://cdn.simpleicons.org/bmw'); }
+    .v-brand-logo--audi       { -webkit-mask-image: url('https://cdn.simpleicons.org/audi'); mask-image: url('https://cdn.simpleicons.org/audi'); }
+    .v-brand-logo--porsche    { -webkit-mask-image: url('https://cdn.simpleicons.org/porsche'); mask-image: url('https://cdn.simpleicons.org/porsche'); }
+    .v-brand-logo--ferrari    { -webkit-mask-image: url('https://cdn.simpleicons.org/ferrari'); mask-image: url('https://cdn.simpleicons.org/ferrari'); }
+    .v-brand-logo--lamborghini{ -webkit-mask-image: url('https://cdn.simpleicons.org/lamborghini'); mask-image: url('https://cdn.simpleicons.org/lamborghini'); }
+    .v-brand-logo--mercedes   { -webkit-mask-image: url('https://cdn.simpleicons.org/mercedes'); mask-image: url('https://cdn.simpleicons.org/mercedes'); }
+    .v-brand-logo--toyota     { -webkit-mask-image: url('https://cdn.simpleicons.org/toyota'); mask-image: url('https://cdn.simpleicons.org/toyota'); }
+    .v-brand-logo--volkswagen { -webkit-mask-image: url('https://cdn.simpleicons.org/volkswagen'); mask-image: url('https://cdn.simpleicons.org/volkswagen'); }
+    .v-brand-logo--honda      { -webkit-mask-image: url('https://cdn.simpleicons.org/honda'); mask-image: url('https://cdn.simpleicons.org/honda'); }
+    .v-brand-logo--mclaren    { -webkit-mask-image: url('https://cdn.simpleicons.org/mclaren'); mask-image: url('https://cdn.simpleicons.org/mclaren'); }
+
+    /* ══════════════════════════════════════════
+       CAR CATEGORIES
+    ══════════════════════════════════════════ */
+    .v-categories {
+      background: #0a0a0a;
+      padding: 80px 60px;
+    }
+
+    .v-section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 14px;
+    }
+
+    .v-section-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      color: var(--v-white);
+      letter-spacing: -.02em;
+      margin-bottom: 48px;
+    }
+
+    .v-cat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: rgba(245,244,240,.06);
+      border: 1px solid rgba(245,244,240,.06);
+    }
+
+    .v-cat-tile {
+      background: #0f0f0f;
+      padding: 32px 24px;
+      cursor: pointer;
+      transition: background 200ms ease;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .v-cat-tile:hover { background: #161616; }
+    .v-cat-tile:hover .v-cat-icon { color: var(--v-orange); }
+    .v-cat-tile--active { background: #161616; border-color: var(--v-orange); }
+    .v-cat-tile--active .v-cat-icon { color: var(--v-orange); }
+
+    .v-cat-icon {
+      font-size: 1.6rem;
+      color: rgba(245,244,240,.3);
+      transition: color 200ms ease;
+      line-height: 1;
+    }
+
+    .v-cat-name {
+      font-family: 'Inter', sans-serif;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--v-white);
+    }
+
+    .v-cat-count {
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      color: rgba(245,244,240,.28);
+    }
+
+    /* ══════════════════════════════════════════
+       TRUST SECTION — car bg + liquid glass
+    ══════════════════════════════════════════ */
+    .v-trust {
+      padding: 80px 60px;
+      position: relative;
       overflow: hidden;
     }
-    .shimmer-img  { height: 180px; }
-    .shimmer-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
-    .shimmer-line { height: 14px; border-radius: 4px; }
-    .shimmer-line.short { width: 55%; }
+
+    .v-trust-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      filter: brightness(.28) saturate(1.2);
+    }
+
+    .v-trust::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(8,8,8,.55) 0%, rgba(8,8,8,.3) 50%, rgba(8,8,8,.7) 100%),
+        radial-gradient(ellipse at 10% 50%, rgba(255,107,43,.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 50%, rgba(255,107,43,.05) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .v-trust > :not(.v-trust-bg) { position: relative; z-index: 2; }
+
+    .v-trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    /* Liquid glass cards */
+    .v-trust-col {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+      padding: 40px 36px;
+      border-radius: 4px;
+      transition: background 240ms ease, box-shadow 240ms ease;
+    }
+
+    .v-trust-col:hover {
+      background: rgba(255, 255, 255, 0.11);
+      box-shadow:
+        0 12px 48px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .v-trust-icon {
+      font-size: 1.4rem;
+      color: var(--v-orange);
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .v-trust-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 10px;
+      letter-spacing: -.01em;
+    }
+
+    .v-trust-body {
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      color: rgba(245,244,240,.55);
+      line-height: 1.65;
+    }
+
+    /* ══════════════════════════════════════════
+       CATEGORIES — car type image tiles
+    ══════════════════════════════════════════ */
+    .v-cat-tile {
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+    }
+
+    .v-cat-tile-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(.35) saturate(1.1);
+      transition: filter 300ms ease, transform 400ms ease;
+    }
+
+    .v-cat-tile:hover .v-cat-tile-bg {
+      filter: brightness(.48) saturate(1.3);
+      transform: scale(1.05);
+    }
+
+    .v-cat-tile--active .v-cat-tile-bg {
+      filter: brightness(.42) saturate(1.4);
+    }
+
+    .v-cat-tile-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 28px 22px;
+      height: 100%;
+      background: linear-gradient(to top, rgba(8,8,8,.85) 0%, rgba(8,8,8,.2) 60%, transparent 100%);
+    }
+
+    /* ══════════════════════════════════════════
+       FEATURED VEHICLES
+    ══════════════════════════════════════════ */
+    .v-featured {
+      background: #0c0c0c;
+      padding: 80px 60px;
+    }
+
+    .v-featured-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      gap: 16px;
+    }
+
+    .v-explore-link {
+      font-family: 'Inter', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--v-orange);
+      text-decoration: none;
+      transition: opacity 200ms ease;
+      white-space: nowrap;
+    }
+
+    .v-explore-link:hover { opacity: .75; }
+
+    .v-feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(245,244,240,.06);
+      border: 1px solid rgba(245,244,240,.06);
+    }
+
+    .v-feat-card {
+      background: #0f0f0f;
+      cursor: pointer;
+      transition: background 200ms ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v-feat-card:hover { background: #141414; }
+    .v-feat-card:hover .v-feat-img { filter: brightness(1.05); }
+
+    .v-feat-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(.88);
+      transition: filter 220ms ease;
+    }
+
+    .v-feat-img-placeholder {
+      width: 100%;
+      height: 220px;
+      background: #181818;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: rgba(245,244,240,.08);
+    }
+
+    .v-feat-body { padding: 28px 28px 24px; flex: 1; display: flex; flex-direction: column; }
+
+    .v-feat-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 8px;
+    }
+
+    .v-feat-make {
+      font-family: 'Inter', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.3);
+      margin-bottom: 4px;
+    }
+
+    .v-feat-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .v-feat-year {
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      color: rgba(245,244,240,.28);
+      flex: 1;
+      margin-bottom: 20px;
+    }
+
+    .v-feat-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(245,244,240,.07);
+      padding-top: 16px;
+    }
+
+    .v-feat-price {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--v-white);
+    }
+
+    .v-feat-arrow {
+      font-size: 1.1rem;
+      color: var(--v-orange);
+      transition: transform 200ms ease;
+    }
+
+    .v-feat-card:hover .v-feat-arrow { transform: translateX(4px); }
+
+    /* ══════════════════════════════════════════
+       CAR TURNTABLE — split layout
+    ══════════════════════════════════════════ */
+    .v-turntable {
+      background: #0a0a0c;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: clamp(60px, 8vw, 120px) clamp(24px, 6vw, 100px);
+      gap: clamp(32px, 5vw, 80px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ambient glow behind the car */
+    .v-turntable::after {
+      content: '';
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50%;
+      height: 70%;
+      background: radial-gradient(ellipse at 60% 50%, rgba(255,107,43,.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .v-turntable__left {
+      flex: 0 0 auto;
+      width: clamp(280px, 38%, 480px);
+      z-index: 2;
+    }
+
+    .v-turntable__right {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      min-width: 0;
+    }
+
+    .v-turntable__img {
+      width: 100%;
+      max-width: 780px;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 32px 64px rgba(0,0,0,.8));
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .v-turntable__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .v-turntable__headline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.6rem, 4.5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.02em;
+      color: var(--v-white);
+      margin: 0 0 24px;
+    }
+
+    .v-turntable__headline em {
+      font-style: italic;
+      color: var(--v-orange);
+    }
+
+    .v-turntable__body {
+      font-family: 'Inter', sans-serif;
+      font-size: .95rem;
+      line-height: 1.7;
+      color: rgba(245,244,240,.55);
+      max-width: 380px;
+      margin: 0 0 44px;
+    }
+
+    .v-turntable__specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+    }
+
+    .v-tt-spec-label {
+      font-family: 'Inter', sans-serif;
+      font-size: .55rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .v-tt-spec-value {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--v-white);
+      line-height: 1;
+    }
+
+    /* keep old overlay class in case referenced elsewhere — hidden */
+    .v-tt-overlay { display: none; }
+
+    /* unused arc — hidden */
+    .v-turntable__progress { display: none; }
+
+    .v-tt-overlay-label, .v-tt-overlay-headline {
+      /* retained for selector safety */
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1;
+      color: var(--v-white);
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLL SCRUB
+    ══════════════════════════════════════════ */
+    .v-scrub {
+      height: 300vh;
+      position: relative;
+    }
+
+    .v-scrub__sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #vScrub {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .v-scrub__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top,  rgba(8,8,8,0.75) 0%, transparent 40%),
+        linear-gradient(to right, rgba(8,8,8,0.50) 0%, transparent 55%);
+      z-index: 1;
+    }
+
+    .v-scrub__copy {
+      position: absolute;
+      bottom: 80px;
+      left: 60px;
+      z-index: 2;
+      animation: scrubCopyFade linear both;
+      animation-timeline: scroll(root);
+      animation-range: 5% 95%;
+    }
+
+    @keyframes scrubCopyFade {
+      0%   { opacity: 0; transform: translateY(24px); }
+      12%  { opacity: 1; transform: translateY(0); }
+      88%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-16px); }
+    }
+
+    .v-scrub__label {
+      font-family: 'Inter', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .v-scrub__headline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -.02em;
+      color: var(--v-white);
+    }
+
+    .v-scrub__headline em {
+      font-style: italic;
+      color: var(--v-orange);
+    }
+
+    /* ══════════════════════════════════════════
+       PRESS & REVIEWS
+    ══════════════════════════════════════════ */
+    .v-reviews {
+      background: #080808;
+      padding: 80px 60px;
+      border-top: 1px solid rgba(245,244,240,.06);
+    }
+
+    .v-reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(245,244,240,.06);
+      border: 1px solid rgba(245,244,240,.06);
+      margin-top: 48px;
+    }
+
+    .v-review-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      cursor: default;
+    }
+
+    .v-review-card-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(.3) saturate(1.1);
+      transition: filter 400ms ease, transform 500ms ease;
+    }
+
+    .v-review-card:hover .v-review-card-bg {
+      filter: brightness(.45) saturate(1.3);
+      transform: scale(1.04);
+    }
+
+    .v-review-card-content {
+      position: relative;
+      z-index: 2;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+      background: linear-gradient(to top, rgba(8,8,8,.95) 0%, rgba(8,8,8,.6) 50%, rgba(8,8,8,.15) 100%);
+    }
+
+    .v-review-date {
+      font-family: 'Inter', sans-serif;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+    }
+
+    .v-review-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--v-white);
+      letter-spacing: -.01em;
+      line-height: 1.2;
+    }
+
+    .v-review-blurb {
+      font-family: 'Inter', sans-serif;
+      font-size: .84rem;
+      color: rgba(245,244,240,.55);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .v-review-link {
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--v-orange);
+      text-decoration: none;
+      transition: opacity 200ms ease;
+      align-self: flex-start;
+    }
+
+    .v-review-link:hover { opacity: .7; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .v-cat-grid     { grid-template-columns: repeat(3, 1fr); }
+      .v-feat-grid    { grid-template-columns: 1fr; }
+      .v-trust-grid   { grid-template-columns: 1fr; gap: 12px; }
+      .v-reviews-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .v-nav            { padding: 20px 24px; }
+      .v-nav__links     { display: none; }
+      .v-hero__content  { padding: 0 24px 60px; }
+      .v-hero__scroll   { right: 24px; }
+      .v-brands         { padding: 20px 24px; }
+      .v-categories     { padding: 56px 24px; }
+      .v-cat-grid       { grid-template-columns: repeat(2, 1fr); }
+      .v-trust          { padding: 56px 24px; }
+      .v-turntable      { flex-direction: column; padding: 56px 24px; min-height: unset; }
+      .v-turntable__left { width: 100%; }
+      .v-turntable__right { width: 100%; }
+      .v-turntable__img  { max-width: 100%; }
+      .v-featured       { padding: 56px 24px; }
+      .v-reviews        { padding: 56px 24px; }
+      .v-divider        { padding: 48px 24px 0; }
+      .v-catalogue      { padding: 32px 24px 60px; }
+      .v-footer         { padding: 32px 24px 40px; }
+      .v-footer__meta   { text-align: left; }
+    }
   </style>
 </head>
 <body class="public-page">
 
-<!-- Hero -->
-<header class="hero">
-  <a href="/login.html" class="staff-btn">Staff Login</a>
-  <div class="hero-logo">◈ AutoPrime</div>
-  <h1>Find Your Perfect Vehicle</h1>
-  <p>Browse our full inventory of premium vehicles. No account needed.</p>
-</header>
+<!-- ══ NAV ══ -->
+<nav class="v-nav">
+  <a href="/" class="v-nav__logo">VEL<span>O</span>CE</a>
+  <div class="v-nav__links" aria-label="Primary">
+    <a href="#catalogue" class="v-nav__link">Collection</a>
+    <a href="#featured-heading" class="v-nav__link">Featured</a>
+    <a href="#trust-heading" class="v-nav__link">Heritage</a>
+    <a href="#site-footer" class="v-nav__link">Project</a>
+  </div>
+  <a href="/login.html" class="v-nav__staff">Staff Login</a>
+</nav>
 
-<!-- Catalogue -->
-<div class="catalogue-wrap">
+<!-- ══ HERO ══ -->
+<section class="v-hero">
+  <!-- Video A (primary) -->
+  <video id="vHeroA" class="v-hero__video" src="car_video_ex.mp4"
+         muted playsinline autoplay preload="auto"></video>
+  <!-- Video B (crossfade target) -->
+  <video id="vHeroB" class="v-hero__video" src="car_video_ex.mp4"
+         muted playsinline preload="auto"></video>
 
-  <div class="catalogue-header">
-    <span class="catalogue-title">Available Vehicles</span>
-    <span class="catalogue-count" id="count"></span>
+  <div class="v-hero__overlay"></div>
+
+  <div class="v-hero__content">
+    <div class="v-hero__eyebrow">◈ Veloce Automotive</div>
+    <h1 class="v-hero__headline">Drive Without<br><em>Compromise.</em></h1>
+    <p class="v-hero__sub">Curated performance vehicles. Exceptional buying experience.</p>
+    <div class="v-hero__cta-row">
+      <a href="#catalogue" class="v-hero__cta">Explore Inventory</a>
+      <a href="/login.html" class="v-hero__cta-ghost">Staff Portal</a>
+    </div>
   </div>
 
-  <div class="filter-bar catalogue-filters">
+  <div class="v-hero__scroll" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="v-hero__scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ BRAND LOGOS STRIP ══ -->
+<div class="v-brands" aria-label="Featured marques">
+  <span class="v-brand-logo v-brand-logo--bmw"         title="BMW"         aria-label="BMW"></span>
+  <span class="v-brand-logo v-brand-logo--audi"        title="Audi"        aria-label="Audi"></span>
+  <span class="v-brand-logo v-brand-logo--mercedes"    title="Mercedes-Benz" aria-label="Mercedes-Benz"></span>
+  <span class="v-brand-logo v-brand-logo--porsche"     title="Porsche"     aria-label="Porsche"></span>
+  <span class="v-brand-logo v-brand-logo--ferrari"     title="Ferrari"     aria-label="Ferrari"></span>
+  <span class="v-brand-logo v-brand-logo--lamborghini" title="Lamborghini" aria-label="Lamborghini"></span>
+  <span class="v-brand-logo v-brand-logo--mclaren"     title="McLaren"     aria-label="McLaren"></span>
+  <span class="v-brand-logo v-brand-logo--volkswagen"  title="Volkswagen"  aria-label="Volkswagen"></span>
+  <span class="v-brand-logo v-brand-logo--toyota"      title="Toyota"      aria-label="Toyota"></span>
+  <span class="v-brand-logo v-brand-logo--honda"       title="Honda"       aria-label="Honda"></span>
+</div>
+
+<!-- ══ CATEGORIES ══ -->
+<section class="v-categories" aria-labelledby="cat-heading">
+  <div class="v-section-label">◈ Browse By Type</div>
+  <h2 class="v-section-heading" id="cat-heading">Find Your Class</h2>
+  <div class="v-cat-grid">
+    <button class="v-cat-tile" data-filter="Economy" onclick="filterByType('Economy')">
+      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-cat-tile-inner">
+        <span class="v-cat-name">Economy</span>
+        <span class="v-cat-count" id="count-Economy">— vehicles</span>
+      </div>
+    </button>
+    <button class="v-cat-tile" data-filter="Sport" onclick="filterByType('Sport')">
+      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-cat-tile-inner">
+        <span class="v-cat-name">Sport</span>
+        <span class="v-cat-count" id="count-Sport">— vehicles</span>
+      </div>
+    </button>
+    <button class="v-cat-tile" data-filter="Luxury" onclick="filterByType('Luxury')">
+      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-cat-tile-inner">
+        <span class="v-cat-name">Luxury</span>
+        <span class="v-cat-count" id="count-Luxury">— vehicles</span>
+      </div>
+    </button>
+    <button class="v-cat-tile" data-filter="Exotic" onclick="filterByType('Exotic')">
+      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1617531653332-bd46c16f5a1f?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-cat-tile-inner">
+        <span class="v-cat-name">Exotic</span>
+        <span class="v-cat-count" id="count-Exotic">— vehicles</span>
+      </div>
+    </button>
+    <button class="v-cat-tile" data-filter="SUV" onclick="filterByType('SUV')">
+      <img class="v-cat-tile-bg" src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600&q=80" alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-cat-tile-inner">
+        <span class="v-cat-name">SUV</span>
+        <span class="v-cat-count" id="count-SUV">— vehicles</span>
+      </div>
+    </button>
+  </div>
+</section>
+
+<!-- ══ TRUST ══ -->
+<section class="v-trust" aria-labelledby="trust-heading">
+  <img class="v-trust-bg"
+       src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80"
+       alt=""
+       aria-hidden="true"
+       loading="lazy" />
+  <div class="v-section-label">◈ Our Promise</div>
+  <h2 class="v-section-heading" id="trust-heading"><em>Why</em> VELOCE</h2>
+  <div class="v-trust-grid">
+    <div class="v-trust-col">
+      <span class="v-trust-icon">◈</span>
+      <div class="v-trust-title">No Hidden Fees</div>
+      <p class="v-trust-body">Transparent pricing, every time. What you see is what you pay — no destination charges, no documentation surprises.</p>
+    </div>
+    <div class="v-trust-col">
+      <span class="v-trust-icon">⟡</span>
+      <div class="v-trust-title">Verified Inventory</div>
+      <p class="v-trust-body">Every vehicle is inspected, documented, and history-checked before it reaches our floor. You buy with certainty.</p>
+    </div>
+    <div class="v-trust-col">
+      <span class="v-trust-icon">✦</span>
+      <div class="v-trust-title">White Glove Service</div>
+      <p class="v-trust-body">From your first inquiry to key handover, a dedicated advisor guides every step. We work around your schedule.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CAR TURNTABLE ══ -->
+<section class="v-turntable" id="turntable" aria-label="360° vehicle showcase">
+  <div class="v-turntable__left">
+    <span class="v-turntable__eyebrow">◈ 360° View</span>
+    <h2 class="v-turntable__headline">Built for<br>Those Who<br><em>Demand More.</em></h2>
+    <p class="v-turntable__body">Every vehicle in the VELOCE collection is hand-selected for mechanical integrity, provenance, and driving character. We don't sell cars — we place legends.</p>
+    <div class="v-turntable__specs">
+      <div>
+        <span class="v-tt-spec-label">◈ Model</span>
+        <div class="v-tt-spec-value">720S</div>
+      </div>
+      <div>
+        <span class="v-tt-spec-label">◈ Engine</span>
+        <div class="v-tt-spec-value">V8 TT</div>
+      </div>
+      <div>
+        <span class="v-tt-spec-label">◈ Output</span>
+        <div class="v-tt-spec-value">710 hp</div>
+      </div>
+      <div>
+        <span class="v-tt-spec-label">◈ 0–60</span>
+        <div class="v-tt-spec-value">2.9 s</div>
+      </div>
+    </div>
+  </div>
+  <div class="v-turntable__right">
+    <video id="turntableVid" class="v-turntable__img" src="car_rotation.mp4"
+           muted playsinline loop preload="auto" autoplay></video>
+  </div>
+</section>
+
+<!-- ══ FEATURED VEHICLES ══ -->
+<section class="v-featured" aria-labelledby="featured-heading">
+  <div class="v-featured-header">
+    <div>
+      <div class="v-section-label">◈ Hand-Picked Selection</div>
+      <h2 class="v-section-heading" style="margin-bottom:0" id="featured-heading">Featured Vehicles</h2>
+    </div>
+    <a href="#catalogue" class="v-explore-link" onclick="document.getElementById('catalogue').scrollIntoView({behavior:'smooth'});return false;">Explore All →</a>
+  </div>
+  <div class="v-feat-grid" id="featuredGrid">
+    <!-- populated by JS after allCars loads -->
+  </div>
+</section>
+
+<!-- ══ PRESS & REVIEWS ══ -->
+<section class="v-reviews" aria-labelledby="reviews-heading">
+  <div class="v-section-label">◈ Press &amp; Reviews</div>
+  <h2 class="v-section-heading" id="reviews-heading">Latest from<br><em>the Road</em></h2>
+  <div class="v-reviews-grid">
+    <article class="v-review-card">
+      <img class="v-review-card-bg"
+           src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80"
+           alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-review-card-content">
+        <div class="v-review-date">March 2025</div>
+        <h3 class="v-review-title">Porsche 911 GT3 RS</h3>
+        <p class="v-review-blurb">The most driver-focused 911 ever made redefines the limits of road-legal performance. A benchmark for the ages.</p>
+        <a href="#" class="v-review-link">Read Review →</a>
+      </div>
+    </article>
+    <article class="v-review-card">
+      <img class="v-review-card-bg"
+           src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80"
+           alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-review-card-content">
+        <div class="v-review-date">February 2025</div>
+        <h3 class="v-review-title">BMW M5 Competition</h3>
+        <p class="v-review-blurb">Four-door practicality meets supercar pace. The new M5 is the definitive fast-family car, with zero apologies.</p>
+        <a href="#" class="v-review-link">Read Review →</a>
+      </div>
+    </article>
+    <article class="v-review-card">
+      <img class="v-review-card-bg"
+           src="https://images.unsplash.com/photo-1621135802920-133df287f89c?w=800&q=80"
+           alt="" aria-hidden="true" loading="lazy" />
+      <div class="v-review-card-content">
+        <div class="v-review-date">January 2025</div>
+        <h3 class="v-review-title">Lamborghini Urus SE</h3>
+        <p class="v-review-blurb">The world's fastest SUV goes hybrid without losing its ferocious character — more theatre, more substance.</p>
+        <a href="#" class="v-review-link">Read Review →</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ DIVIDER ══ -->
+<div class="v-divider" id="catalogue">
+  <div class="v-divider__inner">
+    <span class="v-divider__label">◈ Our Inventory</span>
+    <h2 class="v-divider__title">Available Vehicles</h2>
+  </div>
+</div>
+
+<!-- ══ CATALOGUE ══ -->
+<section class="v-catalogue">
+
+  <div class="v-catalogue-header">
+    <span class="v-catalogue-count" id="count"></span>
+  </div>
+
+  <div class="v-filter-bar">
     <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
     <select id="f-status" onchange="applyFilters()">
       <option value="">All statuses</option>
       <option value="AVAILABLE">Available</option>
-      <option value="SOLD">Sold</option>
       <option value="RESERVED">Reserved</option>
     </select>
     <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
@@ -161,105 +1505,271 @@
     <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
   </div>
 
-  <div class="car-grid" id="car-grid">
-    <!-- shimmer placeholders while loading -->
-    ${Array(6).fill(`
-    <div class="shimmer-card">
-      <div class="shimmer shimmer-img"></div>
-      <div class="shimmer-body">
-        <div class="shimmer shimmer-line"></div>
-        <div class="shimmer shimmer-line short"></div>
-      </div>
-    </div>`).join('')}
+  <div class="v-car-grid" id="car-grid">
+    <!-- shimmer placeholders -->
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
+    <div class="v-shimmer-card"><div class="v-shimmer v-shimmer-img"></div><div class="v-shimmer-body"><div class="v-shimmer v-shimmer-line"></div><div class="v-shimmer v-shimmer-line short"></div></div></div>
   </div>
 
-</div>
+</section>
+
+<footer class="v-footer" id="site-footer">
+  <div class="v-footer__inner">
+    <div class="v-footer__brand">
+      <div class="v-footer__logo">VEL<span>O</span>CE</div>
+      <p class="v-footer__text">
+        Crafted as an ISTE 330 group project for database access and connectivity, with a classic showroom voice and a modern inventory experience.
+      </p>
+    </div>
+    <div class="v-footer__meta">
+      <p>AutoPrime inventory experience</p>
+      <p>Customer collection and admin dashboard kept separate by vehicle availability</p>
+    </div>
+  </div>
+</footer>
 
 <script>
+  /* ══════════════════════════════════════════
+     CROSSFADE VIDEO LOOP
+     Two video elements. When the active one
+     is FADE_S seconds from its end, fade in
+     the waiting one (already cued at 0:00).
+  ══════════════════════════════════════════ */
+  (function () {
+    const FADE_S = 1.5;
+
+    const vA = document.getElementById('vHeroA');
+    const vB = document.getElementById('vHeroB');
+
+    let active  = vA;
+    let waiting = vB;
+    let crossing = false;
+
+    function cueWaiting() {
+      waiting.currentTime = 0; // preload only — do NOT play yet
+    }
+
+    function crossfade() {
+      if (crossing) return;
+      crossing = true;
+
+      waiting.play().catch(() => {}); // start from t=0 exactly now
+      waiting.style.opacity = '1';
+      active.style.opacity  = '0';
+
+      setTimeout(() => {
+        const prev = active;
+        active  = waiting;
+        waiting = prev;
+        prev.pause();
+        crossing = false;
+        cueWaiting();
+      }, FADE_S * 1000);
+    }
+
+    function onTimeUpdate(vid) {
+      if (active !== vid) return;
+      if (!vid.duration)  return;
+      if (vid.currentTime >= vid.duration - FADE_S) crossfade();
+    }
+
+    vA.addEventListener('timeupdate', () => onTimeUpdate(vA));
+    vB.addEventListener('timeupdate', () => onTimeUpdate(vB));
+
+    vA.play().catch(() => {});
+    cueWaiting();
+  })();
+
+  /* ══════════════════════════════════════════
+     SMOOTH SCROLL for CTA
+  ══════════════════════════════════════════ */
+  document.querySelector('.v-hero__cta').addEventListener('click', e => {
+    const target = document.querySelector('#catalogue');
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+
+  /* ══════════════════════════════════════════
+     CAR CATALOGUE
+  ══════════════════════════════════════════ */
   let allCars = [];
 
   async function init() {
-    const res  = await fetch("/api/cars");
-    const cars = await res.json();
-    if (cars.error) {
-      document.getElementById("car-grid").innerHTML =
-        '<div class="empty-state">Could not load vehicles. Please try again later.</div>';
-      return;
+    try {
+      const res  = await fetch('/api/cars');
+      const cars = await res.json();
+      if (cars.error) throw new Error(cars.error);
+      allCars = cars;
+      renderFeatured(cars);
+      updateCategoryCounts(cars);
+      applyFilters();
+    } catch (_) {
+      document.getElementById('car-grid').innerHTML =
+        '<div class="v-empty-state">Could not load vehicles. Please try again later.</div>';
     }
-    allCars = cars;
-    applyFilters();
   }
 
   function applyFilters() {
-    const search   = document.getElementById("f-search").value.trim().toLowerCase();
-    const status   = document.getElementById("f-status").value;
-    const minPrice = parseFloat(document.getElementById("f-min-price").value) || 0;
-    const maxPrice = parseFloat(document.getElementById("f-max-price").value) || Infinity;
-    const minYear  = parseInt(document.getElementById("f-min-year").value)  || 0;
-    const maxYear  = parseInt(document.getElementById("f-max-year").value)  || 9999;
+    const search   = document.getElementById('f-search').value.trim().toLowerCase();
+    const status   = document.getElementById('f-status').value;
+    const minPrice = parseFloat(document.getElementById('f-min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('f-max-price').value) || Infinity;
+    const minYear  = parseInt(document.getElementById('f-min-year').value)  || 0;
+    const maxYear  = parseInt(document.getElementById('f-max-year').value)  || 9999;
 
-    const filtered = allCars.filter(c => {
+    const visibleCars = allCars.filter(c => c.status !== 'SOLD');
+
+    const filtered = visibleCars.filter(c => {
       if (search && !c.make.toLowerCase().includes(search) && !c.model.toLowerCase().includes(search)) return false;
       if (status && c.status !== status) return false;
+      if (activeSegmentFilter && c.segment !== activeSegmentFilter) return false;
       if (c.price < minPrice || c.price > maxPrice) return false;
       if (c.year  < minYear  || c.year  > maxYear)  return false;
       return true;
     });
 
-    document.getElementById("count").textContent = filtered.length + " vehicle" + (filtered.length !== 1 ? "s" : "");
+    const n = filtered.length;
+    document.getElementById('count').textContent = n + ' vehicle' + (n !== 1 ? 's' : '');
     renderGrid(filtered);
   }
 
   function renderGrid(cars) {
-    const grid = document.getElementById("car-grid");
-    if (cars.length === 0) {
-      grid.innerHTML = '<div class="empty-state">No vehicles match your filters.</div>';
+    const grid = document.getElementById('car-grid');
+    if (!cars.length) {
+      grid.innerHTML = '<div class="v-empty-state">No vehicles match your filters.</div>';
       return;
     }
     grid.innerHTML = cars.map(car => {
       const imgHtml = car.imageUrl && car.imageUrl.trim()
-        ? `<img class="car-card-img" src="${escHtml(car.imageUrl)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}"
-             onerror="this.outerHTML='<div class=\\'car-card-img-placeholder\\'>🚗</div>'" />`
-        : `<div class="car-card-img-placeholder" data-make="${escHtml(car.make)}" data-model="${escHtml(car.model)}" data-year="${car.year}">🚗</div>`;
+        ? `<img class="v-car-card-img" src="${esc(car.imageUrl)}" alt="${esc(car.year + ' ' + car.make + ' ' + car.model)}"
+             onerror="this.outerHTML='<div class=\\'v-car-card-img-placeholder\\'>—</div>'" />`
+        : `<div class="v-car-card-img-placeholder"
+               data-make="${esc(car.make)}" data-model="${esc(car.model)}" data-year="${car.year}">—</div>`;
 
-      const badgeCls = { AVAILABLE:'badge-available', SOLD:'badge-sold', RESERVED:'badge-reserved' }[car.status] || 'badge-available';
-      const badgeTxt = car.status ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : 'Available';
+      const bCls = { AVAILABLE:'v-badge-available', SOLD:'v-badge-sold', RESERVED:'v-badge-reserved' }[car.status] || 'v-badge-available';
+      const bTxt = car.status ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : 'Available';
+      const note = car.status === 'RESERVED'
+        ? '<div class="v-car-card-note">Currently reserved. Contact the seller to confirm availability.</div>'
+        : '';
 
       return `
-        <div class="car-card" onclick="location.href='/vehicle-details.html?id=${car.id}'">
+        <div class="v-car-card" onclick="location.href='/vehicle-details.html?id=${car.id}'">
           ${imgHtml}
-          <div class="car-card-body">
-            <div class="car-card-title">${escHtml(car.year + ' ' + car.make + ' ' + car.model)}</div>
-            <div class="car-card-sub">${escHtml(car.color || '')}${car.mileage ? ' · ' + car.mileage.toLocaleString() + ' km' : ''}</div>
-            <div class="car-card-footer">
-              <span class="car-card-price">$${car.price.toLocaleString("en-US", {minimumFractionDigits:2})}</span>
-              <span class="badge ${badgeCls}">${badgeTxt}</span>
+          <div class="v-car-card-body">
+            <div class="v-car-card-make">${esc(car.make)}</div>
+            <div class="v-car-card-title">${esc(car.year + ' ' + car.model)}</div>
+            <div class="v-car-card-sub">${esc(car.color || '')}${car.mileage ? ' · ' + car.mileage.toLocaleString() + ' km' : ''}</div>
+            <div class="v-car-card-footer">
+              <span class="v-car-card-price">$${car.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+              <span class="v-badge ${bCls}">${bTxt}</span>
             </div>
+            ${note}
           </div>
         </div>`;
     }).join('');
 
-    // Lazy-fetch Wikipedia images for cards without one
-    grid.querySelectorAll('.car-card-img-placeholder[data-make]').forEach(async el => {
-      const make = el.dataset.make, model = el.dataset.model, year = el.dataset.year;
+    grid.querySelectorAll('.v-car-card-img-placeholder[data-make]').forEach(async el => {
+      const { make, model, year } = el.dataset;
       try {
         const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`);
         const d = await r.json();
         if (d.url) {
           const img = document.createElement('img');
-          img.className = 'car-card-img';
+          img.className = 'v-car-card-img';
           img.src = d.url;
-          img.alt = year + ' ' + make + ' ' + model;
-          img.onerror = () => {}; // keep placeholder on failure
+          img.alt = `${year} ${make} ${model}`;
           el.replaceWith(img);
         }
       } catch (_) {}
     });
   }
 
-  function escHtml(s) {
+  let activeSegmentFilter = null;
+
+  function filterByType(type) {
+    activeSegmentFilter = activeSegmentFilter === type ? null : type;
+    document.querySelectorAll('.v-cat-tile').forEach(btn => {
+      btn.classList.toggle('v-cat-tile--active', btn.dataset.filter === activeSegmentFilter);
+    });
+    document.getElementById('catalogue').scrollIntoView({ behavior: 'smooth' });
+    applyFilters();
+  }
+
+  function updateCategoryCounts(cars) {
+    const visibleCars = cars.filter(c => c.status !== 'SOLD');
+    const types = ['Economy','Sport','Luxury','Exotic','SUV'];
+    types.forEach(t => {
+      const el = document.getElementById('count-' + t);
+      if (!el) return;
+      const n = visibleCars.filter(c => c.segment && c.segment === t).length;
+      el.textContent = n + ' vehicle' + (n !== 1 ? 's' : '');
+    });
+  }
+
+  function renderFeatured(cars) {
+    const grid = document.getElementById('featuredGrid');
+    if (!grid) return;
+    const available = cars.filter(c => !c.status || c.status === 'AVAILABLE').slice(0, 3);
+    if (!available.length) { grid.style.display = 'none'; return; }
+    grid.innerHTML = available.map(car => {
+      const imgHtml = car.imageUrl && car.imageUrl.trim()
+        ? `<img class="v-feat-img" src="${esc(car.imageUrl)}" alt="${esc(car.year + ' ' + car.make + ' ' + car.model)}"
+             onerror="this.outerHTML='<div class=\\'v-feat-img-placeholder\\'>—</div>'" />`
+        : `<div class="v-feat-img-placeholder"
+               data-feat-make="${esc(car.make)}" data-feat-model="${esc(car.model)}" data-feat-year="${car.year}">—</div>`;
+      return `
+        <div class="v-feat-card" onclick="location.href='/vehicle-details.html?id=${car.id}'">
+          ${imgHtml}
+          <div class="v-feat-body">
+            <div class="v-feat-eyebrow">Featured</div>
+            <div class="v-feat-make">${esc(car.make)}</div>
+            <div class="v-feat-title">${esc(car.model)}</div>
+            <div class="v-feat-year">${car.year}${car.color ? ' · ' + esc(car.color) : ''}</div>
+            <div class="v-feat-footer">
+              <span class="v-feat-price">$${car.price.toLocaleString('en-US', {minimumFractionDigits:2})}</span>
+              <span class="v-feat-arrow">→</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.v-feat-img-placeholder[data-feat-make]').forEach(async el => {
+      const make = el.dataset.featMake, model = el.dataset.featModel, year = el.dataset.featYear;
+      try {
+        const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`);
+        const d = await r.json();
+        if (d.url) {
+          const img = document.createElement('img');
+          img.className = 'v-feat-img';
+          img.src = d.url;
+          img.alt = `${year} ${make} ${model}`;
+          el.replaceWith(img);
+        }
+      } catch (_) {}
+    });
+  }
+
+  function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  /* ══════════════════════════════════════════
+     CAR TURNTABLE — video loop
+     Plays car_rotation.mp4 on loop.
+     Pauses when section leaves viewport.
+  ══════════════════════════════════════════ */
+  (function () {
+    const vid     = document.getElementById('turntableVid');
+    const section = document.getElementById('turntable');
+    if (!vid || !section) return;
+
+    new IntersectionObserver(entries => {
+      entries[0].isIntersecting ? vid.play() : vid.pause();
+    }, { threshold: 0.1 }).observe(section);
+  })();
 
   init();
 </script>

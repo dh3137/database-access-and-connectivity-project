@@ -99,7 +99,7 @@ public class Main {
             if (user != null) {
                 String token = UUID.randomUUID().toString();
                 sessions.put(token, user);
-                logAction(user.getUsername(), "LOGIN", "Role: " + user.getRole());
+                System.out.println("[login] " + user.getUsername() + " logged in, role=" + user.getRole());
                 String dest = "ADMIN".equals(user.getRole()) ? "/dashboard.html" : "/cars.html";
                 ex.getResponseHeaders().add("Set-Cookie", "session=" + token + "; Path=/; HttpOnly");
                 redirect(ex, dest);
@@ -121,7 +121,7 @@ public class Main {
         redirect(ex, "/login.html");
     }
 
-    // GET /api/me  → {"id":1,"username":"ivan","role":"ADMIN","fullName":"Ivan Karlo"}
+    // GET /api/me  → {"id":1,"username":"ivan","role":"ADMIN"}
     private static void handleMe(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
@@ -163,7 +163,7 @@ public class Main {
             if ("DELETE".equals(method) && hasId) {
                 int id = Integer.parseInt(parts[3]);
                 boolean deleted = carDatabase.deleteCar(id);
-                if (deleted) logAction(user.getUsername(), "DELETE_CAR", "Car id=" + id);
+                if (deleted) logVehicleChange(id, user.getEmpId(), "DELETE", null, null);
                 sendJson(ex, deleted ? 200 : 404, deleted ? "{\"ok\":true}" : "{\"error\":\"Car not found\"}");
 
             } else if ("PUT".equals(method) && hasId) {
@@ -173,7 +173,7 @@ public class Main {
                 car.setId(id);
                 validateCar(car, true);
                 boolean updated = carDatabase.updateCar(car);
-                if (updated) logAction(user.getUsername(), "EDIT_CAR", car.getYear() + " " + car.getMake() + " " + car.getModel() + " (id=" + id + ")");
+                if (updated) logVehicleChange(id, user.getEmpId(), "UPDATE", "vehicle", String.valueOf(id));
                 sendJson(ex, updated ? 200 : 404, updated ? carToJson(car) : "{\"error\":\"Car not found\"}");
 
             } else if ("POST".equals(method) && !hasId) {
@@ -181,7 +181,7 @@ public class Main {
                 Car car = parseCarJson(body);
                 validateCar(car, false);
                 boolean added = carDatabase.saveCar(car);
-                if (added) logAction(user.getUsername(), "ADD_CAR", car.getYear() + " " + car.getMake() + " " + car.getModel());
+                if (added) logVehicleChange(car.getModelId(), user.getEmpId(), "INSERT", null, null);
                 sendJson(ex, added ? 201 : 500, added ? "{\"ok\":true}" : "{\"error\":\"Could not add car\"}");
 
             } else if ("GET".equals(method) && hasId) {
@@ -225,10 +225,16 @@ public class Main {
             for (int i = 0; i < entries.size(); i++) {
                 if (i > 0) sb.append(",");
                 String[] e2 = entries.get(i);
-                sb.append(String.format("{\"username\":\"%s\",\"action\":\"%s\",\"detail\":\"%s\",\"time\":\"%s\"}",
-                    escapeJson(e2[0]), escapeJson(e2[1]),
+                // columns: vehicle_id(0), first_name(1), last_name(2), change_type(3), field_changed(4), new_value(5), change_date(6)
+                sb.append(String.format(
+                    "{\"vehicleId\":\"%s\",\"employee\":\"%s %s\",\"changeType\":\"%s\",\"fieldChanged\":\"%s\",\"newValue\":\"%s\",\"time\":\"%s\"}",
+                    escapeJson(e2[0] != null ? e2[0] : ""),
+                    escapeJson(e2[1] != null ? e2[1] : ""),
                     escapeJson(e2[2] != null ? e2[2] : ""),
-                    escapeJson(e2[3])));
+                    escapeJson(e2[3] != null ? e2[3] : ""),
+                    escapeJson(e2[4] != null ? e2[4] : ""),
+                    escapeJson(e2[5] != null ? e2[5] : ""),
+                    escapeJson(e2[6] != null ? e2[6] : "")));
             }
             sb.append("]");
             sendJson(ex, 200, sb.toString());
@@ -432,27 +438,34 @@ public class Main {
     private static String carToJson(Car car) {
         return String.format(
             "{\"id\":%d,\"make\":\"%s\",\"model\":\"%s\",\"year\":%d,\"price\":%.2f" +
-            ",\"status\":\"%s\",\"color\":\"%s\",\"mileage\":%d,\"imageUrl\":\"%s\",\"description\":\"%s\"}",
+            ",\"status\":\"%s\",\"color\":\"%s\",\"mileage\":%d,\"imageUrl\":\"%s\"" +
+            ",\"description\":\"%s\",\"vin\":\"%s\",\"modelId\":%d,\"manufacturerId\":%d" +
+            ",\"segment\":\"%s\"}",
             car.getId(),
             escapeJson(car.getMake()),
             escapeJson(car.getModel()),
             car.getYear(),
             car.getPrice(),
-            escapeJson(car.getStatus() != null ? car.getStatus() : "AVAILABLE"),
+            escapeJson(toApiStatus(car.getStatus())),
             escapeJson(car.getColor() != null ? car.getColor() : ""),
             car.getMileage(),
             escapeJson(car.getImageUrl() != null ? car.getImageUrl() : ""),
-            escapeJson(car.getDescription() != null ? car.getDescription() : "")
+            escapeJson(car.getDescription() != null ? car.getDescription() : ""),
+            escapeJson(car.getVin() != null ? car.getVin() : ""),
+            car.getModelId(),
+            car.getManufacturerId(),
+            escapeJson(car.getSegment() != null ? car.getSegment() : "")
         );
     }
 
     private static String userToJson(User user) {
         return String.format(
-            "{\"id\":%d,\"username\":\"%s\",\"role\":\"%s\",\"fullName\":\"%s\"}",
+            "{\"id\":%d,\"username\":\"%s\",\"role\":\"%s\",\"empId\":%d,\"customerId\":%d}",
             user.getId(),
             escapeJson(user.getUsername()),
             escapeJson(user.getRole()),
-            escapeJson(user.getFullName())
+            user.getEmpId(),
+            user.getCustomerId()
         );
     }
 
@@ -460,13 +473,18 @@ public class Main {
         Car car = new Car();
         car.setMake(jsonString(json, "make"));
         car.setModel(jsonString(json, "model"));
-        car.setYear(Integer.parseInt(jsonString(json, "year")));
-        car.setPrice(Double.parseDouble(jsonString(json, "price")));
+        String modelIdStr = jsonString(json, "modelId");
+        car.setModelId(modelIdStr.isEmpty() ? 0 : Integer.parseInt(modelIdStr));
+        String yearStr = jsonString(json, "year");
+        car.setYear(yearStr.isEmpty() ? 0 : Integer.parseInt(yearStr));
+        String priceStr = jsonString(json, "price");
+        car.setPrice(priceStr.isEmpty() ? 0 : Double.parseDouble(priceStr));
         String status = jsonString(json, "status");
-        car.setStatus(status.isEmpty() ? "AVAILABLE" : status);
+        car.setStatus(toDatabaseStatus(status));
         car.setColor(jsonString(json, "color"));
         String mileageStr = jsonString(json, "mileage");
         car.setMileage(mileageStr.isEmpty() ? 0 : Integer.parseInt(mileageStr));
+        car.setVin(jsonString(json, "vin"));
         car.setImageUrl(jsonString(json, "imageUrl"));
         car.setDescription(jsonString(json, "description"));
         return car;
@@ -494,6 +512,24 @@ public class Main {
     private static String escapeJson(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private static String toApiStatus(String status) {
+        if (status == null || status.isBlank()) return "AVAILABLE";
+        return switch (status.trim().toLowerCase()) {
+            case "sold" -> "SOLD";
+            case "reserved" -> "RESERVED";
+            default -> "AVAILABLE";
+        };
+    }
+
+    private static String toDatabaseStatus(String status) {
+        if (status == null || status.isBlank()) return "Available";
+        return switch (status.trim().toUpperCase()) {
+            case "SOLD" -> "Sold";
+            case "RESERVED" -> "Reserved";
+            default -> "Available";
+        };
     }
 
     private static User authenticate(String username, String password) throws DLException {
@@ -529,12 +565,8 @@ public class Main {
             throw new IllegalArgumentException("Car id is required for update.");
         }
 
-        if (car.getMake() == null || car.getMake().trim().isEmpty()) {
-            throw new IllegalArgumentException("Car make is required.");
-        }
-
-        if (car.getModel() == null || car.getModel().trim().isEmpty()) {
-            throw new IllegalArgumentException("Car model is required.");
+        if (car.getModelId() <= 0) {
+            throw new IllegalArgumentException("modelId is required.");
         }
 
         if (car.getYear() < 1900 || car.getYear() > maxYear) {
@@ -546,11 +578,11 @@ public class Main {
         }
     }
 
-    private static void logAction(String username, String action, String detail) {
+    private static void logVehicleChange(int vehicleId, int empId, String changeType, String fieldChanged, String newValue) {
         try {
-            actionLogDatabase.saveActionLog(username, action, detail);
+            actionLogDatabase.saveActionLog(vehicleId, empId, changeType, fieldChanged, newValue);
         } catch (DLException e) {
-            System.err.println("[action_log] Failed to write log: " + e.getMessage());
+            System.err.println("[change_log] Failed to write log: " + e.getMessage());
         }
     }
 }

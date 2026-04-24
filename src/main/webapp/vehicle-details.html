@@ -3,170 +3,576 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vehicle Details — AutoPrime</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Vehicle Details — VELOCE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" />
   <style>
-    /* Car image */
-    .car-image-wrap {
-      width: 100%;
-      height: 280px;
-      background: #e2e8f0;
-      overflow: hidden;
+    :root {
+      --v-orange:     #FF6B2B;
+      --v-black:      #080808;
+      --v-dark:       #111111;
+      --v-white:      #F5F4F0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--v-black);
+      color: var(--v-white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .vd-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
       display: flex;
       align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      justify-content: space-between;
+      padding: 24px 60px;
+      background: linear-gradient(to bottom, rgba(8,8,8,.85) 60%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .car-image-wrap img {
+
+    .vd-nav-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+      text-decoration: none;
+    }
+    .vd-nav-logo span { color: var(--v-orange); }
+
+    .vd-nav-right { display: flex; align-items: center; gap: 16px; }
+
+    .vd-back {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.45);
+      text-decoration: none;
+      transition: color 150ms;
+    }
+    .vd-back:hover { color: var(--v-white); }
+
+    .vd-nav-btn {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.45);
+      text-decoration: none;
+      border: 1px solid rgba(245,244,240,.18);
+      padding: 8px 18px;
+      border-radius: 2px;
+      transition: color 140ms, border-color 140ms;
+    }
+    .vd-nav-btn:hover { color: var(--v-white); border-color: rgba(245,244,240,.5); }
+
+    /* ── HERO ── */
+    .vd-hero {
+      width: 100%;
+      height: 70vh;
+      min-height: 460px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vd-hero-img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .car-image-wrap .img-placeholder {
+
+    .vd-hero-placeholder {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vd-hero-placeholder-icon {
       font-size: 5rem;
-      color: #94a3b8;
+      color: rgba(245,244,240,.06);
     }
 
-    /* Specs table */
-    .specs-table { width: 100%; border-collapse: collapse; }
-    .specs-table tr { border-bottom: 1px solid var(--border); }
-    .specs-table tr:last-child { border-bottom: none; }
-    .specs-table td { padding: 14px 20px; }
-    .specs-table td:first-child { color: var(--muted); font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; width: 36%; }
-    .specs-table td:last-child  { font-weight: 600; color: var(--text); font-size: .93rem; }
+    .vd-hero-gradient {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top,  rgba(8,8,8,1) 0%, rgba(8,8,8,.55) 40%, rgba(8,8,8,.2) 70%, transparent 100%),
+        linear-gradient(to bottom, rgba(8,8,8,.75) 0%, transparent 28%);
+    }
 
-    /* Description */
-    .desc-block {
-      padding: 18px 20px;
-      border-top: 1px solid var(--border);
-      color: var(--text-2);
+    .vd-hero-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 60px 52px;
+    }
+
+    .vd-hero-make {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 10px;
+    }
+
+    .vd-hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.6rem, 5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      color: var(--v-white);
+      margin-bottom: 18px;
+    }
+
+    .vd-hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 1px;
+    }
+
+    .vd-status-available { background: rgba(5,150,105,.18); color: #34d399; border: 1px solid rgba(52,211,153,.2); }
+    .vd-status-sold      { background: rgba(220,38,38,.18);  color: #f87171; border: 1px solid rgba(248,113,113,.2); }
+    .vd-status-reserved  { background: rgba(217,119,6,.18);  color: #fbbf24; border: 1px solid rgba(251,191,36,.2);  }
+
+    /* ── BODY ── */
+    .vd-body {
+      padding: 0 60px 100px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 60px;
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    /* LEFT — specs */
+    .vd-specs-col { padding-top: 52px; }
+
+    .vd-section-label {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 28px;
+      display: block;
+    }
+
+    .vd-spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(245,244,240,.06);
+      border: 1px solid rgba(245,244,240,.06);
+      margin-bottom: 48px;
+    }
+
+    .vd-spec-item {
+      background: #0f0f0f;
+      padding: 26px 28px;
+      transition: background 180ms;
+    }
+    .vd-spec-item:hover { background: #141414; }
+
+    .vd-spec-label {
+      font-size: .55rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .vd-spec-value {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--v-white);
+      line-height: 1.1;
+    }
+
+    .vd-desc-wrap {
+      border-left: 2px solid var(--v-orange);
+      padding-left: 28px;
+    }
+
+    .vd-desc-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 14px;
+      letter-spacing: -.01em;
+    }
+
+    .vd-desc-text {
       font-size: .88rem;
-      line-height: 1.65;
+      line-height: 1.78;
+      color: rgba(245,244,240,.42);
     }
 
-    /* Car heading area */
-    .car-heading {
-      margin-bottom: 20px;
+    /* RIGHT — price card */
+    .vd-price-col { padding-top: 52px; }
+
+    .vd-price-card {
+      background: #0f0f0f;
+      border: 1px solid rgba(245,244,240,.07);
+      padding: 40px 36px;
+      position: sticky;
+      top: 96px;
+    }
+
+    .vd-price-label {
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.28);
+      margin-bottom: 10px;
+    }
+
+    .vd-price-amount {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--v-white);
+      letter-spacing: -.02em;
+      line-height: 1;
+      margin-bottom: 36px;
+    }
+
+    .vd-cta-primary {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background: var(--v-orange);
+      color: #080808;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 2px;
+      margin-bottom: 10px;
+      transition: background 140ms, transform 120ms;
+    }
+    .vd-cta-primary:hover { background: #ff8044; transform: translateY(-1px); }
+
+    .vd-cta-secondary {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: rgba(245,244,240,.5);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      border: 1px solid rgba(245,244,240,.14);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: color 140ms, border-color 140ms;
+    }
+    .vd-cta-secondary:hover { color: var(--v-white); border-color: rgba(245,244,240,.38); }
+
+    .vd-price-divider {
+      border: none;
+      border-top: 1px solid rgba(245,244,240,.06);
+      margin: 32px 0;
+    }
+
+    .vd-price-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .vd-price-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vd-price-meta-label {
+      font-size: .7rem;
+      color: rgba(245,244,240,.28);
+      letter-spacing: .05em;
+    }
+
+    .vd-price-meta-value {
+      font-size: .8rem;
+      font-weight: 600;
+      color: rgba(245,244,240,.7);
+    }
+
+    /* ── ERROR ── */
+    .vd-error {
+      padding: 120px 60px;
+      text-align: center;
+    }
+
+    .vd-error h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--v-white);
+      margin-bottom: 12px;
+    }
+
+    .vd-error p {
+      font-size: .88rem;
+      color: rgba(245,244,240,.3);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .vd-nav         { padding: 20px 24px; }
+      .vd-hero-content { padding: 0 24px 40px; }
+      .vd-body {
+        grid-template-columns: 1fr;
+        padding: 0 24px 80px;
+        gap: 0;
+      }
+      .vd-specs-col   { padding-top: 40px; }
+      .vd-price-col   { padding-top: 40px; }
+      .vd-price-card  { position: static; }
+      .vd-spec-grid   { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .vd-spec-grid   { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body class="public-page">
+<body>
 
-<header class="public-nav">
-  <a href="/" class="public-nav-logo">◈ AutoPrime</a>
-  <div id="nav-actions"></div>
-</header>
+<!-- ══ NAV ══ -->
+<nav class="vd-nav">
+  <a href="/" class="vd-nav-logo">VEL<span>O</span>CE</a>
+  <div class="vd-nav-right">
+    <a href="/" class="vd-back" id="back-link">← Inventory</a>
+    <a href="/login.html" class="vd-nav-btn" id="nav-action-btn">Staff Login</a>
+  </div>
+</nav>
 
-<div class="public-detail-wrap">
+<!-- ══ HERO ══ -->
+<section class="vd-hero" id="vd-hero">
+  <div class="vd-hero-placeholder" id="hero-placeholder">
+    <span class="vd-hero-placeholder-icon">—</span>
+  </div>
+  <div class="vd-hero-gradient"></div>
+  <div class="vd-hero-content">
+    <div class="vd-hero-make" id="hero-make"></div>
+    <h1 class="vd-hero-title" id="hero-title">Loading…</h1>
+    <span class="vd-hero-status" id="hero-status"></span>
+  </div>
+</section>
 
-      <div style="margin-bottom:20px;">
-        <a id="back-link" href="/" class="back-link">← Back to Vehicles</a>
-      </div>
+<!-- ══ BODY ══ -->
+<div class="vd-body" id="vd-main" style="display:none">
 
-      <div class="car-heading">
-        <h1 id="heading" class="page-title"></h1>
-        <div id="status-badge" style="margin-top:8px;"></div>
-      </div>
+  <!-- Specs -->
+  <div class="vd-specs-col">
+    <span class="vd-section-label">◈ Specifications</span>
+    <div class="vd-spec-grid" id="spec-grid"></div>
 
-      <div class="card">
-        <div class="car-image-wrap" id="img-wrap">
-          <span class="img-placeholder">🚗</span>
-        </div>
+    <div id="desc-section" style="display:none" class="vd-desc-wrap">
+      <h2 class="vd-desc-heading">About this Vehicle</h2>
+      <p class="vd-desc-text" id="desc-text"></p>
+    </div>
+  </div>
 
-        <table class="specs-table">
-          <tbody id="rows"></tbody>
-        </table>
+  <!-- Price -->
+  <div class="vd-price-col">
+    <div class="vd-price-card">
+      <div class="vd-price-label">◈ Asking Price</div>
+      <div class="vd-price-amount" id="price-amount">—</div>
 
-        <div class="desc-block" id="desc-block" style="display:none;"></div>
-      </div>
+      <a href="mailto:sales@veloce.com" class="vd-cta-primary" id="primary-cta">Enquire Now</a>
+      <a href="tel:+1800000000" class="vd-cta-secondary" id="secondary-cta">Schedule a Viewing</a>
 
+      <hr class="vd-price-divider" />
+
+      <div class="vd-price-meta" id="price-meta"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ ERROR ══ -->
+<div class="vd-error" id="vd-error" style="display:none">
+  <h1>Vehicle Not Found</h1>
+  <p id="vd-error-msg"></p>
 </div>
 
 <script>
   async function init() {
-    // Check if user is logged in — optional, only affects nav
     let me = null;
     try {
-      const meRes = await fetch("/api/me", { credentials: "include" });
-      const data = await meRes.json();
-      if (!data.error) me = data;
+      const r = await fetch('/api/me', { credentials: 'include' });
+      const d = await r.json();
+      if (!d.error) me = d;
     } catch (_) {}
 
-    const navActions = document.getElementById("nav-actions");
     if (me) {
-      const dashHref = me.role === "ADMIN" ? "/dashboard.html" : "/cars.html";
-      navActions.innerHTML = `<a href="${dashHref}" class="staff-btn">Dashboard</a>`;
-      document.getElementById("back-link").href = dashHref;
-    } else {
-      navActions.innerHTML = `<a href="/login.html" class="staff-btn">Staff Login</a>`;
+      const dashHref = me.role === 'ADMIN' ? '/dashboard.html' : '/cars.html';
+      document.getElementById('back-link').href = dashHref;
+      document.getElementById('back-link').textContent = '← Dashboard';
+      document.getElementById('nav-action-btn').href = dashHref;
+      document.getElementById('nav-action-btn').textContent = 'Dashboard';
     }
 
-    const id = new URLSearchParams(location.search).get("id");
-    if (!id) { showError("No car ID specified."); return; }
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) { showError('No vehicle ID specified.'); return; }
 
-    const carRes = await fetch(`/api/cars/${id}`);
-    const car = await carRes.json();
-    if (car.error) { showError(car.error); return; }
+    let car;
+    try {
+      const r = await fetch(`/api/cars/${id}`);
+      car = await r.json();
+      if (car.error) throw new Error(car.error);
+    } catch (e) {
+      showError(e.message || 'Could not load vehicle.');
+      return;
+    }
 
-    document.title = `${car.year} ${car.make} ${car.model} — AutoPrime`;
-    document.getElementById("heading").textContent = `${car.year} ${car.make} ${car.model}`;
+    document.title = `${car.year} ${car.make} ${car.model} — VELOCE`;
 
-    const badgeClass = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[car.status] || 'badge-available';
-    const badgeLabel = car.status ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : 'Available';
-    document.getElementById("status-badge").innerHTML = `<span class="badge ${badgeClass}">${badgeLabel}</span>`;
+    // Hero text
+    document.getElementById('hero-make').textContent = '◈ ' + car.make;
+    document.getElementById('hero-title').textContent = `${car.year} ${car.model}`;
 
-    // Car image
-    const imgWrap = document.getElementById("img-wrap");
+    const statusMap = {
+      AVAILABLE: ['vd-status-available', 'Available'],
+      SOLD:      ['vd-status-sold', 'Sold'],
+      RESERVED:  ['vd-status-reserved', 'Reserved'],
+    };
+    const [sCls, sLabel] = statusMap[car.status] || statusMap['AVAILABLE'];
+    const statusEl = document.getElementById('hero-status');
+    statusEl.className = 'vd-hero-status ' + sCls;
+    statusEl.textContent = sLabel;
+
+    const primaryCta = document.getElementById('primary-cta');
+    const secondaryCta = document.getElementById('secondary-cta');
+    if (car.status === 'RESERVED') {
+      primaryCta.textContent = 'Contact the Seller';
+      secondaryCta.textContent = 'Join the Waiting List';
+    } else if (car.status === 'SOLD') {
+      primaryCta.textContent = 'Request Similar Cars';
+      secondaryCta.textContent = 'Speak With an Advisor';
+    }
+
+    // Hero image
+    async function trySetHeroImg(url) {
+      return new Promise((resolve, reject) => {
+        const img = document.createElement('img');
+        img.className = 'vd-hero-img';
+        img.alt = `${car.year} ${car.make} ${car.model}`;
+        img.onload  = () => { document.getElementById('hero-placeholder').replaceWith(img); resolve(); };
+        img.onerror = () => reject();
+        img.src = url;
+      });
+    }
+
     if (car.imageUrl && car.imageUrl.trim()) {
-      imgWrap.innerHTML = `<img src="${escHtml(car.imageUrl)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}" onerror="this.parentElement.innerHTML='<span class=\\'img-placeholder\\'>🚗</span>'" />`;
+      await trySetHeroImg(car.imageUrl).catch(() => {});
     } else {
-      // Lazy-fetch from Wikipedia
       try {
         const r = await fetch(`/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`);
         const d = await r.json();
-        if (d.url) {
-          imgWrap.innerHTML = `<img src="${escHtml(d.url)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}" onerror="this.parentElement.innerHTML='<span class=\\'img-placeholder\\'>🚗</span>'" />`;
-        }
+        if (d.url) await trySetHeroImg(d.url).catch(() => {});
       } catch (_) {}
     }
 
-    // Specs
-    const rows = [
-      ["ID",      car.id],
-      ["Make",    car.make],
-      ["Model",   car.model],
-      ["Year",    car.year],
-      ["Color",   car.color || "—"],
-      ["Mileage", car.mileage ? car.mileage.toLocaleString() + " km" : "—"],
-      ["Price",   "$" + car.price.toLocaleString("en-US", { minimumFractionDigits: 2 })],
+    // Specs grid
+    const specs = [
+      ['Make',    car.make],
+      ['Model',   car.model],
+      ['Year',    car.year],
+      ['Color',   car.color   || '—'],
+      ['Mileage', car.mileage ? car.mileage.toLocaleString() + ' km' : '—'],
+      ['Status',  car.status  ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : '—'],
     ];
-    document.getElementById("rows").innerHTML = rows.map(([label, val]) =>
-      `<tr><td>${escHtml(label)}</td><td>${escHtml(String(val))}</td></tr>`
-    ).join("");
 
+    document.getElementById('spec-grid').innerHTML = specs.map(([l, v]) => `
+      <div class="vd-spec-item">
+        <span class="vd-spec-label">${esc(l)}</span>
+        <div class="vd-spec-value">${esc(String(v))}</div>
+      </div>
+    `).join('');
+
+    // Price
+    document.getElementById('price-amount').textContent =
+      '$' + car.price.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    // Price meta
+    const metaRows = [
+      ['Vehicle ID', '#' + car.id],
+      ['Year', car.year],
+    ];
+    if (car.mileage) metaRows.push(['Mileage', car.mileage.toLocaleString() + ' km']);
+    if (car.color)   metaRows.push(['Color', car.color]);
+
+    document.getElementById('price-meta').innerHTML = metaRows.map(([l, v]) => `
+      <div class="vd-price-meta-row">
+        <span class="vd-price-meta-label">${esc(l)}</span>
+        <span class="vd-price-meta-value">${esc(String(v))}</span>
+      </div>
+    `).join('');
+
+    // Description
     if (car.description && car.description.trim()) {
-      const descBlock = document.getElementById("desc-block");
-      descBlock.textContent = car.description;
-      descBlock.style.display = "block";
+      document.getElementById('desc-text').textContent = car.description;
+      document.getElementById('desc-section').style.display = 'block';
     }
+
+    document.getElementById('vd-main').style.display = 'grid';
   }
 
   function showError(msg) {
-    document.getElementById("heading").textContent = "Vehicle not found";
-    document.getElementById("rows").innerHTML = `<tr><td colspan="2">${escHtml(msg)}</td></tr>`;
+    document.getElementById('hero-title').textContent = 'Vehicle Not Found';
+    document.getElementById('vd-error-msg').textContent = msg;
+    document.getElementById('vd-error').style.display = 'block';
   }
 
-  function escHtml(s) {
+  function esc(s) {
     return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   init();
 </script>
-
 </body>
 </html>

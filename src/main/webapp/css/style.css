@@ -1,41 +1,47 @@
 /* ============================================================
-   AutoPrime — Premium Automotive Dashboard
+   VELOCE — Premium Automotive Dashboard
    Design: Dark luxury, editorial hierarchy, refined motion
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
+  /* VELOCE brand */
+  --v-orange:     #FF6B2B;
+  --v-orange-dim: rgba(255,107,43,0.12);
+  --v-black:      #080808;
+  --v-white:      #F5F4F0;
+
   /* Brand palette */
-  --navy:      #0a1628;
-  --navy-2:    #112240;
-  --navy-3:    #1a3460;
-  --accent:    #2563eb;
-  --accent-2:  #1d4ed8;
-  --accent-glow: rgba(37, 99, 235, 0.25);
+  --navy:      #080808;
+  --navy-2:    #111111;
+  --navy-3:    #1a1a1a;
+  --accent:    #FF6B2B;
+  --accent-2:  #e85a1e;
+  --accent-glow: rgba(255,107,43,0.20);
 
   /* Surface */
-  --bg:        #f0f4f8;
-  --surface:   #ffffff;
-  --surface-2: #f8fafc;
-  --border:    #e2e8f0;
-  --border-2:  #cbd5e1;
+  --bg:        #0c0c0c;
+  --surface:   #141414;
+  --surface-2: #1a1a1a;
+  --border:    rgba(255,255,255,0.08);
+  --border-2:  rgba(255,255,255,0.14);
 
   /* Text */
-  --text:      #0f172a;
-  --text-2:    #334155;
-  --muted:     #64748b;
-  --muted-2:   #94a3b8;
+  --text:      #F5F4F0;
+  --text-2:    rgba(245,244,240,0.7);
+  --muted:     rgba(245,244,240,0.38);
+  --muted-2:   rgba(245,244,240,0.22);
 
   /* Status */
-  --green:     #059669;
-  --green-bg:  #d1fae5;
-  --red:       #dc2626;
-  --red-bg:    #fee2e2;
-  --amber:     #d97706;
-  --amber-bg:  #fef3c7;
+  --green:     #34d399;
+  --green-bg:  rgba(52,211,153,.12);
+  --red:       #f87171;
+  --red-bg:    rgba(248,113,113,.12);
+  --amber:     #fbbf24;
+  --amber-bg:  rgba(251,191,36,.12);
 
   /* Geometry */
   --radius:    8px;
@@ -43,10 +49,10 @@
   --radius-xl: 16px;
 
   /* Shadow system */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow:    0 4px 12px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.05);
-  --shadow-md: 0 8px 24px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
-  --shadow-lg: 0 20px 48px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  --shadow:    0 4px 12px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.4);
+  --shadow-lg: 0 20px 48px rgba(0,0,0,.7), 0 4px 12px rgba(0,0,0,.5);
 
   /* Motion */
   --ease:      cubic-bezier(0.16, 1, 0.3, 1);
@@ -62,7 +68,10 @@ body {
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
 }
+
+.font-playfair { font-family: 'Playfair Display', Georgia, serif; }
 
 a { color: inherit; text-decoration: none; }
 
@@ -75,8 +84,8 @@ a { color: inherit; text-decoration: none; }
   min-width: 220px;
   background: var(--navy);
   background-image:
-    radial-gradient(ellipse at 0% 0%, rgba(37,99,235,.18) 0%, transparent 60%),
-    linear-gradient(180deg, var(--navy) 0%, #081020 100%);
+    radial-gradient(ellipse at 0% 0%, rgba(255,107,43,.10) 0%, transparent 60%),
+    linear-gradient(180deg, var(--navy) 0%, #040404 100%);
   padding: 24px 14px 20px;
   display: flex;
   flex-direction: column;
@@ -128,7 +137,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--accent);
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(37,99,235,.35);
+  box-shadow: 0 2px 8px rgba(255,107,43,.35);
 }
 
 .user-info {
@@ -274,7 +283,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius);
   font-size: .83rem;
   font-family: inherit;
-  background: #fff;
+  background: var(--surface-2);
   color: var(--text);
   outline: none;
   transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
@@ -300,7 +309,7 @@ table {
 
 thead th {
   background: var(--navy);
-  background-image: linear-gradient(135deg, var(--navy-2) 0%, var(--navy) 100%);
+  background-image: linear-gradient(135deg, var(--navy-2) 0%, #040404 100%);
   color: rgba(255,255,255,.7);
   padding: 12px 16px;
   text-align: left;
@@ -320,7 +329,7 @@ tbody tr {
 
 tbody tr:last-child { border-bottom: none; }
 
-tbody tr:hover { background: #f0f7ff; }
+tbody tr:hover { background: rgba(255,255,255,0.04); }
 
 tbody td {
   padding: 13px 16px;
@@ -370,21 +379,21 @@ tbody td.muted { color: var(--muted); font-size: .83rem; }
 .btn-primary {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(37,99,235,.3);
+  box-shadow: 0 2px 8px rgba(255,107,43,.3);
 }
 
-.btn-primary:hover { box-shadow: 0 4px 14px rgba(37,99,235,.4); }
+.btn-primary:hover { box-shadow: 0 4px 14px rgba(255,107,43,.4); }
 
 .btn-outline {
-  background: #fff;
+  background: transparent;
   color: var(--accent);
   border: 1.5px solid var(--accent);
 }
 
 .btn-danger {
-  background: #fff;
+  background: transparent;
   color: var(--red);
-  border: 1.5px solid #fca5a5;
+  border: 1.5px solid rgba(220,38,38,.4);
 }
 
 .btn-sm { padding: 5px 12px; font-size: .78rem; }
@@ -405,10 +414,10 @@ tbody td.muted { color: var(--muted); font-size: .83rem; }
 
 .action-btn:hover { transform: translateY(-1px); }
 
-.btn-edit   { background: #eff6ff; color: #2563eb; }
-.btn-edit:hover   { background: #dbeafe; }
-.btn-delete { background: #fff1f2; color: #dc2626; }
-.btn-delete:hover { background: #fee2e2; }
+.btn-edit   { background: rgba(255,107,43,.10); color: var(--accent); }
+.btn-edit:hover   { background: rgba(255,107,43,.18); }
+.btn-delete { background: rgba(220,38,38,.10); color: #f87171; }
+.btn-delete:hover { background: rgba(220,38,38,.18); }
 
 /* Add Car button in card header */
 .btn-add {
@@ -429,7 +438,7 @@ tbody td.muted { color: var(--muted); font-size: .83rem; }
 
 .btn-add:hover {
   background: var(--accent-2);
-  box-shadow: 0 4px 12px rgba(37,99,235,.35);
+  box-shadow: 0 4px 12px rgba(255,107,43,.35);
   transform: translateY(-1px);
 }
 
@@ -451,7 +460,7 @@ input, select, textarea {
   font-family: inherit;
   font-size: .9rem;
   color: var(--text);
-  background: #fff;
+  background: var(--surface-2);
   outline: none;
   transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
@@ -467,7 +476,7 @@ textarea { resize: vertical; min-height: 72px; }
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(10,22,40,.6);
+  background: rgba(0,0,0,.75);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 100;
@@ -594,9 +603,9 @@ textarea { resize: vertical; min-height: 72px; }
   min-height: 100vh;
   background: var(--navy);
   background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(37,99,235,.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(37,99,235,.1) 0%, transparent 50%),
-    linear-gradient(160deg, #0a1628 0%, #060e1c 100%);
+    radial-gradient(ellipse at 20% 20%, rgba(255,107,43,.14) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255,107,43,.06) 0%, transparent 50%),
+    linear-gradient(160deg, #0a0a0a 0%, #040404 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -614,14 +623,16 @@ textarea { resize: vertical; min-height: 72px; }
 }
 
 .login-logo-mark {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-style: italic;
   color: #fff;
-  letter-spacing: -.02em;
+  letter-spacing: -.01em;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .login-logo-mark::before {

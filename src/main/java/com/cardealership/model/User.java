@@ -2,21 +2,15 @@ package com.cardealership.model;
 
 public class User {
 
-    private int id;
+    private int id;           // user_id
     private String username;
-    private String password;
-    private String role;
-    private String fullName;
+    private String password;  // SHA-256 hex
+    private String role;      // ADMIN | EMPLOYEE | CUSTOMER
+    private int empId;        // nullable FK to Employees (0 = not set)
+    private int customerId;   // nullable FK to Customers (0 = not set)
+    private String createdAt;
 
     public User() {}
-
-    public User(int id, String username, String password, String role, String fullName) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.fullName = fullName;
-    }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -30,6 +24,12 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public int getEmpId() { return empId; }
+    public void setEmpId(int empId) { this.empId = empId; }
+
+    public int getCustomerId() { return customerId; }
+    public void setCustomerId(int customerId) { this.customerId = customerId; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 }

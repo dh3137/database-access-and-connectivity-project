@@ -1,5 +1,27 @@
-.class/
-.DS_Store/
+# macOS
+.DS_Store
 
-# Maven build output (do not commit compiled classes)
+# Maven build output
 target/
+
+# Database credentials (never commit — copy db.properties.example and fill in your values)
+db.properties
+config.properties
+
+# Runtime logs
+logs/
+
+# Editor settings
+.vscode/
+
+# Claude Code local files
+.claude/
+tools/
+workflows/
+
+# Large media files (store locally, not in git)
+*.mp4
+*.webp
+
+# Temp files
+.tmp/
