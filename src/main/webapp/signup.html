@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — VELOCE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" />
+  <style>
+    :root {
+      --v-orange:     #FF6B2B;
+      --v-orange-dim: rgba(255,107,43,.15);
+      --v-black:      #080808;
+      --v-dark:       #111111;
+      --v-white:      #F5F4F0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--v-black);
+      color: var(--v-white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* ── SPLIT LAYOUT ── */
+    .su-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── LOGO ── */
+    .su-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--v-white);
+      text-decoration: none;
+      margin-bottom: 48px;
+      align-self: flex-start;
+    }
+    .su-logo span { color: var(--v-orange); }
+
+    /* ── HEADING ── */
+    .su-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      align-self: flex-start;
+    }
+    .su-heading em { font-style: italic; color: var(--v-orange); }
+
+    .su-sub {
+      font-size: .85rem;
+      color: rgba(245,244,240,.4);
+      margin-bottom: 40px;
+      align-self: flex-start;
+      line-height: 1.55;
+    }
+
+    /* ── FORM ── */
+    .su-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .su-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 2px;
+    }
+
+    .su-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 2px;
+    }
+
+    .su-field label {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.35);
+      padding: 14px 16px 0;
+      background: #161616;
+    }
+
+    .su-field input {
+      font-family: 'Inter', sans-serif;
+      font-size: .9rem;
+      font-weight: 400;
+      color: var(--v-white);
+      background: #161616;
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 16px 14px;
+      outline: none;
+      transition: border-color 150ms, background 150ms;
+      width: 100%;
+    }
+    .su-field input:focus {
+      background: #1c1c1c;
+      border-bottom-color: var(--v-orange);
+    }
+    .su-field input::placeholder { color: rgba(245,244,240,.2); }
+
+    .su-divider-label {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(245,244,240,.2);
+      padding: 20px 0 8px;
+    }
+
+    /* ── SUBMIT ── */
+    .su-submit {
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--v-black);
+      background: var(--v-orange);
+      border: none;
+      padding: 18px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: opacity 200ms;
+      width: 100%;
+    }
+    .su-submit:hover { opacity: .88; }
+    .su-submit:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── ERROR / SUCCESS ── */
+    .su-error {
+      font-size: .78rem;
+      color: #ff6b6b;
+      margin-top: 12px;
+      display: none;
+    }
+    .su-error.show { display: block; }
+
+    /* ── LOGIN LINK ── */
+    .su-login-link {
+      margin-top: 28px;
+      font-size: .78rem;
+      color: rgba(245,244,240,.35);
+      align-self: flex-start;
+    }
+    .su-login-link a {
+      color: var(--v-orange);
+      text-decoration: none;
+    }
+    .su-login-link a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      .su-row { grid-template-columns: 1fr; }
+      .su-panel { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="su-panel">
+  <a href="index.html" class="su-logo">VEL<span>O</span>CE</a>
+
+  <h1 class="su-heading">Create your<br><em>account</em></h1>
+  <p class="su-sub">Sign up to enquire about vehicles and track your requests.</p>
+
+  <form class="su-form" id="su-form" novalidate>
+    <div class="su-row">
+      <div class="su-field">
+        <label for="su-first">First Name</label>
+        <input type="text" id="su-first" name="firstName" autocomplete="given-name" required />
+      </div>
+      <div class="su-field">
+        <label for="su-last">Last Name</label>
+        <input type="text" id="su-last" name="lastName" autocomplete="family-name" required />
+      </div>
+    </div>
+
+    <div class="su-field">
+      <label for="su-email">Email Address</label>
+      <input type="email" id="su-email" name="email" autocomplete="email" required />
+    </div>
+
+    <div class="su-field">
+      <label for="su-phone">Phone (optional)</label>
+      <input type="tel" id="su-phone" name="phone" autocomplete="tel" />
+    </div>
+
+    <div class="su-divider-label">Login details</div>
+
+    <div class="su-field">
+      <label for="su-username">Username</label>
+      <input type="text" id="su-username" name="username" autocomplete="username" required />
+    </div>
+
+    <div class="su-row">
+      <div class="su-field">
+        <label for="su-pass">Password</label>
+        <input type="password" id="su-pass" name="password" autocomplete="new-password" required />
+      </div>
+      <div class="su-field">
+        <label for="su-pass2">Confirm Password</label>
+        <input type="password" id="su-pass2" name="confirmPassword" autocomplete="new-password" required />
+      </div>
+    </div>
+
+    <div class="su-error" id="su-error"></div>
+    <button type="submit" class="su-submit" id="su-btn">Create Account →</button>
+  </form>
+
+  <p class="su-login-link">Already have an account? <a href="login.html">Sign in</a></p>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const returnUrl = params.get('return') || 'cars.html';
+
+  const form    = document.getElementById('su-form');
+  const btn     = document.getElementById('su-btn');
+  const errBox  = document.getElementById('su-error');
+
+  function showError(msg) {
+    errBox.textContent = msg;
+    errBox.classList.add('show');
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    errBox.classList.remove('show');
+
+    const firstName = document.getElementById('su-first').value.trim();
+    const lastName  = document.getElementById('su-last').value.trim();
+    const email     = document.getElementById('su-email').value.trim();
+    const phone     = document.getElementById('su-phone').value.trim();
+    const username  = document.getElementById('su-username').value.trim();
+    const password  = document.getElementById('su-pass').value;
+    const confirm   = document.getElementById('su-pass2').value;
+
+    if (!firstName || !lastName || !email || !username || !password) {
+      showError('Please fill in all required fields.');
+      return;
+    }
+    if (password !== confirm) {
+      showError('Passwords do not match.');
+      return;
+    }
+    if (password.length < 6) {
+      showError('Password must be at least 6 characters.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating…';
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({firstName, lastName, email, phone, username, password})
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = returnUrl;
+      } else {
+        showError(data.error || 'Registration failed. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Create Account →';
+      }
+    } catch {
+      showError('Network error. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Create Account →';
+    }
+  });
+</script>
+</body>
+</html>

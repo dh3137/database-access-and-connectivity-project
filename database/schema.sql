@@ -251,6 +251,7 @@ CREATE TABLE IF NOT EXISTS Reviews (
 CREATE TABLE IF NOT EXISTS Enquiries (
   enquiry_id   INT PRIMARY KEY AUTO_INCREMENT,
   vehicle_id   INT,
+  customer_id  INT,
   name         VARCHAR(100) NOT NULL,
   email        VARCHAR(100) NOT NULL,
   phone        VARCHAR(20),
@@ -259,5 +260,12 @@ CREATE TABLE IF NOT EXISTS Enquiries (
   is_read      BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_enquiries_vehicle
     FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_enquiries_customer
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
     ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+-- Migration (run once if table already exists):
+-- ALTER TABLE Enquiries ADD COLUMN customer_id INT NULL,
+--   ADD CONSTRAINT fk_enquiries_customer FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE SET NULL ON UPDATE CASCADE;

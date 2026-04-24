@@ -13,13 +13,27 @@ public class EnquiryDatabase {
         this.db = db;
     }
 
-    public boolean saveEnquiry(int vehicleId, String name, String email, String phone, String message) throws DLException {
-        String sql = vehicleId > 0
-            ? "INSERT INTO Enquiries (vehicle_id, name, email, phone, message) VALUES (?, ?, ?, ?, ?)"
-            : "INSERT INTO Enquiries (vehicle_id, name, email, phone, message) VALUES (NULL, ?, ?, ?, ?)";
+    public boolean saveEnquiry(int vehicleId, int customerId, String name, String email, String phone, String message) throws DLException {
+        boolean hasVehicle = vehicleId > 0;
+        boolean hasCustomer = customerId > 0;
 
+        String sql;
         ArrayList<String> params = new ArrayList<>();
-        if (vehicleId > 0) params.add(String.valueOf(vehicleId));
+
+        if (hasVehicle && hasCustomer) {
+            sql = "INSERT INTO Enquiries (vehicle_id, customer_id, name, email, phone, message) VALUES (?, ?, ?, ?, ?, ?)";
+            params.add(String.valueOf(vehicleId));
+            params.add(String.valueOf(customerId));
+        } else if (hasVehicle) {
+            sql = "INSERT INTO Enquiries (vehicle_id, name, email, phone, message) VALUES (?, ?, ?, ?, ?)";
+            params.add(String.valueOf(vehicleId));
+        } else if (hasCustomer) {
+            sql = "INSERT INTO Enquiries (customer_id, name, email, phone, message) VALUES (?, ?, ?, ?, ?)";
+            params.add(String.valueOf(customerId));
+        } else {
+            sql = "INSERT INTO Enquiries (name, email, phone, message) VALUES (?, ?, ?, ?)";
+        }
+
         params.add(name);
         params.add(email);
         params.add(phone != null ? phone : "");

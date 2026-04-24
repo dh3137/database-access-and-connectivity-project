@@ -5,9 +5,9 @@
 AutoPrime is a car dealership web application built for the ISTE 330 (Database Access and Connectivity) course at RIT. It demonstrates how a Java backend connects to a MySQL database and serves data to a browser in real time.
 
 The app has three user roles:
-- **ADMIN** — can view, add, edit, and delete vehicles. Sees the vehicle change log.
+- **ADMIN** — can view, add, edit, and delete vehicles; mark vehicles as sold; view all enquiries and sales; sees the vehicle change log.
 - **EMPLOYEE** — can view the car list and car details. Read-only.
-- **CUSTOMER** — same as employee. Read-only.
+- **CUSTOMER** — must sign up to submit enquiries. Can browse inventory and submit enquiries on vehicle detail pages.
 
 ---
 
@@ -121,15 +121,21 @@ src/main/java/com/cardealership/
   util/MySQLDatabase.java — JDBC connection pool helper (getData / setData).
   model/Car.java          — Flat Java object for a vehicle + make/model strings from JOINs.
   model/User.java         — Java object for a Users row (id, username, role, empId, customerId).
-  database/CarDatabase.java     — SQL for vehicles: SELECT with JOINs, INSERT, UPDATE, DELETE.
-  database/UserDatabase.java    — SQL for users: authenticate (username+SHA256), getUserByUsername, saveUser.
-  database/ActionLogDatabase.java — SQL for VehicleChangeLog: save and read change entries.
+  database/CarDatabase.java        — SQL for vehicles: SELECT with JOINs, INSERT, UPDATE, DELETE.
+  database/UserDatabase.java       — SQL for users: authenticate (username+SHA256), getUserByUsername, saveUser.
+  database/CustomerDatabase.java   — SQL for customers: getCustomerById, getAllCustomers, saveCustomer.
+  database/EnquiryDatabase.java    — SQL for enquiries: saveEnquiry (with optional customer_id FK), getAllEnquiries, markAsRead.
+  database/ReviewDatabase.java     — SQL for reviews: getAllReviews (JOINed with Models + Manufacturers).
+  database/SalesDatabase.java      — SQL for sales: recordSale (INSERT + UPDATE vehicle status to Sold), getRecentSales.
+  database/ActionLogDatabase.java  — SQL for VehicleChangeLog: save and read change entries.
 
 src/main/webapp/
-  index.html              — Public landing page. Hero video, classic navbar/footer, rounded showcase cards, and customer inventory view.
+  index.html              — Public landing page. Hero video, classic navbar/footer, rounded showcase cards, and customer inventory view. "Read Review →" links to reviews.html.
   login.html              — Login form. POSTs to /api/login.
-  dashboard.html          — Admin view. Shows full car table (including sold/reserved), Add/Edit/Delete, and change log.
-  vehicle-details.html    — Public car detail page. Lazy-fetches Wikipedia image if no imageUrl and adjusts CTAs for reserved/sold vehicles.
+  signup.html             — Customer self-registration form. POSTs to /api/register, redirects back via ?return= param.
+  dashboard.html          — Admin view. Shows full car table (including sold/reserved), Add/Edit/Delete, Customer Enquiries, Recent Sales, and change log.
+  vehicle-details.html    — Public car detail page. Lazy-fetches Wikipedia image if no imageUrl. Enquire Now auth-gates to signup for non-customers. Admin sees "Mark as Sold" button.
+  reviews.html            — Public reviews page. Fetches all reviews from /api/reviews; filter by model, rating, and source.
   css/style.css           — All shared styles.
 
 db.properties             — Per-developer MySQL credentials (gitignored).
@@ -144,7 +150,7 @@ db.properties.example     — Template showing how to set up db.properties.
 |---|---|---|---|
 | POST | `/api/login` | Anyone | Authenticate, set session cookie |
 | GET | `/api/logout` | Logged in | Destroy session, redirect to login |
-| GET | `/api/me` | Logged in | Returns `{id, username, role, empId, customerId}` |
+| GET | `/api/me` | Logged in | Returns `{id, username, role, empId, customerId}` — CUSTOMER sessions also include `firstName`, `lastName`, `email` |
 | GET | `/api/cars` | Anyone | All vehicles as JSON array (JOINed with make/model/image, status normalized to `AVAILABLE` / `RESERVED` / `SOLD`) |
 | GET | `/api/cars/{id}` | Anyone | Single vehicle as JSON with normalized uppercase status |
 | POST | `/api/cars` | ADMIN | Add a new vehicle (requires `modelId`) |
@@ -152,6 +158,14 @@ db.properties.example     — Template showing how to set up db.properties.
 | DELETE | `/api/cars/{id}` | ADMIN | Delete a vehicle |
 | GET | `/api/logs` | ADMIN | Last 50 VehicleChangeLog entries |
 | GET | `/api/carimage` | Anyone | Wikipedia image URL for `?make=&model=&year=` |
+| POST | `/api/enquiry` | Anyone | Submit a customer enquiry (vehicleId optional) |
+| GET | `/api/enquiries` | ADMIN | Last 50 customer enquiries with vehicle label |
+| POST | `/api/enquiries?id={n}` | ADMIN | Mark enquiry `n` as read |
+| POST | `/api/register` | Anyone | Register a new CUSTOMER account; creates Customers + Users rows; sets session cookie; returns 409 on duplicate username/email |
+| GET | `/api/reviews` | Anyone | All reviews as JSON array (JOINed with model + manufacturer) |
+| GET | `/api/customers` | ADMIN | All customers as JSON array (customerId, firstName, lastName, email) |
+| POST | `/api/sales` | ADMIN | Record a sale (vehicleId, customerId, salePrice, paymentMethod, notes); flips vehicle status to Sold |
+| GET | `/api/sales` | ADMIN | Last 50 sales as JSON array (JOINed with vehicle, model, customer) |
 
 ---
 
@@ -198,6 +212,13 @@ A "car" in the app = `Vehicles` JOIN `Models` JOIN `Manufacturers` LEFT JOIN `Ve
 | `Reservations` | vehicle_id, customer_id, emp_id, expiry_date, status, deposit_amount |
 | `TestDrives` | vehicle_id, customer_id, emp_id, scheduled_date, status |
 
+### Customer Interactions
+
+| Table | Purpose |
+|---|---|
+| `Enquiries` | Customer contact submissions: vehicle_id (nullable), customer_id (nullable FK), name, email, phone, message, is_read, submitted_at. **Migration required** to add `customer_id` column — see `database/schema.sql` comment. |
+| `Reviews` | Vehicle reviews: model_id FK, author, rating (1–5), review_text, source (TEAM/EDMUNDS/KBB), review_date |
+
 ### Audit & Maintenance
 
 | Table | Purpose |
@@ -224,9 +245,12 @@ A "car" in the app = `Vehicles` JOIN `Models` JOIN `Manufacturers` LEFT JOIN `Ve
 - Scroll-reveal animations (IntersectionObserver + CSS, re-animates on every scroll) — `js/reveal.js`
 - Light / dark mode toggle — `js/theme.js`, persists to `localStorage`, respects system preference
 - Unified filter bar on `index.html` and `cars.html` (search, sort, status, type, price range, year range)
+- **Contact form modal** — `vehicle-details.html` Enquire Now button opens a styled modal; name/email/phone/message pre-filled with car name; `POST /api/enquiry` persists to `Enquiries` table; admin dashboard shows all submissions in the Customer Enquiries card with Mark Read action.
+- **Customer signup + authenticated enquiries** — `signup.html` lets customers self-register; `Enquire Now` auth-gates non-customers to signup with `?return=` redirect; logged-in customers get modal pre-filled with their name/email; enquiries stored with `customer_id` FK. Requires ALTER TABLE migration (see `database/schema.sql` comment).
+- **Reviews page** — `reviews.html` shows all DB reviews with filter by model, rating, and source; `index.html` "Read Review →" cards now link there instead of `href="#"`.
+- **Car selling flow** — Admin sees "Mark as Sold" button on `vehicle-details.html` when vehicle is AVAILABLE; opens modal with customer dropdown, price, payment method, notes; `POST /api/sales` inserts Sale row and flips vehicle status to Sold; Recent Sales panel on dashboard shows last 50 deals.
 
 ### Lead Capture / Buying Flow
-- **Contact form modal** — name, email, phone, message pre-filled with car name. `POST /api/enquiry` stores to DB. Admin sees enquiries in dashboard.
 - **"Reserve this car" button** — flips vehicle status AVAILABLE → RESERVED directly from the detail page. Admin can confirm or release from dashboard.
 - **Appointment scheduler** — date/time picker writes to the existing `TestDrives` table. Admin sees upcoming viewings.
 - **WhatsApp quick-contact** — `href="https://wa.me/..."` with pre-written message including the car name. Zero backend needed.
