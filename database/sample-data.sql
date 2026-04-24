@@ -96,11 +96,11 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     (1,  'https://images.unsplash.com/photo-1742742646347-4f708c0afca4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (2,  'https://images.unsplash.com/photo-1742742646348-32384aeaefec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Economy: Toyota Corolla (model 2) — 2 unique photos
-    (3,  'https://images.unsplash.com/photo-1691994866119-14c702835475?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
-    (4,  'https://images.unsplash.com/photo-1691994877641-36e673ad4236?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (3,  'https://images.unsplash.com/photo-1711978477980-a0f1a05039a0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fFRveW90YSUyMENvcm9sbGElMjAyMDIzfGVufDB8fDB8fHww', TRUE),
+    (4,  'https://images.unsplash.com/photo-1763268265028-1631360c07dd?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
     -- Economy: VW Golf (model 3) — 2 unique photos
-    (5,  'https://images.unsplash.com/photo-1645307621773-1e8d3d0e2482?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
-    (6,  'https://images.unsplash.com/photo-1678120597905-b2f3a982b625?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (5,  'https://images.unsplash.com/photo-1724620961935-ee922e2dfad5?q=80&w=2572&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
+    (6,  'https://images.unsplash.com/photo-1683444126212-50c0aa2a421b?q=80&w=1738&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
     -- Economy: Honda Civic (model 4) — 2 unique photos
     (7,  'https://images.unsplash.com/photo-1711226876715-53a1882660e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (8,  'https://images.unsplash.com/photo-1711226876657-3801d4a4e0ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
@@ -108,8 +108,8 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     (9,  'https://images.unsplash.com/photo-1728060838342-cb9744a27d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (10, 'https://images.unsplash.com/photo-1634214564170-893240d3b789?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Sport: Porsche 718 Boxster (model 6) — 2 unique photos
-    (11, 'https://images.unsplash.com/photo-1721572345790-507985e4317a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
-    (12, 'https://images.unsplash.com/photo-1560691647-7085e5cebcfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (11, 'https://images.unsplash.com/photo-1632245889029-e406faaa34cd?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
+    (12, 'https://images.unsplash.com/photo-1632245872256-49c78a46c400?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', TRUE),
     -- Sport: Honda Civic Type R (model 7)
     (13, 'https://images.unsplash.com/photo-1641921966529-7a887417a8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Sport: Toyota GR86 (model 8)
@@ -118,7 +118,7 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     (15, 'https://images.unsplash.com/photo-1706977384830-df8b515e6b70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (16, 'https://images.unsplash.com/photo-1698816688678-a3f838fd4fe0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Luxury: Audi A8 (model 10)
-    (17, 'https://images.unsplash.com/photo-1693945423710-626e031eef83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (17, 'https://t3.ftcdn.net/jpg/04/45/55/36/240_F_445553697_1xwHRCxI6lL6ZzA3uicOmOgAY6mgAg4E.jpg', TRUE),
     -- Luxury: BMW 7 Series (model 11)
     (18, 'https://images.unsplash.com/photo-1627936354732-ffbe552799d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Luxury: Porsche Panamera (model 12)
@@ -137,7 +137,7 @@ INSERT INTO VehicleImages (vehicle_id, image_url, is_primary) VALUES
     -- Exotic: Ferrari F8 Tributo (model 18)
     (26, 'https://images.unsplash.com/photo-1655593972695-919eb269b0df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     -- Exotic: Lamborghini Urus (model 19)
-    (27, 'https://images.unsplash.com/photo-1569398890582-1943b9a5c94b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
+    (27, 'https://images.unsplash.com/photo-1627140290942-7c8f9f56e870?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8TGFtYm9yZ2hpbmklMjBVcnVzJTIwMjAyMnxlbnwwfHwwfHx8MA%3D%3D', TRUE),
     -- SUV: BMW X5 (model 20) — 2 unique photos
     (28, 'https://images.unsplash.com/photo-1615908397724-6dc711db34a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
     (29, 'https://images.unsplash.com/photo-1717082842911-9e55aeaf80cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080', TRUE),
