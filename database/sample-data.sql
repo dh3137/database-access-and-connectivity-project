@@ -14,12 +14,12 @@ VALUES
     (3, 'A4'),
     (4, '320d');
 
-INSERT INTO Vehicles (vin, model_id, price, status)
+INSERT INTO Vehicles (vin, model_id, year, price, status, color, mileage, description)
 VALUES
-    ('JTDBR32E720081235', 1, 18500.00, 'Available'),
-    ('WVWZZZ1KZ6W612345', 2, 17200.00, 'Reserved'),
-    ('WAUZZZ8K9DA123456', 3, 35000.00, 'Sold'),
-    ('WBA8E11050K123456', 4, 31500.00, 'Available');
+    ('JTDBR32E720081235', 1, 2023, 18500.00, 'Available', 'Super White', 15000, 'Excellent fuel economy and reliability.'),
+    ('WVWZZZ1KZ6W612345', 2, 2022, 17200.00, 'Reserved', 'Deep Black', 22000, 'A classic hatchback in pristine condition.'),
+    ('WAUZZZ8K9DA123456', 3, 2021, 35000.00, 'Sold', 'Ibis White', 45000, 'Luxury sedan with full service history.'),
+    ('WBA8E11050K123456', 4, 2024, 31500.00, 'Available', 'Alpine White', 500, 'Brand new model with high performance package.');
 
 INSERT INTO Customers (firstName, lastName, email, phone)
 VALUES
@@ -27,13 +27,13 @@ VALUES
     ('Ana', 'Horvat', 'ana.horvat@example.com', '+385981234567'),
     ('Marko', 'Kovacic', 'marko.kovacic@example.com', '+385991234568');
 
-INSERT INTO Employees (firstName, lastName, email)
+INSERT INTO Employees (firstName, lastName, email, username, password_hash)
 VALUES
-    ('Ivan', 'Karlo', 'ivan.karlo@example.com'),
-    ('Danis', 'Harmandic', 'danis.harmandic@example.com'),
-    ('Jurica', 'Jamic', 'jurica.jamic@example.com'),
-    ('Tomislav', 'Tesija', 'tomislav.tesija@example.com'),
-    ('Branko', 'Mihaljevic', 'branko.mihaljevic@example.com');
+    ('Ivan',      'Karlo',      'ivan.karlo@example.com',      'ivan',      'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'),
+    ('Danis',     'Harmandic',  'danis.harmandic@example.com', 'danis',     'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'),
+    ('Jurica',    'Jamic',      'jurica.jamic@example.com',    'jurica',    'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'),
+    ('Tomislav',  'Tesija',     'tomislav.tesija@example.com', 'tomo',      'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'),
+    ('Branko',    'Mihaljevic', 'branko.mihaljevic@example.com','branko',   'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f');
 
 INSERT INTO Roles (role_name)
 VALUES
@@ -104,7 +104,7 @@ VALUES
 
 INSERT INTO VehicleImages (vehicle_id, image_url)
 VALUES
-    (1, 'images/toyota_corolla_1.jpg'),
-    (2, 'images/vw_golf_1.jpg'),
-    (3, 'images/audi_a4_1.jpg'),
-    (4, 'images/bmw_320d_1.jpg');
+    (1, 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/2019_Toyota_Corolla_Icon_Tech_VVT-i_Hybrid_1.8.jpg/1200px-2019_Toyota_Corolla_Icon_Tech_VVT-i_Hybrid_1.8.jpg'),
+    (2, 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/VW_Golf_VII_1.4_TSI_BlueMotion_Technology_Highline_%28AU%29_%E2%80%93_Frontansicht%2C_31._August_2013%2C_Ratingen.jpg/1200px-VW_Golf_VII_1.4_TSI_BlueMotion_Technology_Highline_%28AU%29_%E2%80%93_Frontansicht%2C_31._August_2013%2C_Ratingen.jpg'),
+    (3, 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/2018_Audi_A4_Sport_35_TFSI_1.4_Front.jpg/1200px-2018_Audi_A4_Sport_35_TFSI_1.4_Front.jpg'),
+    (4, 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/BMW_320d_F30_LCI_Sport_Line_Shadow_Automatic.jpg/1200px-BMW_320d_F30_LCI_Sport_Line_Shadow_Automatic.jpg');

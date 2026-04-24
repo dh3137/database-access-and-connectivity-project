@@ -21,8 +21,12 @@ CREATE TABLE Vehicles (
     vehicle_id INT PRIMARY KEY AUTO_INCREMENT,
     vin VARCHAR(17) NOT NULL UNIQUE,
     model_id INT NOT NULL,
+    year INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     status ENUM('Available','Reserved','Sold') NOT NULL DEFAULT 'Available',
+    color VARCHAR(50),
+    mileage INT,
+    description TEXT,
     CONSTRAINT fk_vehicles_model
         FOREIGN KEY (model_id)
         REFERENCES Models(model_id)
@@ -41,10 +45,11 @@ CREATE TABLE Customers (
 
 CREATE TABLE Employees (
     emp_id INT PRIMARY KEY AUTO_INCREMENT,
-    firstName varchar(20), 
+    firstName varchar(20),
     lastName varchar(20),
-    email VARCHAR(100) NOT NULL UNIQUE
-
+    email VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(50) UNIQUE,
+    password_hash VARCHAR(64)
 );
 
 CREATE TABLE Roles (
@@ -186,4 +191,12 @@ CREATE TABLE VehicleImages (
         REFERENCES Vehicles(vehicle_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
+);
+
+CREATE TABLE action_log (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50),
+    action VARCHAR(100),
+    detail VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

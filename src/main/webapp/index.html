@@ -220,7 +220,7 @@
       const imgHtml = car.imageUrl && car.imageUrl.trim()
         ? `<img class="car-card-img" src="${escHtml(car.imageUrl)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}"
              onerror="this.outerHTML='<div class=\\'car-card-img-placeholder\\'>🚗</div>'" />`
-        : `<div class="car-card-img-placeholder" data-make="${escHtml(car.make)}" data-model="${escHtml(car.model)}" data-year="${car.year}">🚗</div>`;
+        : `<div class="car-card-img-placeholder" data-id="${car.id}" data-make="${escHtml(car.make)}" data-model="${escHtml(car.model)}" data-year="${car.year}">🚗</div>`;
 
       const badgeCls = { AVAILABLE:'badge-available', SOLD:'badge-sold', RESERVED:'badge-reserved' }[car.status] || 'badge-available';
       const badgeTxt = car.status ? car.status.charAt(0) + car.status.slice(1).toLowerCase() : 'Available';
@@ -241,9 +241,9 @@
 
     // Lazy-fetch Wikipedia images for cards without one
     grid.querySelectorAll('.car-card-img-placeholder[data-make]').forEach(async el => {
-      const make = el.dataset.make, model = el.dataset.model, year = el.dataset.year;
+      const { make, model, year, id } = el.dataset;
       try {
-        const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}`);
+        const r = await fetch(`/api/carimage?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&year=${encodeURIComponent(year)}&id=${id}`);
         const d = await r.json();
         if (d.url) {
           const img = document.createElement('img');

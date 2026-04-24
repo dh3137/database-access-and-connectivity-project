@@ -95,7 +95,7 @@
 
     const navActions = document.getElementById("nav-actions");
     if (me) {
-      const dashHref = me.role === "ADMIN" ? "/dashboard.html" : "/cars.html";
+      const dashHref = me.role.toUpperCase() === "ADMIN" ? "/dashboard.html" : "/cars.html";
       navActions.innerHTML = `<a href="${dashHref}" class="staff-btn">Dashboard</a>`;
       document.getElementById("back-link").href = dashHref;
     } else {
@@ -123,7 +123,7 @@
     } else {
       // Lazy-fetch from Wikipedia
       try {
-        const r = await fetch(`/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`);
+        const r = await fetch(`/api/carimage?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}&id=${car.id}`);
         const d = await r.json();
         if (d.url) {
           imgWrap.innerHTML = `<img src="${escHtml(d.url)}" alt="${escHtml(car.year + ' ' + car.make + ' ' + car.model)}" onerror="this.parentElement.innerHTML='<span class=\\'img-placeholder\\'>🚗</span>'" />`;
