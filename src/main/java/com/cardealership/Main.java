@@ -209,9 +209,10 @@ public class Main {
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Car car = parseCarJson(body);
                 car.setId(id);
-                if (car.getModelId() <= 0 && car.getMake() != null && car.getModel() != null) {
-                    int resolved = carDatabase.findModelId(car.getMake(), car.getModel());
-                    if (resolved > 0) car.setModelId(resolved);
+                if (car.getModelId() <= 0 && car.getMake() != null && !car.getMake().isBlank()
+                        && car.getModel() != null && !car.getModel().isBlank()) {
+                    car.setModelId(carDatabase.findOrCreateModelId(
+                        car.getMake(), car.getModel(), car.getBodyType(), car.getSegment(), car.getCountry()));
                 }
                 validateCar(car, true);
                 boolean updated = carDatabase.updateCar(car);
@@ -226,9 +227,13 @@ public class Main {
             } else if ("POST".equals(method) && !hasId) {
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 Car car = parseCarJson(body);
-                if (car.getModelId() <= 0 && car.getMake() != null && car.getModel() != null) {
-                    int resolved = carDatabase.findModelId(car.getMake(), car.getModel());
-                    if (resolved > 0) car.setModelId(resolved);
+                if (car.getModelId() <= 0 && car.getMake() != null && !car.getMake().isBlank()
+                        && car.getModel() != null && !car.getModel().isBlank()) {
+                    car.setModelId(carDatabase.findOrCreateModelId(
+                        car.getMake(), car.getModel(), car.getBodyType(), car.getSegment(), car.getCountry()));
+                }
+                if (car.getVin() == null || car.getVin().isBlank()) {
+                    car.setVin(carDatabase.generateUniqueVin());
                 }
                 validateCar(car, false);
                 boolean added = carDatabase.saveCar(car);
@@ -881,6 +886,9 @@ public class Main {
         car.setVin(jsonString(json, "vin"));
         car.setImageUrl(jsonString(json, "imageUrl"));
         car.setDescription(jsonString(json, "description"));
+        car.setBodyType(jsonString(json, "bodyType"));
+        car.setSegment(jsonString(json, "segment"));
+        car.setCountry(jsonString(json, "country"));
         return car;
     }
 

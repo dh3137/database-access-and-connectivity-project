@@ -412,6 +412,33 @@
           <label>Mileage (km)</label>
           <input type="number" id="modal-mileage" placeholder="e.g. 45000" />
         </div>
+        <div class="form-group">
+          <label>Body Type <span style="font-weight:400;color:var(--muted-2);">(new model only)</span></label>
+          <select id="modal-body-type">
+            <option value="">— select —</option>
+            <option value="Sedan">Sedan</option>
+            <option value="SUV">SUV</option>
+            <option value="Truck">Truck</option>
+            <option value="Coupe">Coupe</option>
+            <option value="Convertible">Convertible</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="Wagon">Wagon</option>
+            <option value="Van">Van</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Segment <span style="font-weight:400;color:var(--muted-2);">(new model only)</span></label>
+          <select id="modal-segment">
+            <option value="">— select —</option>
+            <option value="Economy">Economy</option>
+            <option value="Compact">Compact</option>
+            <option value="Mid-Size">Mid-Size</option>
+            <option value="Full-Size">Full-Size</option>
+            <option value="Luxury">Luxury</option>
+            <option value="Sport">Sport</option>
+            <option value="Electric">Electric</option>
+          </select>
+        </div>
         <div class="form-group full">
           <label>Status</label>
           <select id="modal-status">
@@ -751,6 +778,8 @@
       document.getElementById(id).value = "";
     });
     document.getElementById("modal-status").value = "AVAILABLE";
+    document.getElementById("modal-body-type").value = "";
+    document.getElementById("modal-segment").value = "";
     document.getElementById("modal-error").style.display = "none";
     document.getElementById("modal-backdrop").classList.add("open");
   }
@@ -797,8 +826,10 @@
       return;
     }
 
-    const modelId = parseInt(document.getElementById("modal-model-id").value) || 0;
-    const payload = { make, model, year, price, status, color, mileage, imageUrl, description, modelId };
+    const modelId  = parseInt(document.getElementById("modal-model-id").value) || 0;
+    const bodyType = document.getElementById("modal-body-type").value;
+    const segment  = document.getElementById("modal-segment").value;
+    const payload  = { make, model, year, price, status, color, mileage, imageUrl, description, modelId, bodyType, segment };
     const body    = JSON.stringify(payload);
     const isEdit  = id !== "";
     const url     = isEdit ? `/api/cars/${id}` : "/api/cars";

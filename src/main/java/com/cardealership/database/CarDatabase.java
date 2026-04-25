@@ -1,5 +1,6 @@
 package com.cardealership.database;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,6 +138,61 @@ public class CarDatabase {
             return Integer.parseInt(rows[1][0]);
         }
         return 0;
+    }
+
+    public int findOrCreateModelId(String make, String modelName, String bodyType, String segment, String country) throws DLException {
+        int existing = findModelId(make, modelName);
+        if (existing > 0) return existing;
+
+        // find or create manufacturer
+        String mfrQuery = "SELECT manufacturer_id FROM Manufacturers WHERE LOWER(name) = LOWER(?) LIMIT 1";
+        ArrayList<String> p = new ArrayList<>();
+        p.add(make);
+        String[][] mfrRows = database.getData(mfrQuery, p);
+        int mfrId;
+        if (mfrRows != null && mfrRows.length > 1 && mfrRows[1][0] != null && !mfrRows[1][0].isBlank()) {
+            mfrId = Integer.parseInt(mfrRows[1][0]);
+        } else {
+            String mfrCountry = (country != null && !country.isBlank()) ? country : "Unknown";
+            ArrayList<String> ins = new ArrayList<>();
+            ins.add(make);
+            ins.add(mfrCountry);
+            mfrId = database.setDataReturnKey(
+                "INSERT INTO Manufacturers (name, country) VALUES (?, ?)", ins);
+        }
+
+        // create model
+        String bt = (bodyType != null && !bodyType.isBlank()) ? bodyType : null;
+        String seg = (segment != null && !segment.isBlank()) ? segment : null;
+        ArrayList<String> mp = new ArrayList<>();
+        mp.add(modelName);
+        mp.add(String.valueOf(mfrId));
+        mp.add(bt);
+        mp.add(seg);
+        database.setData(
+            "INSERT INTO Models (model_name, manufacturer_id, body_type, segment) VALUES (?, ?, ?, ?)", mp);
+
+        return findModelId(make, modelName);
+    }
+
+    public String generateUniqueVin() throws DLException {
+        // VIN alphabet excludes I, O, Q per ISO 3779
+        final String CHARS = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789";
+        final SecureRandom rng = new SecureRandom();
+        String vin;
+        do {
+            StringBuilder sb = new StringBuilder(17);
+            for (int i = 0; i < 17; i++) sb.append(CHARS.charAt(rng.nextInt(CHARS.length())));
+            vin = sb.toString();
+        } while (vinExists(vin));
+        return vin;
+    }
+
+    private boolean vinExists(String vin) throws DLException {
+        ArrayList<String> p = new ArrayList<>();
+        p.add(vin);
+        String[][] rows = database.getData("SELECT 1 FROM Vehicles WHERE vin = ? LIMIT 1", p);
+        return rows != null && rows.length > 1;
     }
 
     public String getVehicleImageUrl(int vehicleId) throws DLException {
