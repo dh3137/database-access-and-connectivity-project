@@ -16,6 +16,8 @@ public class Car {
     private String imageUrl;  // primary image from VehicleImages (populated by JOIN)
     private String description;
     private String segment;
+    private String bodyType;
+    private String country;
 
     public Car() {}
 
@@ -60,4 +62,10 @@ public class Car {
 
     public String getSegment() { return segment; }
     public void setSegment(String segment) { this.segment = segment; }
+
+    public String getBodyType() { return bodyType; }
+    public void setBodyType(String bodyType) { this.bodyType = bodyType; }
+
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
 }
