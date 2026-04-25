@@ -45,7 +45,8 @@ public class EnquiryDatabase {
     public String[][] getRecent(int limit) throws DLException {
         String sql = """
             SELECT e.enquiry_id, e.name, e.email, e.phone, e.message, e.submitted_at, e.is_read,
-                   COALESCE(CONCAT(m.model_name, ' (', v.year, ')'), 'General') AS vehicle_label
+                   COALESCE(CONCAT(m.model_name, ' (', v.year, ')'), 'General') AS vehicle_label,
+                   e.customer_id, e.vehicle_id
             FROM Enquiries e
             LEFT JOIN Vehicles v ON e.vehicle_id = v.vehicle_id
             LEFT JOIN Models m ON v.model_id = m.model_id
@@ -57,9 +58,12 @@ public class EnquiryDatabase {
         return db.getData(sql, params);
     }
 
-    public boolean markRead(int enquiryId) throws DLException {
+    public boolean markRead(int enquiryId, boolean read) throws DLException {
         ArrayList<String> params = new ArrayList<>();
         params.add(String.valueOf(enquiryId));
-        return db.setData("UPDATE Enquiries SET is_read = TRUE WHERE enquiry_id = ?", params);
+        String sql = read
+            ? "UPDATE Enquiries SET is_read = TRUE  WHERE enquiry_id = ?"
+            : "UPDATE Enquiries SET is_read = FALSE WHERE enquiry_id = ?";
+        return db.setData(sql, params);
     }
 }

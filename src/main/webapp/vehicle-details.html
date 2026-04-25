@@ -527,47 +527,7 @@
     }
     .sell-backdrop.open { display: flex; }
 
-    .sell-modal {
-      background: #111;
-      border: 1px solid rgba(245,244,240,.09);
-      width: 100%;
-      max-width: 480px;
-      padding: 40px;
-      position: relative;
-    }
-
-    .sell-heading {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: var(--v-white);
-      margin-bottom: 6px;
-    }
-
-    .sell-sub {
-      font-size: .78rem;
-      color: rgba(245,244,240,.32);
-      margin-bottom: 28px;
-    }
-
-    .sell-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .sell-field label {
-      font-size: .6rem;
-      font-weight: 700;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: var(--v-orange);
-    }
-
-    .sell-field input,
-    .sell-field select,
-    .sell-field textarea {
+    .sell-field select {
       background: #0b0b0b;
       border: 1px solid rgba(245,244,240,.1);
       color: var(--v-white);
@@ -578,18 +538,31 @@
       outline: none;
       transition: border-color 150ms;
       width: 100%;
+      cursor: pointer;
+      appearance: none;
     }
-    .sell-field select option { background: #111; }
-    .sell-field input:focus,
-    .sell-field select:focus,
-    .sell-field textarea:focus { border-color: var(--v-orange); }
-    .sell-field textarea { min-height: 80px; resize: vertical; }
+    .sell-field select:focus { border-color: var(--v-orange); }
 
-    .sell-error {
+    .vd-cta-admin {
       display: none;
-      font-size: .8rem;
-      color: #f87171;
-      margin-bottom: 14px;
+      width: 100%;
+      margin-top: 10px;
+      padding: 13px 24px;
+      background: transparent;
+      border: 1px solid rgba(245,244,240,.18);
+      color: rgba(245,244,240,.55);
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 160ms;
+    }
+    .vd-cta-admin:hover {
+      background: rgba(245,244,240,.06);
+      border-color: rgba(245,244,240,.35);
+      color: var(--v-white);
     }
 
     /* ── ERROR ── */
@@ -629,6 +602,61 @@
     @media (max-width: 480px) {
       .vd-spec-grid   { grid-template-columns: 1fr; }
     }
+
+    /* ── LIGHT MODE ── */
+    [data-theme="light"] {
+      --v-black: #F2F1ED;
+      --v-white: #1A1918;
+    }
+
+    /* Nav stays dark (dark gradient bg) — keep text light */
+    [data-theme="light"] .vd-nav-logo          { color: rgba(245,244,240,.90); }
+    [data-theme="light"] .vd-back:hover        { color: rgba(245,244,240,.90); }
+    [data-theme="light"] .vd-nav-btn:hover     { color: rgba(245,244,240,.90); border-color: rgba(245,244,240,.50); }
+
+    /* Hero — sits over dark image gradient, text must stay light */
+    [data-theme="light"] .vd-hero-title        { color: #F5F4F0; }
+    [data-theme="light"] .vd-hero-make         { color: var(--v-orange); }
+
+    /* Spec grid */
+    [data-theme="light"] .vd-spec-grid         { background: rgba(26,25,24,.06); border-color: rgba(26,25,24,.06); }
+    [data-theme="light"] .vd-spec-item         { background: #EDECEA; }
+    [data-theme="light"] .vd-spec-item:hover   { background: #E5E4E0; }
+    [data-theme="light"] .vd-spec-value        { color: #1A1918; }
+
+    /* Description */
+    [data-theme="light"] .vd-desc-text         { color: rgba(26,25,24,.55); }
+
+    /* Price card */
+    [data-theme="light"] .vd-price-card        { background: #EDECEA; border-color: rgba(26,25,24,.08); }
+    [data-theme="light"] .vd-price-label       { color: rgba(26,25,24,.32); }
+    [data-theme="light"] .vd-price-divider     { border-top-color: rgba(26,25,24,.07); }
+    [data-theme="light"] .vd-price-meta-label  { color: rgba(26,25,24,.32); }
+    [data-theme="light"] .vd-price-meta-value  { color: rgba(26,25,24,.70); }
+    [data-theme="light"] .vd-cta-secondary     { color: rgba(26,25,24,.55); border-color: rgba(26,25,24,.15); }
+    [data-theme="light"] .vd-cta-secondary:hover { color: #1A1918; border-color: rgba(26,25,24,.40); }
+
+    /* Reviews section */
+    [data-theme="light"] .vd-reviews-count     { color: rgba(26,25,24,.32); }
+    [data-theme="light"] .vd-review-card       { border-top-color: rgba(26,25,24,.07); }
+    [data-theme="light"] .vd-review-date       { color: rgba(26,25,24,.28); }
+    [data-theme="light"] .vd-review-text       { color: rgba(26,25,24,.55); }
+
+    /* Enquiry modal */
+    [data-theme="light"] .enq-modal            { background: #F2F1ED; border-color: rgba(26,25,24,.10); }
+    [data-theme="light"] .enq-close            { color: rgba(26,25,24,.40); }
+    [data-theme="light"] .enq-close:hover      { color: #1A1918; }
+    [data-theme="light"] .enq-sub              { color: rgba(26,25,24,.38); }
+    [data-theme="light"] .enq-field input,
+    [data-theme="light"] .enq-field textarea   { background: #fff; border-color: rgba(26,25,24,.12); color: #1A1918; }
+    [data-theme="light"] .enq-success-msg      { color: rgba(26,25,24,.45); }
+
+    /* Error state */
+    [data-theme="light"] .vd-error p           { color: rgba(26,25,24,.38); }
+    /* Sell modal selects */
+    [data-theme="light"] .sell-field select    { background: #fff; border-color: rgba(26,25,24,.12); color: #1A1918; }
+    [data-theme="light"] .vd-cta-admin         { border-color: rgba(26,25,24,.18); color: rgba(26,25,24,.45); }
+    [data-theme="light"] .vd-cta-admin:hover   { background: rgba(26,25,24,.06); border-color: rgba(26,25,24,.35); color: #1A1918; }
   </style>
 </head>
 <body>
@@ -689,7 +717,7 @@
       <div class="vd-price-amount" id="price-amount">—</div>
 
       <button class="vd-cta-primary" id="primary-cta" onclick="openEnquiry()">Enquire Now</button>
-      <button class="vd-cta-secondary" id="sell-btn" style="display:none" onclick="openSellModal()">Mark as Sold</button>
+      <button class="vd-cta-admin" id="admin-sell-btn" onclick="openSellModal()">Mark as Sold</button>
 
       <hr class="vd-price-divider" />
 
@@ -740,34 +768,43 @@
 
 <!-- ══ SELL MODAL ══ -->
 <div class="sell-backdrop" id="sell-backdrop">
-  <div class="sell-modal" role="dialog" aria-modal="true" aria-labelledby="sell-heading">
+  <div class="enq-modal" role="dialog" aria-modal="true" aria-labelledby="sell-heading">
     <button class="enq-close" onclick="closeSellModal()" aria-label="Close">×</button>
-    <div class="sell-heading" id="sell-heading">Mark as Sold</div>
-    <div class="sell-sub" id="sell-sub">Record the sale details below.</div>
 
-    <div class="sell-field">
-      <label for="sell-customer">Customer</label>
-      <select id="sell-customer"><option value="">Loading customers…</option></select>
-    </div>
-    <div class="sell-field">
-      <label for="sell-price">Sale Price ($)</label>
-      <input type="number" id="sell-price" step="0.01" min="0" />
-    </div>
-    <div class="sell-field">
-      <label for="sell-payment">Payment Method</label>
-      <select id="sell-payment">
-        <option value="CASH">Cash</option>
-        <option value="FINANCE">Finance</option>
-        <option value="LEASE">Lease</option>
-      </select>
-    </div>
-    <div class="sell-field">
-      <label for="sell-notes">Notes (optional)</label>
-      <textarea id="sell-notes" placeholder="Any additional notes…"></textarea>
+    <div id="sell-form-wrap">
+      <div class="enq-heading" id="sell-heading">Mark as Sold</div>
+      <div class="enq-sub" id="sell-sub">Record this sale in the system.</div>
+
+      <div class="enq-field sell-field">
+        <label for="sell-customer">Customer *</label>
+        <select id="sell-customer"><option value="">Loading customers…</option></select>
+      </div>
+      <div class="enq-field">
+        <label for="sell-price">Sale Price *</label>
+        <input type="number" id="sell-price" min="0" step="0.01" placeholder="0.00" />
+      </div>
+      <div class="enq-field sell-field">
+        <label for="sell-payment">Payment Method</label>
+        <select id="sell-payment">
+          <option value="CASH">Cash</option>
+          <option value="FINANCE">Finance</option>
+          <option value="LEASE">Lease</option>
+        </select>
+      </div>
+      <div class="enq-field">
+        <label for="sell-notes">Notes <span style="font-weight:400;text-transform:none;letter-spacing:0;color:rgba(245,244,240,.25)">(optional)</span></label>
+        <textarea id="sell-notes" placeholder="Optional notes about this sale…" style="min-height:80px;resize:vertical"></textarea>
+      </div>
+
+      <div class="enq-error" id="sell-error"></div>
+      <button class="vd-cta-primary" id="sell-submit" onclick="submitSale()" style="margin-bottom:0;">Record Sale</button>
     </div>
 
-    <div class="sell-error" id="sell-error"></div>
-    <button class="vd-cta-primary" id="sell-submit" onclick="submitSale()" style="margin-bottom:0;">Confirm Sale</button>
+    <div class="enq-success" id="sell-success">
+      <div class="enq-success-icon">✓</div>
+      <div class="enq-success-title">Sale Recorded</div>
+      <p class="enq-success-msg">The vehicle has been marked as sold.</p>
+    </div>
   </div>
 </div>
 
@@ -917,8 +954,8 @@
       primaryCta.disabled = true;
     }
 
-    if (_me && _me.role === 'ADMIN' && car.status === 'AVAILABLE') {
-      document.getElementById('sell-btn').style.display = 'block';
+    if (_me && _me.role === 'ADMIN' && car.status !== 'SOLD') {
+      document.getElementById('admin-sell-btn').style.display = 'block';
     }
 
     // Hero image
@@ -1022,6 +1059,94 @@
     return '★'.repeat(full) + '☆'.repeat(Math.max(0, 5 - full));
   }
 
+  async function openSellModal() {
+    const modal = document.getElementById('sell-backdrop');
+    const errorEl = document.getElementById('sell-error');
+    const selectEl = document.getElementById('sell-customer');
+    const priceEl = document.getElementById('sell-price');
+    const sub = document.getElementById('sell-sub');
+
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+    document.getElementById('sell-form-wrap').style.display = '';
+    document.getElementById('sell-success').style.display = 'none';
+    document.getElementById('sell-submit').disabled = false;
+    document.getElementById('sell-submit').textContent = 'Record Sale';
+    document.getElementById('sell-notes').value = '';
+
+    if (_currentCar) {
+      sub.textContent = `${_currentCar.year} ${_currentCar.make} ${_currentCar.model}`;
+      if (_currentCar.price) priceEl.value = parseFloat(_currentCar.price).toFixed(2);
+    }
+
+    selectEl.innerHTML = '<option value="">Loading customers…</option>';
+    try {
+      const r = await fetch('/api/customers', { credentials: 'include' });
+      const customers = await r.json();
+      if (Array.isArray(customers) && customers.length > 0) {
+        selectEl.innerHTML = '<option value="">Select a customer…</option>' +
+          customers.map(c =>
+            `<option value="${esc(c.customerId)}">${esc(c.firstName + ' ' + c.lastName)} — ${esc(c.email)}</option>`
+          ).join('');
+      } else {
+        selectEl.innerHTML = '<option value="">No customers found</option>';
+      }
+    } catch (_) {
+      selectEl.innerHTML = '<option value="">Could not load customers</option>';
+    }
+
+    modal.classList.add('open');
+  }
+
+  function closeSellModal() {
+    document.getElementById('sell-backdrop').classList.remove('open');
+  }
+
+  async function submitSale() {
+    const btn = document.getElementById('sell-submit');
+    const errorEl = document.getElementById('sell-error');
+    const customerId = document.getElementById('sell-customer').value;
+    const salePrice = document.getElementById('sell-price').value;
+    const paymentMethod = document.getElementById('sell-payment').value;
+    const notes = document.getElementById('sell-notes').value;
+
+    errorEl.style.display = 'none';
+    if (!customerId) { showSellError('Please select a customer.'); return; }
+    if (!salePrice || parseFloat(salePrice) <= 0) { showSellError('Please enter a valid sale price.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Recording…';
+
+    try {
+      const r = await fetch('/api/sales', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vehicleId: _currentCar.id, customerId, salePrice, paymentMethod, notes })
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        showSellError(d.error || 'Could not record sale.');
+        btn.disabled = false;
+        btn.textContent = 'Record Sale';
+        return;
+      }
+      document.getElementById('sell-form-wrap').style.display = 'none';
+      document.getElementById('sell-success').style.display = 'block';
+      setTimeout(() => { closeSellModal(); init(); }, 1800);
+    } catch (_) {
+      showSellError('A network error occurred. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Record Sale';
+    }
+  }
+
+  function showSellError(msg) {
+    const el = document.getElementById('sell-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
   function showError(msg) {
     document.getElementById('hero-title').textContent = 'Vehicle Not Found';
     document.getElementById('vd-error-msg').textContent = msg;
@@ -1035,93 +1160,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
-
-  async function openSellModal() {
-    const errEl = document.getElementById('sell-error');
-    errEl.style.display = 'none';
-    document.getElementById('sell-sub').textContent = _currentCar
-      ? `Recording sale for: ${_currentCar.year} ${_currentCar.make} ${_currentCar.model}`
-      : 'Record the sale details below.';
-    if (_currentCar) {
-      document.getElementById('sell-price').value = _currentCar.price || '';
-    }
-
-    const sel = document.getElementById('sell-customer');
-    sel.innerHTML = '<option value="">Loading…</option>';
-    try {
-      const r = await fetch('/api/customers', { credentials: 'include' });
-      const data = await r.json();
-      if (Array.isArray(data) && data.length > 0) {
-        sel.innerHTML = data.map(c =>
-          `<option value="${esc(String(c.customerId))}">${esc(c.firstName + ' ' + c.lastName)} — ${esc(c.email)}</option>`
-        ).join('');
-      } else {
-        sel.innerHTML = '<option value="">No customers found</option>';
-      }
-    } catch (_) {
-      sel.innerHTML = '<option value="">Could not load customers</option>';
-    }
-
-    document.getElementById('sell-backdrop').classList.add('open');
-  }
-
-  function closeSellModal() {
-    document.getElementById('sell-backdrop').classList.remove('open');
-  }
-
-  async function submitSale() {
-    const customerId = document.getElementById('sell-customer').value;
-    const salePrice  = document.getElementById('sell-price').value;
-    const payment    = document.getElementById('sell-payment').value;
-    const notes      = document.getElementById('sell-notes').value.trim();
-    const errEl      = document.getElementById('sell-error');
-
-    if (!customerId) {
-      errEl.textContent = 'Please select a customer.';
-      errEl.style.display = 'block';
-      return;
-    }
-    if (!salePrice || parseFloat(salePrice) <= 0) {
-      errEl.textContent = 'Please enter a valid sale price.';
-      errEl.style.display = 'block';
-      return;
-    }
-    errEl.style.display = 'none';
-
-    const btn = document.getElementById('sell-submit');
-    btn.disabled = true;
-    btn.textContent = 'Recording…';
-
-    try {
-      const res = await fetch('/api/sales', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vehicleId: _currentCar.id,
-          customerId: parseInt(customerId, 10),
-          salePrice: parseFloat(salePrice),
-          paymentMethod: payment,
-          notes
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Sale could not be recorded.');
-      closeSellModal();
-      location.reload();
-    } catch (e) {
-      errEl.textContent = e.message || 'Something went wrong.';
-      errEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Confirm Sale';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('sell-backdrop').addEventListener('click', function(e) {
-      if (e.target === this) closeSellModal();
-    });
-  });
 
   init();
 </script>

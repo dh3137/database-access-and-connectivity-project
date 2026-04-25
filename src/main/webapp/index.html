@@ -1328,6 +1328,14 @@
 
     .v-review-link:hover { opacity: .7; }
 
+    /* ── Light mode: keep overlay car-card text readable on dark gradient ── */
+    /* These win over style.css via cascade order (inline style is later in <head>) */
+    [data-theme="light"] .v-car-card-title { color: rgba(245,244,240,.92); }
+    [data-theme="light"] .v-car-card-price { color: rgba(245,244,240,.92); }
+    [data-theme="light"] .v-car-card-make  { color: rgba(245,244,240,.70); }
+    [data-theme="light"] .v-car-card-sub   { color: rgba(245,244,240,.65); }
+    [data-theme="light"] .v-car-card-note  { color: rgba(245,244,240,.60); }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .v-cat-grid     { grid-template-columns: repeat(3, 1fr); }

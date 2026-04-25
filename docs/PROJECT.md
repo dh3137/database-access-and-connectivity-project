@@ -158,7 +158,7 @@ db.properties.example     — Template showing how to set up db.properties.
 | DELETE | `/api/cars/{id}` | ADMIN | Delete a vehicle |
 | GET | `/api/logs` | ADMIN | Last 50 VehicleChangeLog entries |
 | GET | `/api/carimage` | Anyone | Wikipedia image URL for `?make=&model=&year=` |
-| POST | `/api/enquiry` | Anyone | Submit a customer enquiry (vehicleId optional) |
+| POST | `/api/enquiry` | CUSTOMER | Submit an enquiry; requires active customer session; stores customer_id FK |
 | GET | `/api/enquiries` | ADMIN | Last 50 customer enquiries with vehicle label |
 | POST | `/api/enquiries?id={n}` | ADMIN | Mark enquiry `n` as read |
 | POST | `/api/register` | Anyone | Register a new CUSTOMER account; creates Customers + Users rows; sets session cookie; returns 409 on duplicate username/email |
@@ -243,7 +243,7 @@ A "car" in the app = `Vehicles` JOIN `Models` JOIN `Manufacturers` LEFT JOIN `Ve
 
 ### Implemented
 - Scroll-reveal animations (IntersectionObserver + CSS, re-animates on every scroll) — `js/reveal.js`
-- Light / dark mode toggle — `js/theme.js`, persists to `localStorage`, respects system preference
+- Light / dark mode toggle — `js/theme.js`, persists to `localStorage`, respects system preference. Full light-mode theming in `css/style.css`: navbar text contrast, footer always-dark, car card text, section backgrounds (brands, categories, featured, catalogue). Overlay-style car cards on `index.html` keep text light via inline `<style>` cascade override.
 - Unified filter bar on `index.html` and `cars.html` (search, sort, status, type, price range, year range)
 - **Contact form modal** — `vehicle-details.html` Enquire Now button opens a styled modal; name/email/phone/message pre-filled with car name; `POST /api/enquiry` persists to `Enquiries` table; admin dashboard shows all submissions in the Customer Enquiries card with Mark Read action.
 - **Customer signup + authenticated enquiries** — `signup.html` lets customers self-register; `Enquire Now` auth-gates non-customers to signup with `?return=` redirect; logged-in customers get modal pre-filled with their name/email; enquiries stored with `customer_id` FK. Requires ALTER TABLE migration (see `database/schema.sql` comment).

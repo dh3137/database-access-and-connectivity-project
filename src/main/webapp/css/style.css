@@ -896,8 +896,61 @@ body.public-page {
 [data-theme="light"] .v-feat-year,
 [data-theme="light"] .v-feat-eyebrow { color: rgba(26,25,24,0.50); }
 
-/* Footer */
-[data-theme="light"] .v-footer { background: var(--surface); border-color: rgba(26,25,24,0.07); }
+/* Navbar — light mode text contrast */
+[data-theme="light"] .v-nav__link {
+  color: rgba(26,25,24,0.72);
+}
+[data-theme="light"] .v-nav__link:hover,
+[data-theme="light"] .v-nav__link.active {
+  color: #1A1918;
+}
+[data-theme="light"] .v-nav__logo {
+  color: #1A1918;
+}
+[data-theme="light"] .v-nav__staff {
+  color: rgba(26,25,24,0.55);
+  border-color: rgba(26,25,24,0.20);
+}
+[data-theme="light"] .v-nav__staff:hover {
+  color: #1A1918;
+  border-color: rgba(26,25,24,0.45);
+}
+
+/* Car card — light mode text contrast */
+[data-theme="light"] .v-car-card-title  { color: var(--text); }
+[data-theme="light"] .v-car-card-price  { color: var(--text); }
+[data-theme="light"] .v-car-card-sub    { color: rgba(26,25,24,0.45); }
+[data-theme="light"] .v-car-card-note   { color: rgba(26,25,24,0.40); }
+[data-theme="light"] .v-badge-sold      { background: rgba(26,25,24,0.07); color: rgba(26,25,24,0.42); }
+[data-theme="light"] .v-badge-reserved  { background: rgba(26,25,24,0.07); color: rgba(26,25,24,0.55); }
+
+/* Footer — always dark regardless of theme; keep text light so it reads on dark bg */
+[data-theme="light"] .v-footer__logo  { color: rgba(245,244,240,0.90); }
+[data-theme="light"] .v-footer__text,
+[data-theme="light"] .v-footer__meta  { color: rgba(245,244,240,0.50); }
+
+/* index.html section backgrounds — light mode */
+[data-theme="light"] .v-brands        { background: var(--surface); border-top-color: rgba(26,25,24,0.06); border-bottom-color: rgba(26,25,24,0.06); }
+[data-theme="light"] .v-brand-logo    { background-color: rgba(26,25,24,0.20); }
+[data-theme="light"] .v-categories    { background: var(--bg); }
+[data-theme="light"] .v-cat-grid      { background: rgba(26,25,24,0.04); border-color: rgba(26,25,24,0.06); }
+[data-theme="light"] .v-cat-tile      { background: var(--surface); }
+[data-theme="light"] .v-cat-tile:hover,
+[data-theme="light"] .v-cat-tile--active { background: var(--surface-2, #e8e7e3); }
+[data-theme="light"] .v-cat-icon      { color: rgba(26,25,24,0.35); }
+[data-theme="light"] .v-cat-count     { color: rgba(26,25,24,0.50); }
+[data-theme="light"] .v-featured      { background: var(--bg); }
+[data-theme="light"] .v-feat-card:hover { background: #f0efeb; box-shadow: 0 6px 28px rgba(0,0,0,.10); }
+[data-theme="light"] .v-feat-img-placeholder { background: #e8e7e3; color: rgba(26,25,24,0.12); }
+[data-theme="light"] .v-feat-footer   { border-top-color: rgba(26,25,24,0.08); }
+[data-theme="light"] .v-shimmer-card  { background: var(--surface); }
+[data-theme="light"] .v-catalogue-count { color: rgba(26,25,24,0.35); }
+[data-theme="light"] .v-empty-state   { color: rgba(26,25,24,0.25); }
+[data-theme="light"] .v-divider__inner { border-top-color: rgba(26,25,24,0.08); }
+[data-theme="light"] .v-section-label { color: rgba(26,25,24,0.40); }
+[data-theme="light"] .v-section-heading { color: var(--text); }
+[data-theme="light"] .v-explore-link  { color: rgba(26,25,24,0.55); }
+[data-theme="light"] .v-explore-link:hover { color: var(--text); }
 
 /* Theme toggle button */
 .v-theme-toggle {

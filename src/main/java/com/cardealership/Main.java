@@ -452,27 +452,30 @@ public class Main {
             if ("POST".equalsIgnoreCase(ex.getRequestMethod())) {
                 String query = ex.getRequestURI().getQuery();
                 int enquiryId = 0;
+                boolean read = true;
                 if (query != null) {
                     for (String part : query.split("&")) {
                         if (part.startsWith("id=")) {
                             try { enquiryId = Integer.parseInt(part.substring(3)); } catch (NumberFormatException ignored) {}
+                        } else if (part.startsWith("read=")) {
+                            read = !"false".equalsIgnoreCase(part.substring(5));
                         }
                     }
                 }
                 if (enquiryId <= 0) { sendJson(ex, 400, "{\"error\":\"Missing id\"}"); return; }
-                enquiryDatabase.markRead(enquiryId);
+                enquiryDatabase.markRead(enquiryId, read);
                 sendJson(ex, 200, "{\"ok\":true}");
                 return;
             }
 
             String[][] rows = enquiryDatabase.getRecent(50);
             StringBuilder sb = new StringBuilder("[");
-            for (int i = 0; i < rows.length; i++) {
-                if (i > 0) sb.append(",");
+            for (int i = 1; i < rows.length; i++) {   // row 0 is the header from getData()
+                if (i > 1) sb.append(",");
                 String[] r = rows[i];
-                // columns: enquiry_id(0) name(1) email(2) phone(3) message(4) submitted_at(5) is_read(6) vehicle_label(7)
+                // columns: enquiry_id(0) name(1) email(2) phone(3) message(4) submitted_at(5) is_read(6) vehicle_label(7) customer_id(8) vehicle_id(9)
                 sb.append(String.format(
-                    "{\"id\":\"%s\",\"name\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\",\"message\":\"%s\",\"time\":\"%s\",\"isRead\":%s,\"vehicle\":\"%s\"}",
+                    "{\"id\":\"%s\",\"name\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\",\"message\":\"%s\",\"time\":\"%s\",\"isRead\":%s,\"vehicle\":\"%s\",\"customerId\":\"%s\",\"vehicleId\":\"%s\"}",
                     escapeJson(r[0] != null ? r[0] : ""),
                     escapeJson(r[1] != null ? r[1] : ""),
                     escapeJson(r[2] != null ? r[2] : ""),
@@ -480,7 +483,9 @@ public class Main {
                     escapeJson(r[4] != null ? r[4] : ""),
                     escapeJson(r[5] != null ? r[5] : ""),
                     "1".equals(r[6]) || "true".equalsIgnoreCase(r[6]) ? "true" : "false",
-                    escapeJson(r[7] != null ? r[7] : "General")
+                    escapeJson(r[7] != null ? r[7] : "General"),
+                    escapeJson(r[8] != null ? r[8] : ""),
+                    escapeJson(r[9] != null ? r[9] : "")
                 ));
             }
             sb.append("]");

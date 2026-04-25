@@ -289,6 +289,68 @@
       .rv-grid { grid-template-columns: 1fr; }
       .rv-card { padding: 28px 24px; }
     }
+
+    /* ── THEME TOGGLE ── */
+    .v-theme-toggle {
+      background: none;
+      border: 1px solid rgba(245,244,240,0.18);
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 6px 10px;
+      color: rgba(245,244,240,0.6);
+      transition: color 140ms, border-color 140ms;
+    }
+    .v-theme-toggle:hover {
+      color: rgba(245,244,240,0.9);
+      border-color: rgba(245,244,240,0.45);
+    }
+    [data-theme="light"] .v-theme-toggle {
+      border-color: rgba(26,25,24,0.18);
+      color: rgba(26,25,24,0.55);
+    }
+    [data-theme="light"] .v-theme-toggle:hover {
+      color: #1A1918;
+      border-color: rgba(26,25,24,0.45);
+    }
+
+    /* ── LIGHT MODE ── */
+    [data-theme="light"] {
+      --v-black: #F2F1ED;
+      --v-white: #1A1918;
+      --v-dark:  #EDECEA;
+    }
+
+    /* Nav stays dark (dark gradient bg) — keep logo/back text light */
+    [data-theme="light"] .rv-nav-logo          { color: rgba(245,244,240,.90); }
+    [data-theme="light"] .rv-back              { color: rgba(245,244,240,.50); }
+    [data-theme="light"] .rv-back:hover        { color: rgba(245,244,240,.90); }
+
+    /* Header */
+    [data-theme="light"] .rv-header            { border-bottom-color: rgba(26,25,24,.08); }
+    [data-theme="light"] .rv-header-sub        { color: rgba(26,25,24,.50); }
+
+    /* Filters */
+    [data-theme="light"] .rv-filters           { border-bottom-color: rgba(26,25,24,.06); }
+    [data-theme="light"] .rv-filter-label      { color: rgba(26,25,24,.38); }
+    [data-theme="light"] .rv-filter-sep        { background: rgba(26,25,24,.12); }
+    [data-theme="light"] .rv-filter-btn        { color: rgba(26,25,24,.55); border-color: rgba(26,25,24,.15); }
+    [data-theme="light"] .rv-filter-btn:hover  { color: #1A1918; border-color: rgba(26,25,24,.40); }
+
+    /* Grid header */
+    [data-theme="light"] .rv-count             { color: rgba(26,25,24,.35); }
+
+    /* Cards */
+    [data-theme="light"] .rv-card:hover        { background: #E5E4E0; }
+    [data-theme="light"] .rv-card-text         { color: rgba(26,25,24,.60); }
+    [data-theme="light"] .rv-card-footer       { border-top-color: rgba(26,25,24,.08); }
+    [data-theme="light"] .rv-card-author       { color: rgba(26,25,24,.45); }
+    [data-theme="light"] .rv-card-date         { color: rgba(26,25,24,.28); }
+    [data-theme="light"] .rv-star              { color: rgba(26,25,24,.15); }
+
+    /* Empty / loading state */
+    [data-theme="light"] .rv-empty             { color: rgba(26,25,24,.28); }
   </style>
 </head>
 <body>
@@ -298,6 +360,7 @@
   <a href="index.html" class="rv-nav-logo">VEL<span>O</span>CE</a>
   <div class="rv-nav-right">
     <a href="cars.html" class="rv-back">← Browse Cars</a>
+    <button class="v-theme-toggle" onclick="toggleTheme()" aria-label="Switch to light mode">☀</button>
   </div>
 </nav>
 
@@ -414,5 +477,6 @@
 
   init();
 </script>
+<script src="js/theme.js"></script>
 </body>
 </html>

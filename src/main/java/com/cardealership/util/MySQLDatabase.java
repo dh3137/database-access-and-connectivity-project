@@ -137,7 +137,23 @@ public class MySQLDatabase {
     private void bindValues(PreparedStatement statement, ArrayList<String> values, int startIndex) throws DLException {
         try {
             for (int i = 0; i < values.size(); i++) {
-                statement.setString(startIndex + i, values.get(i));
+                String v = values.get(i);
+                int idx = startIndex + i;
+                if (v == null) {
+                    statement.setNull(idx, java.sql.Types.VARCHAR);
+                    continue;
+                }
+                // Bind integers and decimals as numeric types so LIMIT/OFFSET and price
+                // comparisons work correctly — MySQL rejects LIMIT '50' (quoted string).
+                try {
+                    statement.setInt(idx, Integer.parseInt(v));
+                    continue;
+                } catch (NumberFormatException ignored) {}
+                try {
+                    statement.setDouble(idx, Double.parseDouble(v));
+                    continue;
+                } catch (NumberFormatException ignored) {}
+                statement.setString(idx, v);
             }
         } catch (SQLException e) {
             throw new DLException(e, "Operation=bindValues", "DatabaseType=MySQL");
