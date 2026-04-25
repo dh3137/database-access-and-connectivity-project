@@ -11,6 +11,157 @@
     tbody tr td:not(:last-child) { cursor: pointer; }
     .modal-backdrop { display: none; }
     .modal-backdrop.open { display: flex; }
+
+    /* Enquiry rows */
+    #enq-rows tr { cursor: pointer; transition: background 120ms; }
+    #enq-rows tr:hover { background: rgba(255,107,43,.06); }
+
+    /* Enquiry detail + sell overlay */
+    .enq-detail-backdrop,
+    .dash-sell-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: rgba(8,8,8,.82);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .enq-detail-backdrop.open,
+    .dash-sell-backdrop.open { display: flex; }
+
+    .enq-detail-modal,
+    .dash-sell-modal {
+      background: #111;
+      border: 1px solid rgba(245,244,240,.09);
+      width: 100%;
+      max-width: 540px;
+      padding: 40px;
+      position: relative;
+      border-radius: 2px;
+    }
+
+    .enq-detail-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      background: none;
+      border: none;
+      color: rgba(245,244,240,.35);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .enq-detail-close:hover { color: #f5f4f0; }
+
+    .enq-detail-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f5f4f0;
+      margin-bottom: 4px;
+    }
+
+    .enq-detail-meta {
+      font-size: .76rem;
+      color: rgba(245,244,240,.32);
+      margin-bottom: 22px;
+    }
+
+    .enq-detail-message {
+      background: #0b0b0b;
+      border: 1px solid rgba(245,244,240,.08);
+      border-radius: 2px;
+      padding: 16px 18px;
+      font-size: .88rem;
+      line-height: 1.74;
+      color: rgba(245,244,240,.72);
+      white-space: pre-wrap;
+      margin-bottom: 24px;
+    }
+
+    .enq-detail-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .enq-detail-actions .btn-read {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .btn-sell-enq {
+      flex: 1;
+      min-width: 130px;
+      padding: 10px 16px;
+      background: var(--orange, #FF6B2B);
+      color: #080808;
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 140ms;
+    }
+    .btn-sell-enq:hover { background: #ff8044; }
+    .btn-sell-enq:disabled { opacity: .45; cursor: default; }
+
+    /* Sell modal fields */
+    .dash-sell-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f5f4f0;
+      margin-bottom: 4px;
+    }
+    .dash-sell-sub {
+      font-size: .76rem;
+      color: rgba(245,244,240,.32);
+      margin-bottom: 24px;
+    }
+    .dash-sell-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .dash-sell-field label {
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--orange, #FF6B2B);
+    }
+    .dash-sell-field input,
+    .dash-sell-field select,
+    .dash-sell-field textarea {
+      background: #0b0b0b;
+      border: 1px solid rgba(245,244,240,.1);
+      color: #f5f4f0;
+      font-family: 'Inter', sans-serif;
+      font-size: .88rem;
+      padding: 11px 14px;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 150ms;
+      width: 100%;
+    }
+    .dash-sell-field select option { background: #111; }
+    .dash-sell-field input:focus,
+    .dash-sell-field select:focus,
+    .dash-sell-field textarea:focus { border-color: var(--orange, #FF6B2B); }
+    .dash-sell-field textarea { min-height: 76px; resize: vertical; }
+    .dash-sell-error {
+      display: none;
+      font-size: .8rem;
+      color: #f87171;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -115,12 +266,11 @@
               <th>From</th>
               <th>Email</th>
               <th>Vehicle</th>
-              <th>Message</th>
-              <th>Read</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody id="enq-rows">
-            <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
           </tbody>
         </table>
       </div>
@@ -175,6 +325,55 @@
     </div>
 
   </main>
+</div>
+
+<!-- Enquiry Detail Modal -->
+<div class="enq-detail-backdrop" id="enq-detail-backdrop">
+  <div class="enq-detail-modal" role="dialog" aria-modal="true">
+    <button class="enq-detail-close" onclick="closeEnquiryDetail()" aria-label="Close">×</button>
+    <div class="enq-detail-heading" id="enq-detail-name"></div>
+    <div class="enq-detail-meta" id="enq-detail-meta"></div>
+    <div class="enq-detail-message" id="enq-detail-message"></div>
+    <div class="enq-detail-actions">
+      <button class="btn action-btn btn-edit btn-read" id="enq-toggle-read-btn" onclick="toggleRead()"></button>
+      <button class="btn-sell-enq" id="enq-sell-btn" onclick="openSellFromEnquiry()">Mark as Sold</button>
+    </div>
+    <div id="enq-toggle-error" style="display:none;margin-top:10px;color:#e84545;font-size:.8rem;"></div>
+    <div id="enq-sell-note" style="display:none;margin-top:6px;font-size:.75rem;color:rgba(245,244,240,.4);"></div>
+  </div>
+</div>
+
+<!-- Sell Modal (dashboard) -->
+<div class="dash-sell-backdrop" id="dash-sell-backdrop">
+  <div class="dash-sell-modal" role="dialog" aria-modal="true">
+    <button class="enq-detail-close" onclick="closeSellModal()" aria-label="Close">×</button>
+    <div class="dash-sell-heading">Mark as Sold</div>
+    <div class="dash-sell-sub" id="dash-sell-sub">Record the sale details below.</div>
+
+    <div class="dash-sell-field">
+      <label for="dash-sell-customer">Customer</label>
+      <select id="dash-sell-customer"><option value="">Loading customers…</option></select>
+    </div>
+    <div class="dash-sell-field">
+      <label for="dash-sell-price">Sale Price ($)</label>
+      <input type="number" id="dash-sell-price" step="0.01" min="0" />
+    </div>
+    <div class="dash-sell-field">
+      <label for="dash-sell-payment">Payment Method</label>
+      <select id="dash-sell-payment">
+        <option value="CASH">Cash</option>
+        <option value="FINANCE">Finance</option>
+        <option value="LEASE">Lease</option>
+      </select>
+    </div>
+    <div class="dash-sell-field">
+      <label for="dash-sell-notes">Notes (optional)</label>
+      <textarea id="dash-sell-notes" placeholder="Any additional notes…"></textarea>
+    </div>
+
+    <div class="dash-sell-error" id="dash-sell-error"></div>
+    <button class="btn-sell-enq" id="dash-sell-submit" onclick="submitSale()" style="width:100%;">Confirm Sale</button>
+  </div>
 </div>
 
 <!-- Add / Edit Modal -->
@@ -322,31 +521,181 @@
 
   function goDetail(id) { location.href = "/vehicle-details.html?id=" + id; }
 
+  let _enquiries = [];
+  let _activeEnquiry = null;
+  let _sellVehicleId = null;
+
   async function loadEnquiries() {
     const res = await fetch("/api/enquiries", { credentials: "include" });
     const data = await res.json();
+    _enquiries = Array.isArray(data) ? data : [];
     const tbody = document.getElementById("enq-rows");
-    if (!data || !data.length) {
-      tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:24px;'>No enquiries yet.</td></tr>";
+    if (!_enquiries.length) {
+      tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;color:var(--muted);padding:24px;'>No enquiries yet.</td></tr>";
       return;
     }
-    tbody.innerHTML = data.map(e => `
-      <tr>
+    tbody.innerHTML = _enquiries.map((e, i) => `
+      <tr onclick="openEnquiryDetail(${i})">
         <td class="muted" style="white-space:nowrap;font-size:.8rem;">${esc(e.time)}</td>
         <td><strong>${esc(e.name)}</strong></td>
         <td class="muted" style="font-size:.83rem;">${esc(e.email)}</td>
         <td class="muted" style="font-size:.83rem;">${esc(e.vehicle)}</td>
-        <td style="font-size:.83rem;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${esc(e.message)}">${esc(e.message)}</td>
         <td>${e.isRead === 'true' || e.isRead === true
           ? '<span class="badge badge-available">Read</span>'
-          : `<button class="action-btn btn-edit" onclick="markRead(${e.id})">Mark Read</button>`}</td>
+          : '<span class="badge badge-reserved">Unread</span>'}</td>
       </tr>
     `).join("");
   }
 
-  async function markRead(id) {
-    await fetch(`/api/enquiries?id=${id}`, { method: "POST", credentials: "include" });
-    await loadEnquiries();
+  function openEnquiryDetail(idx) {
+    _activeEnquiry = _enquiries[idx];
+    const e = _activeEnquiry;
+    document.getElementById("enq-detail-name").textContent = e.name;
+    document.getElementById("enq-detail-meta").textContent =
+      `${e.email}${e.phone ? ' · ' + e.phone : ''} · ${e.vehicle} · ${e.time}`;
+    document.getElementById("enq-detail-message").textContent = e.message || '(no message)';
+
+    const isRead = e.isRead === true || e.isRead === 'true';
+    const toggleBtn = document.getElementById("enq-toggle-read-btn");
+    toggleBtn.textContent = isRead ? 'Mark as Unread' : 'Mark as Read';
+
+    const hasVehicle = e.vehicleId && e.vehicleId !== '' && e.vehicleId !== '0';
+    const sellBtn = document.getElementById("enq-sell-btn");
+    sellBtn.disabled = !hasVehicle;
+    sellBtn.title = hasVehicle ? '' : 'No vehicle attached';
+
+    const sellNote = document.getElementById("enq-sell-note");
+    if (!hasVehicle) {
+      sellNote.textContent = 'No vehicle attached to this enquiry — submit from a vehicle page to enable selling.';
+      sellNote.style.display = 'block';
+    } else {
+      sellNote.style.display = 'none';
+    }
+    document.getElementById("enq-toggle-error").style.display = 'none';
+
+    document.getElementById("enq-detail-backdrop").classList.add("open");
+  }
+
+  function closeEnquiryDetail() {
+    document.getElementById("enq-detail-backdrop").classList.remove("open");
+  }
+
+  async function toggleRead() {
+    if (!_activeEnquiry) return;
+    const isRead = _activeEnquiry.isRead === true || _activeEnquiry.isRead === 'true';
+    const newRead = !isRead;
+    const errEl = document.getElementById("enq-toggle-error");
+    errEl.style.display = 'none';
+    try {
+      const res = await fetch(`/api/enquiries?id=${_activeEnquiry.id}&read=${newRead}`, {
+        method: "POST",
+        credentials: "include"
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error ${res.status}`);
+      }
+      closeEnquiryDetail();
+      await loadEnquiries();
+    } catch (err) {
+      console.error('toggleRead failed:', err);
+      errEl.textContent = err.message || 'Failed to update status.';
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function openSellFromEnquiry() {
+    if (!_activeEnquiry) return;
+    const enq = _activeEnquiry;
+    _sellVehicleId = enq.vehicleId;
+
+    const car = allCars.find(c => String(c.id) === String(enq.vehicleId));
+    document.getElementById("dash-sell-sub").textContent = car
+      ? `Recording sale for: ${car.year} ${car.make} ${car.model}`
+      : `Vehicle ID: ${enq.vehicleId}`;
+    if (car) {
+      document.getElementById("dash-sell-price").value = car.price || '';
+    } else {
+      document.getElementById("dash-sell-price").value = '';
+    }
+
+    document.getElementById("dash-sell-notes").value = '';
+    document.getElementById("dash-sell-error").style.display = "none";
+    const btn = document.getElementById("dash-sell-submit");
+    btn.disabled = false;
+    btn.textContent = 'Confirm Sale';
+
+    const sel = document.getElementById("dash-sell-customer");
+    sel.innerHTML = '<option value="">Loading…</option>';
+    try {
+      const r = await fetch('/api/customers', { credentials: 'include' });
+      const customers = await r.json();
+      if (Array.isArray(customers) && customers.length > 0) {
+        sel.innerHTML = customers.map(c =>
+          `<option value="${esc(String(c.customerId))}"${String(c.customerId) === String(enq.customerId) ? ' selected' : ''}>${esc(c.firstName + ' ' + c.lastName)} — ${esc(c.email)}</option>`
+        ).join('');
+      } else {
+        sel.innerHTML = '<option value="">No customers found</option>';
+      }
+    } catch (_) {
+      sel.innerHTML = '<option value="">Could not load customers</option>';
+    }
+
+    closeEnquiryDetail();
+    document.getElementById("dash-sell-backdrop").classList.add("open");
+  }
+
+  function closeSellModal() {
+    document.getElementById("dash-sell-backdrop").classList.remove("open");
+  }
+
+  async function submitSale() {
+    const customerId = document.getElementById("dash-sell-customer").value;
+    const salePrice  = document.getElementById("dash-sell-price").value;
+    const payment    = document.getElementById("dash-sell-payment").value;
+    const notes      = document.getElementById("dash-sell-notes").value.trim();
+    const errEl      = document.getElementById("dash-sell-error");
+
+    if (!customerId) {
+      errEl.textContent = 'Please select a customer.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!salePrice || parseFloat(salePrice) <= 0) {
+      errEl.textContent = 'Please enter a valid sale price.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById("dash-sell-submit");
+    btn.disabled = true;
+    btn.textContent = 'Recording…';
+
+    try {
+      const res = await fetch('/api/sales', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vehicleId: parseInt(_sellVehicleId, 10),
+          customerId: parseInt(customerId, 10),
+          salePrice: parseFloat(salePrice),
+          paymentMethod: payment,
+          notes
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Sale could not be recorded.');
+      closeSellModal();
+      await loadCars();
+      await loadSales();
+    } catch (e) {
+      errEl.textContent = e.message || 'Something went wrong.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Confirm Sale';
+    }
   }
 
   async function loadSales() {
@@ -388,9 +737,9 @@
     tbody.innerHTML = logs.map(l => `
       <tr>
         <td class="muted" style="white-space:nowrap;font-size:.8rem;">${l.time}</td>
-        <td><strong>${l.username}</strong></td>
-        <td>${l.action}</td>
-        <td class="muted" style="font-size:.83rem;">${l.detail}</td>
+        <td><strong>${l.employee}</strong></td>
+        <td>${l.changeType}</td>
+        <td class="muted" style="font-size:.83rem;">${l.fieldChanged ? l.fieldChanged + (l.newValue ? ' → ' + l.newValue : '') : l.newValue || ''}</td>
       </tr>
     `).join("");
   }
