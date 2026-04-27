@@ -4,7 +4,8 @@
 # Maven build output
 target/
 
-# config.properties
+# Local database config
+db.properties
 
 
 # Runtime logs

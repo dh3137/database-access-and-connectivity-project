@@ -3,6 +3,7 @@ package com.cardealership;
 import com.cardealership.database.ActionLogDatabase;
 import com.cardealership.database.CarDatabase;
 import com.cardealership.database.CustomerDatabase;
+import com.cardealership.database.EmployeeDatabase;
 import com.cardealership.database.EnquiryDatabase;
 import com.cardealership.database.ReviewDatabase;
 import com.cardealership.database.SalesDatabase;
@@ -48,10 +49,11 @@ public class Main {
         String database = props.getProperty(osUser + ".database");
         String username = props.getProperty(osUser + ".username");
         String password = props.getProperty(osUser + ".password");
+        String params   = props.getProperty(osUser + ".params", "");
         if (host == null || password == null) {
             throw new RuntimeException("No DB config found for OS user: \"" + osUser + "\". Add your entry to db.properties.");
         }
-        return new MySQLDatabase(host, port, database, username, password);
+        return new MySQLDatabase(host, port, database, username, password, params);
     }
     private static final Map<String, User> sessions = new ConcurrentHashMap<>();
     private static final CarDatabase carDatabase = new CarDatabase(database);
@@ -60,6 +62,7 @@ public class Main {
     private static final ReviewDatabase reviewDatabase = new ReviewDatabase(database);
     private static final EnquiryDatabase enquiryDatabase = new EnquiryDatabase(database);
     private static final CustomerDatabase customerDatabase = new CustomerDatabase(database);
+    private static final EmployeeDatabase employeeDatabase = new EmployeeDatabase(database);
     private static final SalesDatabase salesDatabase = new SalesDatabase(database);
 
 
@@ -90,6 +93,7 @@ public class Main {
         server.createContext("/api/enquiries",  Main::handleEnquiries);
         server.createContext("/api/sales",      Main::handleSales);
         server.createContext("/api/customers",  Main::handleCustomers);
+        server.createContext("/api/employees",  Main::handleEmployees);
         server.createContext("/",             Main::handleStatic);
 
         server.setExecutor(Executors.newFixedThreadPool(4));
@@ -595,6 +599,45 @@ public class Main {
             sendJson(ex, 200, sb.toString());
         } catch (Exception e) {
             System.err.println("[customers] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            sendJson(ex, 500, "{\"error\":\"Server error\"}");
+        }
+    }
+
+    // GET /api/employees  (ADMIN only) → list all employees as JSON array
+    private static void handleEmployees(HttpExchange ex) throws IOException {
+        try {
+            User user = getSessionUser(ex);
+            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
+            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+
+            if (!"GET".equals(ex.getRequestMethod())) {
+                sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
+                return;
+            }
+
+            String[][] rows = employeeDatabase.getAllEmployees();
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = 1; i < rows.length; i++) {
+                if (i > 1) sb.append(",");
+                String[] r = rows[i];
+                sb.append(String.format(
+                    "{\"employeeId\":\"%s\",\"firstName\":\"%s\",\"lastName\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\",\"hireDate\":\"%s\",\"isActive\":%s,\"username\":\"%s\",\"role\":\"%s\"}",
+                    escapeJson(r[0] != null ? r[0] : ""),
+                    escapeJson(r[1] != null ? r[1] : ""),
+                    escapeJson(r[2] != null ? r[2] : ""),
+                    escapeJson(r[3] != null ? r[3] : ""),
+                    escapeJson(r[4] != null ? r[4] : ""),
+                    escapeJson(r[5] != null ? r[5] : ""),
+                    "1".equals(r[6]) || "true".equalsIgnoreCase(r[6]) ? "true" : "false",
+                    escapeJson(r[7] != null ? r[7] : ""),
+                    escapeJson(r[8] != null ? r[8] : "EMPLOYEE")
+                ));
+            }
+            sb.append("]");
+            sendJson(ex, 200, sb.toString());
+        } catch (Exception e) {
+            System.err.println("[employees] ERROR: " + e.getMessage());
             e.printStackTrace();
             sendJson(ex, 500, "{\"error\":\"Server error\"}");
         }

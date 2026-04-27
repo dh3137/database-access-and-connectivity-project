@@ -17,13 +17,19 @@ public class MySQLDatabase {
     private final String database;
     private final String username;
     private final String password;
+    private final String connectionParams;
 
     public MySQLDatabase(String host, String port, String database, String username, String password) {
+        this(host, port, database, username, password, "");
+    }
+
+    public MySQLDatabase(String host, String port, String database, String username, String password, String connectionParams) {
         this.host = host;
         this.port = port;
         this.database = database;
         this.username = username;
         this.password = password;
+        this.connectionParams = connectionParams;
     }
 
     public boolean connect() throws DLException {
@@ -163,13 +169,21 @@ public class MySQLDatabase {
     }
 
     private Connection createConnection() throws SQLException {
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + database
-                + "?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
+        StringBuilder url = new StringBuilder("jdbc:mysql://")
+            .append(host)
+            .append(":")
+            .append(port)
+            .append("/")
+            .append(database)
+            .append("?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        if (connectionParams != null && !connectionParams.isBlank()) {
+            url.append("&").append(connectionParams);
+        }
 
         Properties props = new Properties();
         props.put("user", username);
         props.put("password", password);
 
-        return DriverManager.getConnection(url, props);
+        return DriverManager.getConnection(url.toString(), props);
     }
 }

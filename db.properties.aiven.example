@@ -1,0 +1,11 @@
+# Example Aiven-flavored database config.
+# Copy the values you need into your local db.properties under your OS username key.
+# Replace every placeholder with the values from the Aiven service page.
+
+YOUR_OS_USERNAME.host=YOUR_AIVEN_HOST
+YOUR_OS_USERNAME.port=YOUR_AIVEN_PORT
+YOUR_OS_USERNAME.database=defaultdb
+YOUR_OS_USERNAME.username=avnadmin
+YOUR_OS_USERNAME.password=YOUR_AIVEN_PASSWORD
+# Add any JDBC query params Aiven requires for your setup.
+YOUR_OS_USERNAME.params=sslMode=REQUIRED

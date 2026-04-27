@@ -162,6 +162,9 @@
       color: #f87171;
       margin-bottom: 12px;
     }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
   </style>
 </head>
 <body>
@@ -171,158 +174,206 @@
   <aside class="sidebar">
     <a href="/index.html" class="sidebar-logo" style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:1.35rem;letter-spacing:.01em;text-decoration:none;color:inherit;">◈ VELOCE</a>
     <div class="user-info" id="user-name"></div>
-    <a href="/dashboard.html" class="active">Vehicles</a>
+    <a href="#vehicles" id="nav-vehicles" class="active" onclick="setAdminTab('vehicles'); return false;">Vehicles</a>
+    <a href="#employees" id="nav-employees" onclick="setAdminTab('employees'); return false;">Employees</a>
     <a href="/api/logout" style="margin-top:auto;">Logout</a>
   </aside>
 
   <main class="admin-main">
-
-    <!-- Page header -->
-    <div class="page-header">
-      <div>
-        <div class="page-title" style="font-family:'Playfair Display',Georgia,serif;font-size:1.75rem;font-weight:700;letter-spacing:-.01em;">Vehicle Inventory</div>
-        <div class="page-subtitle">Manage your dealership's full vehicle catalogue.</div>
-      </div>
-    </div>
-
-    <!-- Stat cards -->
-    <div class="stat-row" id="stat-row">
-      <div class="stat-box">
-        <div class="label">Total Vehicles</div>
-        <div class="value" id="stat-total">—</div>
-        <div class="sub">in inventory</div>
-      </div>
-      <div class="stat-box green">
-        <div class="label">Available</div>
-        <div class="value" id="stat-available">—</div>
-        <div class="sub">ready to sell</div>
-      </div>
-      <div class="stat-box red">
-        <div class="label">Sold</div>
-        <div class="value" id="stat-sold">—</div>
-        <div class="sub">completed deals</div>
-      </div>
-      <div class="stat-box amber">
-        <div class="label">Reserved</div>
-        <div class="value" id="stat-reserved">—</div>
-        <div class="sub">pending deals</div>
-      </div>
-    </div>
-
-    <!-- Vehicles table card -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-header-title">All Vehicles</span>
-        <button class="btn-add" onclick="openModal()">+ Add Car</button>
+    <section id="section-vehicles" class="admin-section active">
+      <div class="page-header">
+        <div>
+          <div class="page-title" style="font-family:'Playfair Display',Georgia,serif;font-size:1.75rem;font-weight:700;letter-spacing:-.01em;">Vehicle Inventory</div>
+          <div class="page-subtitle">Manage your dealership's full vehicle catalogue.</div>
+        </div>
       </div>
 
-      <div class="filter-bar">
-        <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
-        <select id="f-status" onchange="applyFilters()">
-          <option value="">All statuses</option>
-          <option value="AVAILABLE">Available</option>
-          <option value="SOLD">Sold</option>
-          <option value="RESERVED">Reserved</option>
-        </select>
-        <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
-        <input type="number" id="f-max-price" placeholder="Max $"     oninput="applyFilters()" />
-        <input type="number" id="f-min-year"  placeholder="From year" oninput="applyFilters()" />
-        <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
+      <div class="stat-row" id="stat-row">
+        <div class="stat-box">
+          <div class="label">Total Vehicles</div>
+          <div class="value" id="stat-total">—</div>
+          <div class="sub">in inventory</div>
+        </div>
+        <div class="stat-box green">
+          <div class="label">Available</div>
+          <div class="value" id="stat-available">—</div>
+          <div class="sub">ready to sell</div>
+        </div>
+        <div class="stat-box red">
+          <div class="label">Sold</div>
+          <div class="value" id="stat-sold">—</div>
+          <div class="sub">completed deals</div>
+        </div>
+        <div class="stat-box amber">
+          <div class="label">Reserved</div>
+          <div class="value" id="stat-reserved">—</div>
+          <div class="sub">pending deals</div>
+        </div>
       </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Make</th>
-              <th>Model</th>
-              <th>Year</th>
-              <th>Color</th>
-              <th>Mileage</th>
-              <th>Price</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="car-rows">
-            <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-header-title">All Vehicles</span>
+          <button class="btn-add" onclick="openModal()">+ Add Car</button>
+        </div>
 
-    <!-- Enquiries card -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-header-title">Customer Enquiries</span>
-        <span style="color:var(--muted);font-size:.78rem;">last 50 submissions</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>From</th>
-              <th>Email</th>
-              <th>Vehicle</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="enq-rows">
-            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <div class="filter-bar">
+          <input type="text"   id="f-search"    placeholder="Search make or model…" oninput="applyFilters()" />
+          <select id="f-status" onchange="applyFilters()">
+            <option value="">All statuses</option>
+            <option value="AVAILABLE">Available</option>
+            <option value="SOLD">Sold</option>
+            <option value="RESERVED">Reserved</option>
+          </select>
+          <input type="number" id="f-min-price" placeholder="Min $"     oninput="applyFilters()" />
+          <input type="number" id="f-max-price" placeholder="Max $"     oninput="applyFilters()" />
+          <input type="number" id="f-min-year"  placeholder="From year" oninput="applyFilters()" />
+          <input type="number" id="f-max-year"  placeholder="To year"   oninput="applyFilters()" />
+        </div>
 
-    <!-- Recent Sales card -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-header-title">Recent Sales</span>
-        <span style="color:var(--muted);font-size:.78rem;">last 50 completed deals</span>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Color</th>
+                <th>Mileage</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="car-rows">
+              <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Vehicle</th>
-              <th>Customer</th>
-              <th>Sale Price</th>
-              <th>Payment</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody id="sales-rows">
-            <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- Activity log card -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-header-title">Activity Log</span>
-        <span style="color:var(--muted);font-size:.78rem;">last 50 actions</span>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-header-title">Customer Enquiries</span>
+          <span style="color:var(--muted);font-size:.78rem;">last 50 submissions</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>From</th>
+                <th>Email</th>
+                <th>Vehicle</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="enq-rows">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>User</th>
-              <th>Action</th>
-              <th>Detail</th>
-            </tr>
-          </thead>
-          <tbody id="log-rows">
-            <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
-          </tbody>
-        </table>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-header-title">Recent Sales</span>
+          <span style="color:var(--muted);font-size:.78rem;">last 50 completed deals</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Vehicle</th>
+                <th>Customer</th>
+                <th>Sale Price</th>
+                <th>Payment</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="sales-rows">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-header-title">Activity Log</span>
+          <span style="color:var(--muted);font-size:.78rem;">last 50 actions</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="log-rows">
+              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-employees" class="admin-section">
+      <div class="page-header">
+        <div>
+          <div class="page-title" style="font-family:'Playfair Display',Georgia,serif;font-size:1.75rem;font-weight:700;letter-spacing:-.01em;">Employees</div>
+          <div class="page-subtitle">A simple team directory for admins and class demos.</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="label">Total Employees</div>
+          <div class="value" id="emp-stat-total">—</div>
+          <div class="sub">people in the system</div>
+        </div>
+        <div class="stat-box green">
+          <div class="label">Active</div>
+          <div class="value" id="emp-stat-active">—</div>
+          <div class="sub">currently active staff</div>
+        </div>
+        <div class="stat-box amber">
+          <div class="label">Admin Accounts</div>
+          <div class="value" id="emp-stat-admin">—</div>
+          <div class="sub">elevated access users</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-header-title">Employee Directory</span>
+          <span style="color:var(--muted);font-size:.78rem;">read-only admin view</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Hire Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="employee-rows">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
   </main>
 </div>
@@ -468,6 +519,8 @@
 
 <script>
   let allCars = [];
+  let allEmployees = [];
+  let currentAdminTab = "vehicles";
 
   async function init() {
     const meRes = await fetch("/api/me", { credentials: "include" });
@@ -475,10 +528,25 @@
     if (me.error) { location.href = "/login.html"; return; }
     if (me.role !== "ADMIN") { location.href = "/cars.html"; return; }
     document.getElementById("user-name").textContent = me.fullName;
-    await loadCars();
-    await loadEnquiries();
-    await loadSales();
-    await loadLogs();
+
+    await Promise.all([
+      loadCars(),
+      loadEnquiries(),
+      loadSales(),
+      loadLogs(),
+      loadEmployees()
+    ]);
+
+    setAdminTab(location.hash === "#employees" ? "employees" : "vehicles");
+  }
+
+  function setAdminTab(tab) {
+    currentAdminTab = tab === "employees" ? "employees" : "vehicles";
+    document.getElementById("section-vehicles").classList.toggle("active", currentAdminTab === "vehicles");
+    document.getElementById("section-employees").classList.toggle("active", currentAdminTab === "employees");
+    document.getElementById("nav-vehicles").classList.toggle("active", currentAdminTab === "vehicles");
+    document.getElementById("nav-employees").classList.toggle("active", currentAdminTab === "employees");
+    history.replaceState(null, "", currentAdminTab === "employees" ? "#employees" : "#vehicles");
   }
 
   async function loadCars() {
@@ -495,6 +563,40 @@
     document.getElementById("stat-available").textContent = allCars.filter(c => c.status === "AVAILABLE").length;
     document.getElementById("stat-sold").textContent      = allCars.filter(c => c.status === "SOLD").length;
     document.getElementById("stat-reserved").textContent  = allCars.filter(c => c.status === "RESERVED").length;
+  }
+
+  async function loadEmployees() {
+    const res = await fetch("/api/employees", { credentials: "include" });
+    const data = await res.json();
+    if (data.error) { location.href = "/login.html"; return; }
+    allEmployees = Array.isArray(data) ? data : [];
+    updateEmployeeStats();
+    renderEmployees();
+  }
+
+  function updateEmployeeStats() {
+    document.getElementById("emp-stat-total").textContent = allEmployees.length;
+    document.getElementById("emp-stat-active").textContent = allEmployees.filter(e => e.isActive === true || e.isActive === "true").length;
+    document.getElementById("emp-stat-admin").textContent = allEmployees.filter(e => e.role === "ADMIN").length;
+  }
+
+  function renderEmployees() {
+    const tbody = document.getElementById("employee-rows");
+    if (!allEmployees.length) {
+      tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:var(--muted);padding:24px;'>No employees found.</td></tr>";
+      return;
+    }
+    tbody.innerHTML = allEmployees.map(emp => `
+      <tr>
+        <td><strong>${esc(emp.firstName)} ${esc(emp.lastName)}</strong></td>
+        <td class="muted">${emp.username ? esc(emp.username) : "—"}</td>
+        <td>${statusBadge(emp.role || "EMPLOYEE")}</td>
+        <td>${esc(emp.email)}</td>
+        <td class="muted">${emp.phone ? esc(emp.phone) : "—"}</td>
+        <td class="muted">${emp.hireDate ? esc(emp.hireDate) : "—"}</td>
+        <td>${employeeStatusBadge(emp.isActive)}</td>
+      </tr>
+    `).join("");
   }
 
   function applyFilters() {
@@ -544,6 +646,12 @@
     const cls = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[s] || 'badge-available';
     const label = s ? s.charAt(0) + s.slice(1).toLowerCase() : 'Available';
     return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  function employeeStatusBadge(isActive) {
+    return isActive === true || isActive === "true"
+      ? '<span class="badge badge-available">Active</span>'
+      : '<span class="badge badge-sold">Inactive</span>';
   }
 
   function goDetail(id) { location.href = "/vehicle-details.html?id=" + id; }
