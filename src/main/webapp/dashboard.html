@@ -214,7 +214,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-header-title">All Vehicles</span>
-          <button class="btn-add" onclick="openModal()">+ Add Car</button>
+          <button class="btn-add admin-only perm-manage-cars" onclick="openModal()">+ Add Car</button>
         </div>
 
         <div class="filter-bar">
@@ -235,19 +235,19 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
+                <th class="num">ID</th>
                 <th>Make</th>
                 <th>Model</th>
-                <th>Year</th>
+                <th class="num">Year</th>
                 <th>Color</th>
-                <th>Mileage</th>
-                <th>Price</th>
+                <th class="num">Mileage</th>
+                <th class="num">Price</th>
                 <th>Status</th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="car-rows">
-              <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+              <tr><td colspan="9" class="td-empty">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -270,7 +270,7 @@
               </tr>
             </thead>
             <tbody id="enq-rows">
-              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+              <tr><td colspan="5" class="td-empty">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -288,13 +288,13 @@
                 <th>Date</th>
                 <th>Vehicle</th>
                 <th>Customer</th>
-                <th>Sale Price</th>
+                <th class="num">Sale Price</th>
                 <th>Payment</th>
                 <th>Notes</th>
               </tr>
             </thead>
             <tbody id="sales-rows">
-              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+              <tr><td colspan="6" class="td-empty">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -316,7 +316,7 @@
               </tr>
             </thead>
             <tbody id="log-rows">
-              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+              <tr><td colspan="4" class="td-empty">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -368,7 +368,7 @@
               </tr>
             </thead>
             <tbody id="employee-rows">
-              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">Loading…</td></tr>
+              <tr><td colspan="7" class="td-empty">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -521,32 +521,45 @@
   let allCars = [];
   let allEmployees = [];
   let currentAdminTab = "vehicles";
+  let isAdmin = false;
+  let canManageCars = false;
+  const availableTabs = ["vehicles", "employees"];
 
   async function init() {
     const meRes = await fetch("/api/me", { credentials: "include" });
     const me = await meRes.json();
     if (me.error) { location.href = "/login.html"; return; }
-    if (me.role !== "ADMIN") { location.href = "/cars.html"; return; }
+    if (me.role !== "ADMIN" && me.role !== "EMPLOYEE") { location.href = "/cars.html"; return; }
+    isAdmin = me.role === "ADMIN";
+    canManageCars = me.canManageCars === true;
     document.getElementById("user-name").textContent = me.fullName;
 
-    await Promise.all([
-      loadCars(),
-      loadEnquiries(),
-      loadSales(),
-      loadLogs(),
-      loadEmployees()
-    ]);
+    // Hide static admin-only elements and then re-enable inventory controls for admins.
+    document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
+    if (canManageCars) {
+      document.querySelectorAll(".perm-manage-cars").forEach(el => el.style.display = "");
+    }
 
-    setAdminTab(location.hash === "#employees" ? "employees" : "vehicles");
+    const loadQueue = [];
+    loadQueue.push(loadCars());
+    loadQueue.push(loadEnquiries());
+    loadQueue.push(loadSales());
+    loadQueue.push(loadLogs());
+    loadQueue.push(loadEmployees());
+    await Promise.all(loadQueue);
+
+    const hash = location.hash.replace("#", "");
+    setAdminTab(availableTabs.includes(hash) ? hash : "vehicles");
   }
 
+  const TABS = ["vehicles", "employees"];
   function setAdminTab(tab) {
-    currentAdminTab = tab === "employees" ? "employees" : "vehicles";
-    document.getElementById("section-vehicles").classList.toggle("active", currentAdminTab === "vehicles");
-    document.getElementById("section-employees").classList.toggle("active", currentAdminTab === "employees");
-    document.getElementById("nav-vehicles").classList.toggle("active", currentAdminTab === "vehicles");
-    document.getElementById("nav-employees").classList.toggle("active", currentAdminTab === "employees");
-    history.replaceState(null, "", currentAdminTab === "employees" ? "#employees" : "#vehicles");
+    currentAdminTab = availableTabs.includes(tab) ? tab : "vehicles";
+    TABS.forEach(t => {
+      document.getElementById("section-" + t).classList.toggle("active", currentAdminTab === t);
+      document.getElementById("nav-" + t).classList.toggle("active", currentAdminTab === t);
+    });
+    history.replaceState(null, "", currentAdminTab === "vehicles" ? "#vehicles" : "#" + currentAdminTab);
   }
 
   async function loadCars() {
@@ -583,17 +596,17 @@
   function renderEmployees() {
     const tbody = document.getElementById("employee-rows");
     if (!allEmployees.length) {
-      tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:var(--muted);padding:24px;'>No employees found.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='7' class='td-empty'>No employees found.</td></tr>";
       return;
     }
     tbody.innerHTML = allEmployees.map(emp => `
       <tr>
-        <td><strong>${esc(emp.firstName)} ${esc(emp.lastName)}</strong></td>
-        <td class="muted">${emp.username ? esc(emp.username) : "—"}</td>
+        <td class="strong">${esc(emp.firstName)} ${esc(emp.lastName)}</td>
+        <td class="mono muted">${emp.username ? esc(emp.username) : "—"}</td>
         <td>${statusBadge(emp.role || "EMPLOYEE")}</td>
         <td>${esc(emp.email)}</td>
         <td class="muted">${emp.phone ? esc(emp.phone) : "—"}</td>
-        <td class="muted">${emp.hireDate ? esc(emp.hireDate) : "—"}</td>
+        <td class="mono muted">${emp.hireDate ? esc(emp.hireDate) : "—"}</td>
         <td>${employeeStatusBadge(emp.isActive)}</td>
       </tr>
     `).join("");
@@ -621,22 +634,22 @@
   function renderCars(cars) {
     const tbody = document.getElementById("car-rows");
     if (cars.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='9' style='text-align:center;color:var(--muted);padding:32px;'>No vehicles match your filters.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='9' class='td-empty'>No vehicles match your filters.</td></tr>";
       return;
     }
     tbody.innerHTML = cars.map(car => `
       <tr>
-        <td class="muted" onclick="goDetail(${car.id})">${car.id}</td>
-        <td onclick="goDetail(${car.id})"><strong>${car.make}</strong></td>
-        <td onclick="goDetail(${car.id})">${car.model}</td>
-        <td onclick="goDetail(${car.id})">${car.year}</td>
-        <td onclick="goDetail(${car.id})" class="muted">${car.color || '—'}</td>
-        <td onclick="goDetail(${car.id})" class="muted">${car.mileage ? car.mileage.toLocaleString() + ' km' : '—'}</td>
-        <td onclick="goDetail(${car.id})">$${car.price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
+        <td class="num mono" onclick="goDetail(${car.id})">${car.id}</td>
+        <td onclick="goDetail(${car.id})" class="strong">${esc(car.make)}</td>
+        <td onclick="goDetail(${car.id})">${esc(car.model)}</td>
+        <td class="num" onclick="goDetail(${car.id})">${car.year}</td>
+        <td onclick="goDetail(${car.id})" class="muted">${esc(car.color) || '—'}</td>
+        <td class="num muted" onclick="goDetail(${car.id})">${car.mileage ? car.mileage.toLocaleString() + ' km' : '—'}</td>
+        <td class="num" onclick="goDetail(${car.id})">$${car.price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
         <td onclick="goDetail(${car.id})">${statusBadge(car.status)}</td>
         <td style="white-space:nowrap;">
-          <button class="action-btn btn-edit" onclick="openEdit(${car.id})">Edit</button>
-          <button class="action-btn btn-delete" onclick="deleteCar(${car.id})">Delete</button>
+          ${canManageCars ? `<button class="action-btn btn-edit" onclick="openEdit(${car.id})">Edit</button>
+          <button class="action-btn btn-delete" onclick="deleteCar(${car.id})">Delete</button>` : ''}
         </td>
       </tr>
     `).join("");
@@ -646,6 +659,12 @@
     const cls = { AVAILABLE: 'badge-available', SOLD: 'badge-sold', RESERVED: 'badge-reserved' }[s] || 'badge-available';
     const label = s ? s.charAt(0) + s.slice(1).toLowerCase() : 'Available';
     return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  function paymentBadge(method) {
+    const m = (method || '').toLowerCase();
+    const cls = m === 'cash' ? 'badge-cash' : m === 'finance' || m === 'financing' ? 'badge-finance' : m === 'lease' ? 'badge-lease' : 'badge-neutral';
+    return `<span class="badge ${cls}">${esc(method || '—')}</span>`;
   }
 
   function employeeStatusBadge(isActive) {
@@ -666,15 +685,15 @@
     _enquiries = Array.isArray(data) ? data : [];
     const tbody = document.getElementById("enq-rows");
     if (!_enquiries.length) {
-      tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;color:var(--muted);padding:24px;'>No enquiries yet.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='5' class='td-empty'>No enquiries yet.</td></tr>";
       return;
     }
     tbody.innerHTML = _enquiries.map((e, i) => `
       <tr onclick="openEnquiryDetail(${i})">
-        <td class="muted" style="white-space:nowrap;font-size:.8rem;">${esc(e.time)}</td>
-        <td><strong>${esc(e.name)}</strong></td>
-        <td class="muted" style="font-size:.83rem;">${esc(e.email)}</td>
-        <td class="muted" style="font-size:.83rem;">${esc(e.vehicle)}</td>
+        <td class="mono muted">${esc(e.time)}</td>
+        <td class="strong">${esc(e.name)}</td>
+        <td class="muted">${esc(e.email)}</td>
+        <td class="muted">${esc(e.vehicle)}</td>
         <td>${e.isRead === 'true' || e.isRead === true
           ? '<span class="badge badge-available">Read</span>'
           : '<span class="badge badge-reserved">Unread</span>'}</td>
@@ -838,17 +857,17 @@
     const data = await res.json();
     const tbody = document.getElementById("sales-rows");
     if (!data || !data.length) {
-      tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:24px;'>No sales recorded yet.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='6' class='td-empty'>No sales recorded yet.</td></tr>";
       return;
     }
     tbody.innerHTML = data.map(s => `
       <tr>
-        <td class="muted" style="white-space:nowrap;font-size:.8rem;">${esc(s.saleDate ? s.saleDate.slice(0,10) : '')}</td>
-        <td><strong>${esc(s.vehicle)}</strong></td>
-        <td>${esc(s.customer)}<br><span style="color:var(--muted);font-size:.78rem;">${esc(s.customerEmail)}</span></td>
-        <td>$${parseFloat(s.salePrice || 0).toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
-        <td><span class="badge badge-available">${esc(s.paymentMethod)}</span></td>
-        <td class="muted" style="font-size:.83rem;">${esc(s.notes)}</td>
+        <td class="mono muted">${esc(s.saleDate ? s.saleDate.slice(0,10) : '—')}</td>
+        <td class="strong">${esc(s.vehicle)}</td>
+        <td>${esc(s.customer)}<br><span class="muted" style="font-size:.78rem;">${esc(s.customerEmail)}</span></td>
+        <td class="num">$${parseFloat(s.salePrice || 0).toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
+        <td>${paymentBadge(s.paymentMethod)}</td>
+        <td class="muted">${esc(s.notes)}</td>
       </tr>
     `).join("");
   }
@@ -866,15 +885,15 @@
     const logs = await res.json();
     const tbody = document.getElementById("log-rows");
     if (!logs || !logs.length) {
-      tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;color:var(--muted);padding:24px;'>No actions yet.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='4' class='td-empty'>No actions yet.</td></tr>";
       return;
     }
     tbody.innerHTML = logs.map(l => `
       <tr>
-        <td class="muted" style="white-space:nowrap;font-size:.8rem;">${l.time}</td>
-        <td><strong>${l.employee}</strong></td>
-        <td>${l.changeType}</td>
-        <td class="muted" style="font-size:.83rem;">${l.fieldChanged ? l.fieldChanged + (l.newValue ? ' → ' + l.newValue : '') : l.newValue || ''}</td>
+        <td class="mono muted">${esc(l.time)}</td>
+        <td class="strong">${esc(l.employee)}</td>
+        <td>${esc(l.changeType)}</td>
+        <td class="muted">${l.fieldChanged ? esc(l.fieldChanged) + (l.newValue ? ' → ' + esc(l.newValue) : '') : esc(l.newValue) || '—'}</td>
       </tr>
     `).join("");
   }

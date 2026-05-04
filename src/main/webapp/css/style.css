@@ -301,62 +301,138 @@ a { color: inherit; text-decoration: none; }
 .filter-bar input[type="number"] { width: 96px; }
 
 /* ── Table ── */
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: .87rem;
+  font-size: .855rem;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 thead th {
-  background: var(--navy);
-  background-image: linear-gradient(135deg, var(--navy-2) 0%, #040404 100%);
-  color: rgba(255,255,255,.7);
-  padding: 12px 16px;
+  background: var(--surface-2);
+  color: var(--muted);
+  padding: 10px 16px;
   text-align: left;
-  font-size: .7rem;
-  font-weight: 600;
+  font-size: .68rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .07em;
+  letter-spacing: .08em;
   white-space: nowrap;
+  border-bottom: 1px solid var(--border-2);
+  user-select: none;
 }
 
-thead th:first-child { border-radius: 0; }
+thead th.num { text-align: right; }
 
 tbody tr {
   border-bottom: 1px solid var(--border);
-  transition: background var(--dur-fast);
+  transition: background var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 tbody tr:last-child { border-bottom: none; }
 
-tbody tr:hover { background: rgba(255,255,255,0.04); }
+tbody tr:nth-child(even) { background: rgba(255,255,255,0.018); }
+
+tbody tr:hover {
+  background: rgba(255,107,43,0.055);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
 
 tbody td {
-  padding: 13px 16px;
+  padding: 11px 16px;
   vertical-align: middle;
   color: var(--text-2);
 }
 
+tbody td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -.01em;
+}
+
+tbody td.mono {
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', ui-monospace, monospace;
+  font-size: .78rem;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
 tbody td.muted { color: var(--muted); font-size: .83rem; }
+
+tbody td.strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.td-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 16px !important;
+  font-style: italic;
+  font-size: .85rem;
+}
+
+/* Light mode table */
+[data-theme="light"] thead th {
+  background: var(--surface-2);
+  color: rgba(26,25,24,0.50);
+  border-bottom-color: var(--border-2);
+}
+[data-theme="light"] tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+[data-theme="light"] tbody tr:hover {
+  background: rgba(255,107,43,0.05);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+[data-theme="light"] .table-wrap { border-color: var(--border-2); }
 
 /* ── Badges ── */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 10px;
-  border-radius: 99px;
-  font-size: .7rem;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: .67rem;
   font-weight: 700;
-  letter-spacing: .05em;
+  letter-spacing: .06em;
   text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid transparent;
 }
 
-.badge-available { background: var(--green-bg); color: var(--green); }
-.badge-sold      { background: var(--red-bg);   color: var(--red); }
-.badge-reserved  { background: var(--amber-bg); color: var(--amber); }
+.badge-available {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: rgba(52,211,153,.18);
+}
+.badge-sold {
+  background: var(--red-bg);
+  color: var(--red);
+  border-color: rgba(248,113,113,.18);
+}
+.badge-reserved {
+  background: var(--amber-bg);
+  color: var(--amber);
+  border-color: rgba(251,191,36,.18);
+}
+
+/* Payment method badges */
+.badge-cash    { background: rgba(99,215,159,.12);  color: #63d79f; border-color: rgba(99,215,159,.2); }
+.badge-finance { background: rgba(139,120,255,.12); color: #9d8fff; border-color: rgba(139,120,255,.2); }
+.badge-lease   { background: rgba(56,178,255,.12);  color: #38b2ff; border-color: rgba(56,178,255,.2); }
+.badge-neutral { background: rgba(245,244,240,.07); color: var(--text-2); border-color: var(--border); }
 
 /* ── Buttons ── */
 .btn {

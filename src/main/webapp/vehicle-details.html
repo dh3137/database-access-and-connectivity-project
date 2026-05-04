@@ -406,6 +406,138 @@
       color: rgba(245,244,240,.42);
     }
 
+    /* ── SERVICE HISTORY ── */
+    .vd-maint {
+      margin-top: 60px;
+    }
+
+    .vd-maint-empty {
+      font-size: .84rem;
+      color: rgba(245,244,240,.25);
+      letter-spacing: .04em;
+      padding: 20px 0;
+    }
+
+    .vd-maint-record {
+      border-top: 1px solid rgba(245,244,240,.06);
+      padding: 22px 0;
+      display: grid;
+      grid-template-columns: 110px 1fr auto;
+      gap: 6px 20px;
+      align-items: start;
+    }
+
+    .vd-maint-date {
+      font-size: .72rem;
+      font-weight: 600;
+      color: rgba(245,244,240,.35);
+      letter-spacing: .07em;
+      padding-top: 2px;
+    }
+
+    .vd-maint-type {
+      font-size: .84rem;
+      font-weight: 600;
+      color: var(--v-white);
+      letter-spacing: .02em;
+    }
+
+    .vd-maint-cost {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--v-orange);
+      white-space: nowrap;
+    }
+
+    .vd-maint-desc {
+      grid-column: 2 / -1;
+      font-size: .8rem;
+      line-height: 1.65;
+      color: rgba(245,244,240,.38);
+    }
+
+    .vd-maint-by {
+      grid-column: 2 / -1;
+      font-size: .68rem;
+      color: rgba(245,244,240,.22);
+      letter-spacing: .05em;
+    }
+
+    /* Add-record form (admin only, inline) */
+    .vd-maint-add {
+      margin-top: 28px;
+      border-top: 1px solid rgba(245,244,240,.06);
+      padding-top: 24px;
+      display: none;
+    }
+
+    .vd-maint-add-title {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+      margin-bottom: 16px;
+    }
+
+    .vd-maint-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .vd-maint-form .full { grid-column: 1 / -1; }
+
+    .vd-maint-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .vd-maint-field label {
+      font-size: .57rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--v-orange);
+    }
+
+    .vd-maint-field input,
+    .vd-maint-field textarea {
+      background: #0b0b0b;
+      border: 1px solid rgba(245,244,240,.1);
+      color: var(--v-white);
+      font-family: 'Inter', sans-serif;
+      font-size: .86rem;
+      padding: 10px 13px;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 150ms;
+      width: 100%;
+    }
+    .vd-maint-field input:focus,
+    .vd-maint-field textarea:focus { border-color: var(--v-orange); }
+    .vd-maint-field textarea { min-height: 72px; resize: vertical; }
+
+    .vd-maint-add-error {
+      display: none;
+      font-size: .78rem;
+      color: #f87171;
+      margin-top: 8px;
+    }
+
+    /* Light-mode overrides for service history */
+    [data-theme="light"] .vd-maint-record        { border-top-color: rgba(26,25,24,.07); }
+    [data-theme="light"] .vd-maint-date          { color: rgba(26,25,24,.35); }
+    [data-theme="light"] .vd-maint-type          { color: #1A1918; }
+    [data-theme="light"] .vd-maint-desc          { color: rgba(26,25,24,.50); }
+    [data-theme="light"] .vd-maint-by            { color: rgba(26,25,24,.28); }
+    [data-theme="light"] .vd-maint-add           { border-top-color: rgba(26,25,24,.07); }
+    [data-theme="light"] .vd-maint-field input,
+    [data-theme="light"] .vd-maint-field textarea { background: #fff; border-color: rgba(26,25,24,.12); color: #1A1918; }
+    [data-theme="light"] .vd-maint-empty         { color: rgba(26,25,24,.30); }
+
     /* ── ENQUIRY MODAL ── */
     .enq-backdrop {
       display: none;
@@ -708,6 +840,41 @@
       </div>
       <div id="reviews-list"></div>
     </div>
+
+    <!-- Service History -->
+    <div class="vd-maint" id="maint-section">
+      <span class="vd-section-label">◈ Service History</span>
+      <div id="maint-list"><div class="vd-maint-empty">No service records on file.</div></div>
+
+      <!-- Admin: add new record -->
+      <div class="vd-maint-add" id="maint-add">
+        <div class="vd-maint-add-title">Add Service Record</div>
+        <div class="vd-maint-form">
+          <div class="vd-maint-field">
+            <label for="maint-date">Service Date *</label>
+            <input type="date" id="maint-date" />
+          </div>
+          <div class="vd-maint-field">
+            <label for="maint-type">Service Type *</label>
+            <input type="text" id="maint-type" placeholder="e.g. Oil Change" />
+          </div>
+          <div class="vd-maint-field">
+            <label for="maint-cost">Cost (USD)</label>
+            <input type="number" id="maint-cost" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="vd-maint-field">
+            <label for="maint-by">Performed By</label>
+            <input type="text" id="maint-by" placeholder="Technician or shop name" />
+          </div>
+          <div class="vd-maint-field full">
+            <label for="maint-desc">Description</label>
+            <textarea id="maint-desc" placeholder="Details about the service…"></textarea>
+          </div>
+        </div>
+        <div class="vd-maint-add-error" id="maint-error"></div>
+        <button class="vd-cta-primary" id="maint-submit" onclick="submitMaintenance()" style="margin-top:14px;margin-bottom:0;">Save Record</button>
+      </div>
+    </div>
   </div>
 
   <!-- Price -->
@@ -817,6 +984,7 @@
 <script>
   let _currentCar = null;
   let _me = null;
+  let _isStaff = false;
 
   async function openEnquiry() {
     if (!_me || _me.role !== 'CUSTOMER') {
@@ -905,11 +1073,14 @@
     try {
       const r = await fetch('/api/me', { credentials: 'include' });
       const d = await r.json();
-      if (!d.error) _me = d;
+      if (!d.error) {
+        _me = d;
+        _isStaff = d.role === 'ADMIN' || d.role === 'EMPLOYEE';
+      }
     } catch (_) {}
 
     if (_me) {
-      const dashHref = _me.role === 'ADMIN' ? '/dashboard.html' : '/cars.html';
+      const dashHref = _isStaff ? '/dashboard.html' : '/cars.html';
       document.getElementById('back-link').href = dashHref;
       document.getElementById('back-link').textContent = '← Dashboard';
       document.getElementById('nav-action-btn').href = dashHref;
@@ -954,7 +1125,7 @@
       primaryCta.disabled = true;
     }
 
-    if (_me && _me.role === 'ADMIN' && car.status !== 'SOLD') {
+    if (_isStaff && car.status !== 'SOLD') {
       document.getElementById('admin-sell-btn').style.display = 'block';
     }
 
@@ -1051,7 +1222,80 @@
       } catch (_) {}
     }
 
+    // Service History
+    loadMaintenance(car.id);
+    if (_isStaff) {
+      document.getElementById('maint-add').style.display = 'block';
+    }
+
     document.getElementById('vd-main').style.display = 'grid';
+  }
+
+  async function loadMaintenance(vehicleId) {
+    try {
+      const r = await fetch(`/api/maintenance/${vehicleId}`);
+      const records = await r.json();
+      const list = document.getElementById('maint-list');
+      if (!Array.isArray(records) || records.length === 0) {
+        list.innerHTML = '<div class="vd-maint-empty">No service records on file.</div>';
+        return;
+      }
+      list.innerHTML = records.map(rec => {
+        const cost = rec.cost && rec.cost !== '' ? '$' + parseFloat(rec.cost).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '';
+        return `
+          <div class="vd-maint-record">
+            <div class="vd-maint-date">${esc(rec.serviceDate || '')}</div>
+            <div class="vd-maint-type">${esc(rec.serviceType || '')}</div>
+            ${cost ? `<div class="vd-maint-cost">${esc(cost)}</div>` : '<div></div>'}
+            ${rec.description ? `<div class="vd-maint-desc">${esc(rec.description)}</div>` : ''}
+            ${rec.performedBy ? `<div class="vd-maint-by">By ${esc(rec.performedBy)}</div>` : ''}
+          </div>`;
+      }).join('');
+    } catch (_) {}
+  }
+
+  async function submitMaintenance() {
+    const btn = document.getElementById('maint-submit');
+    const errEl = document.getElementById('maint-error');
+    const serviceDate = document.getElementById('maint-date').value.trim();
+    const serviceType = document.getElementById('maint-type').value.trim();
+    const cost        = document.getElementById('maint-cost').value.trim();
+    const performedBy = document.getElementById('maint-by').value.trim();
+    const description = document.getElementById('maint-desc').value.trim();
+
+    errEl.style.display = 'none';
+    if (!serviceDate || !serviceType) {
+      errEl.textContent = 'Service date and type are required.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      const r = await fetch(`/api/maintenance/${_currentCar.id}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceDate, serviceType, description, cost, performedBy }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Could not save record.');
+      // clear form and reload list
+      document.getElementById('maint-date').value = '';
+      document.getElementById('maint-type').value = '';
+      document.getElementById('maint-cost').value = '';
+      document.getElementById('maint-by').value = '';
+      document.getElementById('maint-desc').value = '';
+      loadMaintenance(_currentCar.id);
+    } catch (e) {
+      errEl.textContent = e.message || 'Something went wrong.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save Record';
+    }
   }
 
   function starsHtml(rating) {

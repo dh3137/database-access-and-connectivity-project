@@ -182,21 +182,11 @@ INSERT INTO Users (username, password, role, customer_id) VALUES
     ('ana',   'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'CUSTOMER', 2),
     ('marko', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'CUSTOMER', 3);
 
--- Roles & Permissions
-INSERT INTO Roles (role_name) VALUES ('Admin'), ('Salesperson'), ('Employee');
-
-INSERT INTO Permissions (permission_name) VALUES
-    ('Add Vehicle'), ('Update Vehicle'), ('Remove Vehicle'),
-    ('Record Sale'), ('View Sales Records'), ('Manage Customers'), ('Manage Reservations');
-
-INSERT INTO EmployeeRoles (emp_id, role_id, assigned_date) VALUES
-    (1, 1, '2026-04-01'), (2, 1, '2026-04-01'), (3, 1, '2026-04-01'),
-    (4, 1, '2026-04-01'), (5, 3, '2026-04-01');
-
-INSERT INTO RolePermissions (role_id, permission_id) VALUES
-    (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),
-    (2,1),(2,2),(2,4),(2,5),(2,6),(2,7),
-    (3,5);
+-- Staff access is driven directly by Users.role in the live app:
+-- ADMIN  -> full access, including vehicle inventory CRUD
+-- EMPLOYEE -> staff workflows like sales, enquiries, maintenance, logs, and employees
+-- The Roles/Permissions tables remain in the schema for future expansion, but
+-- this demo seed intentionally leaves them empty.
 
 -- Sales
 INSERT INTO Sales (vehicle_id, customer_id, emp_id, sale_price, payment_method) VALUES
