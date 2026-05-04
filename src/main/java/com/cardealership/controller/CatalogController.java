@@ -109,6 +109,10 @@ public class CatalogController {
                 HttpUtil.sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
             }
         } catch (Exception e) {
+            if (e instanceof IllegalArgumentException || e instanceof NumberFormatException) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"" + JsonUtil.escapeJson(e.getMessage() != null ? e.getMessage() : "Invalid car data") + "\"}");
+                return;
+            }
             System.err.println("[cars] ERROR: " + e.getMessage());
             e.printStackTrace();
             HttpUtil.sendJson(ex, 500, "{\"error\":\"Server error\"}");
@@ -288,8 +292,28 @@ public class CatalogController {
                     HttpUtil.sendJson(ex, 400, "{\"error\":\"serviceDate and serviceType are required\"}");
                     return;
                 }
+                if (!cost.isEmpty()) {
+                    try {
+                        if (Double.parseDouble(cost) < 0) {
+                            HttpUtil.sendJson(ex, 400, "{\"error\":\"cost cannot be negative\"}");
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        HttpUtil.sendJson(ex, 400, "{\"error\":\"cost must be a valid number\"}");
+                        return;
+                    }
+                }
 
                 boolean ok = context.maintenanceDatabase.addRecord(vehicleId, serviceDate, serviceType, description, cost, performedBy);
+                if (ok) {
+                    authService.logGeneralAction(
+                        user,
+                        "MAINTENANCE_ADDED",
+                        "Vehicle",
+                        String.valueOf(vehicleId),
+                        "Added maintenance record: " + serviceType
+                    );
+                }
                 HttpUtil.sendJson(ex, ok ? 201 : 500, ok ? "{\"ok\":true}" : "{\"error\":\"Could not save record\"}");
             } else {
                 HttpUtil.sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
@@ -367,6 +391,12 @@ public class CatalogController {
         }
         if (car.getPrice() < 0) {
             throw new IllegalArgumentException("Car price cannot be negative.");
+        }
+        if (car.getMileage() < 0) {
+            throw new IllegalArgumentException("Car mileage cannot be negative.");
+        }
+        if (car.getVin() != null && !car.getVin().isBlank() && car.getVin().trim().length() != 17) {
+            throw new IllegalArgumentException("VIN must be exactly 17 characters.");
         }
     }
 

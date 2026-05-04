@@ -6,6 +6,8 @@ import com.cardealership.model.User;
 import com.cardealership.util.HttpUtil;
 import com.cardealership.util.JsonUtil;
 import com.sun.net.httpserver.HttpExchange;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -91,6 +93,75 @@ public class AuthService {
 
     public String hashPassword(String input) {
         return sha256(input);
+    }
+
+    public User registerCustomer(String username, String password, String firstName, String lastName, String email, String phone)
+        throws DLException {
+        try (Connection connection = context.database.getConnection()) {
+            boolean originalAutoCommit = connection.getAutoCommit();
+            try {
+                connection.setAutoCommit(false);
+
+                int customerId = context.customerDatabase.createCustomer(connection, firstName, lastName, email, phone);
+                if (customerId <= 0) {
+                    connection.rollback();
+                    return null;
+                }
+
+                User newUser = new User();
+                newUser.setUsername(username);
+                newUser.setPassword(hashPassword(password));
+                newUser.setRole("CUSTOMER");
+                newUser.setCustomerId(customerId);
+
+                if (!context.userDatabase.saveUser(connection, newUser)) {
+                    connection.rollback();
+                    return null;
+                }
+
+                connection.commit();
+            } catch (DLException | SQLException e) {
+                rollbackQuietly(connection);
+                if (e instanceof DLException dlException) {
+                    throw dlException;
+                }
+                throw new DLException((SQLException) e, "Operation=registerCustomer", "DatabaseType=MySQL");
+            } finally {
+                restoreAutoCommit(connection, originalAutoCommit);
+            }
+        } catch (DLException e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new DLException(e, "Operation=registerCustomer", "DatabaseType=MySQL");
+        }
+
+        return authenticate(username, password);
+    }
+
+    public void logGeneralAction(User user, String actionType, String objectType, String objectId, String details) {
+        try {
+            int userId = user != null ? user.getId() : 0;
+            int empId = user != null ? user.getEmpId() : 0;
+            context.actionLogDatabase.saveGeneralAction(userId, empId, actionType, objectType, objectId, details);
+        } catch (DLException e) {
+            System.err.println("[action_log] Failed to write log: " + e.getMessage());
+        }
+    }
+
+    private void rollbackQuietly(Connection connection) {
+        try {
+            connection.rollback();
+        } catch (SQLException rollbackError) {
+            System.err.println("[auth] Rollback failed: " + rollbackError.getMessage());
+        }
+    }
+
+    private void restoreAutoCommit(Connection connection, boolean originalAutoCommit) throws DLException {
+        try {
+            connection.setAutoCommit(originalAutoCommit);
+        } catch (SQLException e) {
+            throw new DLException(e, "Operation=restoreAutoCommit", "DatabaseType=MySQL");
+        }
     }
 
     private String sha256(String input) {

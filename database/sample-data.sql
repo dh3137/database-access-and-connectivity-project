@@ -185,8 +185,6 @@ INSERT INTO Users (username, password, role, customer_id) VALUES
 -- Staff access is driven directly by Users.role in the live app:
 -- ADMIN  -> full access, including vehicle inventory CRUD
 -- EMPLOYEE -> staff workflows like sales, enquiries, maintenance, logs, and employees
--- The Roles/Permissions tables remain in the schema for future expansion, but
--- this demo seed intentionally leaves them empty.
 
 -- Sales
 INSERT INTO Sales (vehicle_id, customer_id, emp_id, sale_price, payment_method) VALUES

@@ -42,19 +42,41 @@ public class ManagementController {
             String message = JsonUtil.jsonString(body, "message").trim();
             String vidStr = JsonUtil.jsonString(body, "vehicleId").trim();
 
-            if (name.isEmpty() || email.isEmpty()) {
-                HttpUtil.sendJson(ex, 400, "{\"error\":\"name and email are required\"}");
+            if (name.isEmpty() || email.isEmpty() || message.isEmpty()) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"name, email, and message are required\"}");
                 return;
             }
             if (!email.contains("@")) {
                 HttpUtil.sendJson(ex, 400, "{\"error\":\"invalid email address\"}");
                 return;
             }
+            if (message.length() > 2000) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"message is too long\"}");
+                return;
+            }
 
             int vehicleId = 0;
-            try { vehicleId = Integer.parseInt(vidStr); } catch (NumberFormatException ignored) {}
+            try {
+                vehicleId = vidStr.isEmpty() ? 0 : Integer.parseInt(vidStr);
+            } catch (NumberFormatException ignored) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"vehicleId must be a number\"}");
+                return;
+            }
+            if (vehicleId < 0) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"vehicleId must be positive\"}");
+                return;
+            }
 
             boolean saved = context.enquiryDatabase.saveEnquiry(vehicleId, user.getCustomerId(), name, email, phone, message);
+            if (saved) {
+                authService.logGeneralAction(
+                    user,
+                    "ENQUIRY_SUBMITTED",
+                    "Vehicle",
+                    vehicleId > 0 ? String.valueOf(vehicleId) : "",
+                    "Customer enquiry submitted"
+                );
+            }
             HttpUtil.sendJson(ex, saved ? 201 : 500, saved ? "{\"ok\":true}" : "{\"error\":\"Could not save enquiry\"}");
         } catch (Exception e) {
             System.err.println("[enquiry] ERROR: " + e.getMessage());
@@ -84,6 +106,13 @@ public class ManagementController {
                 }
                 if (enquiryId <= 0) { HttpUtil.sendJson(ex, 400, "{\"error\":\"Missing id\"}"); return; }
                 context.enquiryDatabase.markRead(enquiryId, read);
+                authService.logGeneralAction(
+                    user,
+                    read ? "ENQUIRY_MARKED_READ" : "ENQUIRY_MARKED_UNREAD",
+                    "Enquiry",
+                    String.valueOf(enquiryId),
+                    read ? "Enquiry marked as read" : "Enquiry marked as unread"
+                );
                 HttpUtil.sendJson(ex, 200, "{\"ok\":true}");
                 return;
             }
@@ -135,12 +164,37 @@ public class ManagementController {
                     return;
                 }
 
-                int vehicleId = Integer.parseInt(vehicleIdStr);
-                int customerId = Integer.parseInt(customerIdStr);
-                double salePrice = Double.parseDouble(salePriceStr);
+                int vehicleId;
+                int customerId;
+                double salePrice;
+                try {
+                    vehicleId = Integer.parseInt(vehicleIdStr);
+                    customerId = Integer.parseInt(customerIdStr);
+                    salePrice = Double.parseDouble(salePriceStr);
+                } catch (NumberFormatException e) {
+                    HttpUtil.sendJson(ex, 400, "{\"error\":\"vehicleId, customerId, and salePrice must be valid numbers\"}");
+                    return;
+                }
+                if (vehicleId <= 0 || customerId <= 0) {
+                    HttpUtil.sendJson(ex, 400, "{\"error\":\"vehicleId and customerId must be positive\"}");
+                    return;
+                }
+                if (salePrice <= 0) {
+                    HttpUtil.sendJson(ex, 400, "{\"error\":\"salePrice must be greater than zero\"}");
+                    return;
+                }
                 if (payment.isEmpty()) payment = "CASH";
 
                 boolean ok = context.salesDatabase.recordSale(vehicleId, customerId, user.getEmpId(), salePrice, payment, notes);
+                if (ok) {
+                    authService.logGeneralAction(
+                        user,
+                        "SALE_RECORDED",
+                        "Vehicle",
+                        String.valueOf(vehicleId),
+                        "Sale recorded for customer " + customerId + " at " + salePrice
+                    );
+                }
                 HttpUtil.sendJson(ex, ok ? 201 : 500, ok ? "{\"ok\":true}" : "{\"error\":\"Could not record sale\"}");
             } else if ("GET".equals(ex.getRequestMethod())) {
                 String[][] rows = context.salesDatabase.getRecentSales(50);

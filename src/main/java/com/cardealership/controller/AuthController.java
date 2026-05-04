@@ -38,6 +38,7 @@ public class AuthController {
             if (user != null) {
                 String token = authService.createSession(user);
                 System.out.println("[login] " + user.getUsername() + " logged in, role=" + user.getRole());
+                authService.logGeneralAction(user, "LOGIN", "Session", String.valueOf(user.getId()), "Successful login");
                 String dest = authService.isStaff(user) ? "/dashboard.html" : "/cars.html";
                 authService.attachSessionCookie(ex, token);
                 HttpUtil.redirect(ex, dest);
@@ -52,6 +53,10 @@ public class AuthController {
     }
 
     public void handleLogout(HttpExchange ex) throws IOException {
+        User user = authService.getSessionUser(ex);
+        if (user != null) {
+            authService.logGeneralAction(user, "LOGOUT", "Session", String.valueOf(user.getId()), "User logged out");
+        }
         authService.clearSession(ex);
         HttpUtil.redirect(ex, "/login.html");
     }
@@ -103,6 +108,14 @@ public class AuthController {
                 HttpUtil.sendJson(ex, 400, "{\"error\":\"All fields are required\"}");
                 return;
             }
+            if (username.length() < 3 || username.length() > 50) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"Username must be between 3 and 50 characters\"}");
+                return;
+            }
+            if (password.length() < 8) {
+                HttpUtil.sendJson(ex, 400, "{\"error\":\"Password must be at least 8 characters long\"}");
+                return;
+            }
             if (!email.contains("@")) {
                 HttpUtil.sendJson(ex, 400, "{\"error\":\"Invalid email address\"}");
                 return;
@@ -116,26 +129,19 @@ public class AuthController {
                 return;
             }
 
-            int customerId = context.customerDatabase.createCustomer(firstName, lastName, email, phone);
-            if (customerId <= 0) {
-                HttpUtil.sendJson(ex, 500, "{\"error\":\"Could not create customer record\"}");
-                return;
-            }
-
-            User newUser = new User();
-            newUser.setUsername(username);
-            newUser.setPassword(authService.hashPassword(password));
-            newUser.setRole("CUSTOMER");
-            newUser.setCustomerId(customerId);
-
-            if (!context.userDatabase.saveUser(newUser)) {
-                HttpUtil.sendJson(ex, 500, "{\"error\":\"Could not create user account\"}");
-                return;
-            }
-
-            User created = authService.authenticate(username, password);
+            User created = authService.registerCustomer(username, password, firstName, lastName, email, phone);
             if (created != null) {
                 authService.attachSessionCookie(ex, authService.createSession(created));
+                authService.logGeneralAction(
+                    created,
+                    "CUSTOMER_REGISTERED",
+                    "Customer",
+                    String.valueOf(created.getCustomerId()),
+                    "Customer account created for " + email
+                );
+            } else {
+                HttpUtil.sendJson(ex, 500, "{\"error\":\"Could not create user account\"}");
+                return;
             }
             HttpUtil.sendJson(ex, 201, "{\"ok\":true}");
         } catch (Exception e) {

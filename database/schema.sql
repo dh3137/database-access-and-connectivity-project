@@ -95,46 +95,7 @@ CREATE TABLE Users (
     -- role mutual-exclusivity enforced by application layer (saveUser branches on empId vs customerId)
 );
 
--- ─── 04 Access Control ────────────────────────────────────────────────────────
-
-CREATE TABLE Roles (
-    role_id     INT PRIMARY KEY AUTO_INCREMENT,
-    role_name   VARCHAR(50) NOT NULL UNIQUE,
-    description TEXT
-);
-
-CREATE TABLE Permissions (
-    permission_id   INT PRIMARY KEY AUTO_INCREMENT,
-    permission_name VARCHAR(100) NOT NULL UNIQUE,
-    description     TEXT
-);
-
-CREATE TABLE EmployeeRoles (
-    emp_id        INT  NOT NULL,
-    role_id       INT  NOT NULL,
-    assigned_date DATE NOT NULL,
-    PRIMARY KEY (emp_id, role_id),
-    CONSTRAINT fk_employee_roles_employee
-        FOREIGN KEY (emp_id) REFERENCES Employees(emp_id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_employee_roles_role
-        FOREIGN KEY (role_id) REFERENCES Roles(role_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE RolePermissions (
-    role_id       INT NOT NULL,
-    permission_id INT NOT NULL,
-    PRIMARY KEY (role_id, permission_id),
-    CONSTRAINT fk_role_permissions_role
-        FOREIGN KEY (role_id) REFERENCES Roles(role_id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_role_permissions_permission
-        FOREIGN KEY (permission_id) REFERENCES Permissions(permission_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- ─── 05 Transactions ──────────────────────────────────────────────────────────
+-- ─── 04 Transactions ──────────────────────────────────────────────────────────
 
 CREATE TABLE Sales (
     sale_id        INT PRIMARY KEY AUTO_INCREMENT,
@@ -200,7 +161,7 @@ CREATE TABLE TestDrives (
     CONSTRAINT chk_test_drive_duration_positive CHECK (duration_minutes > 0)
 );
 
--- ─── 06 Audit & Maintenance ───────────────────────────────────────────────────
+-- ─── 05 Audit & Maintenance ───────────────────────────────────────────────────
 
 CREATE TABLE MaintenanceHistory (
     maintenance_id INT PRIMARY KEY AUTO_INCREMENT,

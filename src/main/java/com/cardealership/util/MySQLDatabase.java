@@ -80,6 +80,21 @@ public class MySQLDatabase {
         }
     }
 
+    public int setDataReturnKey(Connection connection, String sql, ArrayList<String> values) throws DLException {
+        try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+            bindValues(statement, values, 1);
+            statement.executeUpdate();
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
+            return -1;
+        } catch (SQLException e) {
+            throw new DLException(e, "Operation=setDataReturnKeyConnection", "DatabaseType=MySQL", "SQL=" + sql);
+        } catch (Exception e) {
+            throw new DLException(e, "Operation=setDataReturnKeyConnection", "DatabaseType=MySQL", "SQL=" + sql);
+        }
+    }
+
     public boolean setData(String sql, ArrayList<String> values) throws DLException {
         try (Connection connection = getConnection();
              PreparedStatement statement = prepare(connection, sql, values)) {
@@ -92,6 +107,19 @@ public class MySQLDatabase {
             throw new DLException(e, "Operation=setDataPrepared", "DatabaseType=MySQL", "SQL=" + sql);
         } catch (Exception e) {
             throw new DLException(e, "Operation=setDataPrepared", "DatabaseType=MySQL", "SQL=" + sql);
+        }
+    }
+
+    public boolean setData(Connection connection, String sql, ArrayList<String> values) throws DLException {
+        try (PreparedStatement statement = prepare(connection, sql, values)) {
+            statement.executeUpdate();
+            return true;
+        } catch (DLException e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new DLException(e, "Operation=setDataPreparedConnection", "DatabaseType=MySQL", "SQL=" + sql);
+        } catch (Exception e) {
+            throw new DLException(e, "Operation=setDataPreparedConnection", "DatabaseType=MySQL", "SQL=" + sql);
         }
     }
 

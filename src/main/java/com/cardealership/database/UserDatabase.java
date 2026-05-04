@@ -3,6 +3,7 @@ package com.cardealership.database;
 import com.cardealership.DLException;
 import com.cardealership.model.User;
 import com.cardealership.util.MySQLDatabase;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class UserDatabase {
@@ -41,6 +42,17 @@ public class UserDatabase {
     }
 
     public boolean saveUser(User user) throws DLException {
+        return saveUser(null, user);
+    }
+
+    public boolean saveUser(Connection connection, User user) throws DLException {
+        if (connection == null) {
+            return saveUserStandalone(user);
+        }
+        return saveUserWithConnection(connection, user);
+    }
+
+    private boolean saveUserStandalone(User user) throws DLException {
         if (user.getEmpId() > 0) {
             String sql = "INSERT INTO Users (username, password, role, emp_id) VALUES (?, ?, ?, ?)";
             ArrayList<String> values = new ArrayList<>();
@@ -64,6 +76,33 @@ public class UserDatabase {
             values.add(user.getPassword());
             values.add(user.getRole());
             return database.setData(sql, values);
+        }
+    }
+
+    private boolean saveUserWithConnection(Connection connection, User user) throws DLException {
+        if (user.getEmpId() > 0) {
+            String sql = "INSERT INTO Users (username, password, role, emp_id) VALUES (?, ?, ?, ?)";
+            ArrayList<String> values = new ArrayList<>();
+            values.add(user.getUsername());
+            values.add(user.getPassword());
+            values.add(user.getRole());
+            values.add(String.valueOf(user.getEmpId()));
+            return database.setData(connection, sql, values);
+        } else if (user.getCustomerId() > 0) {
+            String sql = "INSERT INTO Users (username, password, role, customer_id) VALUES (?, ?, ?, ?)";
+            ArrayList<String> values = new ArrayList<>();
+            values.add(user.getUsername());
+            values.add(user.getPassword());
+            values.add(user.getRole());
+            values.add(String.valueOf(user.getCustomerId()));
+            return database.setData(connection, sql, values);
+        } else {
+            String sql = "INSERT INTO Users (username, password, role) VALUES (?, ?, ?)";
+            ArrayList<String> values = new ArrayList<>();
+            values.add(user.getUsername());
+            values.add(user.getPassword());
+            values.add(user.getRole());
+            return database.setData(connection, sql, values);
         }
     }
 

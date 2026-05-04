@@ -39,10 +39,34 @@ public class ActionLogDatabase {
 
     public List<String[]> getRecent(int limit) throws DLException {
         List<String[]> rows = new ArrayList<>();
-        String sql = "SELECT vcl.vehicle_id, e.first_name, e.last_name, vcl.change_type, vcl.field_changed, vcl.new_value, vcl.change_date " +
-                     "FROM VehicleChangeLog vcl " +
-                     "JOIN Employees e ON vcl.emp_id = e.emp_id " +
-                     "ORDER BY vcl.change_date DESC LIMIT ?";
+        String sql = """
+            SELECT *
+            FROM (
+                SELECT
+                    CAST(vcl.vehicle_id AS CHAR) AS object_id,
+                    e.first_name AS first_name,
+                    e.last_name AS last_name,
+                    vcl.change_type AS action_type,
+                    COALESCE(vcl.field_changed, '') AS field_changed,
+                    COALESCE(vcl.new_value, '') AS details,
+                    vcl.change_date AS action_time
+                FROM VehicleChangeLog vcl
+                JOIN Employees e ON vcl.emp_id = e.emp_id
+                UNION ALL
+                SELECT
+                    COALESCE(al.object_id, '') AS object_id,
+                    COALESCE(e.first_name, 'System') AS first_name,
+                    COALESCE(e.last_name, '') AS last_name,
+                    al.action_type AS action_type,
+                    COALESCE(al.object_type, '') AS field_changed,
+                    COALESCE(al.details, '') AS details,
+                    al.action_date AS action_time
+                FROM ActionLog al
+                LEFT JOIN Employees e ON al.emp_id = e.emp_id
+            ) activity
+            ORDER BY action_time DESC
+            LIMIT ?
+            """;
         ArrayList<String> values = new ArrayList<>();
         values.add(String.valueOf(limit));
         String[][] result = database.getData(sql, values);
