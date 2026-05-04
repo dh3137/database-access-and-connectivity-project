@@ -37,7 +37,10 @@ CREATE TABLE Vehicles (
     CONSTRAINT fk_vehicles_model
         FOREIGN KEY (model_id) REFERENCES Models(model_id)
         ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT chk_vin_length CHECK (CHAR_LENGTH(vin) = 17)
+    CONSTRAINT chk_vin_length CHECK (CHAR_LENGTH(vin) = 17),
+    CONSTRAINT chk_vehicle_year CHECK (year BETWEEN 1900 AND 2100),
+    CONSTRAINT chk_vehicle_price_positive CHECK (price > 0),
+    CONSTRAINT chk_vehicle_mileage_nonnegative CHECK (mileage >= 0)
 );
 
 CREATE TABLE VehicleImages (
@@ -150,10 +153,11 @@ CREATE TABLE Sales (
         ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT fk_sales_employee
         FOREIGN KEY (emp_id) REFERENCES Employees(emp_id)
-        ON DELETE RESTRICT ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT chk_sale_price_positive CHECK (sale_price > 0)
 );
 
--- Business layer must enforce: no Active reservation exists for this vehicle before inserting
+-- Business layer converts active reservations when a vehicle is sold.
 CREATE TABLE Reservations (
     reservation_id   INT PRIMARY KEY AUTO_INCREMENT,
     vehicle_id       INT           NOT NULL,
@@ -171,7 +175,8 @@ CREATE TABLE Reservations (
         ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT fk_reservations_employee
         FOREIGN KEY (emp_id) REFERENCES Employees(emp_id)
-        ON DELETE RESTRICT ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT chk_reservation_deposit_nonnegative CHECK (deposit_amount IS NULL OR deposit_amount >= 0)
 );
 
 CREATE TABLE TestDrives (
@@ -191,7 +196,8 @@ CREATE TABLE TestDrives (
         ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT fk_test_drives_employee
         FOREIGN KEY (emp_id) REFERENCES Employees(emp_id)
-        ON DELETE RESTRICT ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT chk_test_drive_duration_positive CHECK (duration_minutes > 0)
 );
 
 -- ─── 06 Audit & Maintenance ───────────────────────────────────────────────────
@@ -206,7 +212,8 @@ CREATE TABLE MaintenanceHistory (
     performed_by   VARCHAR(100),
     CONSTRAINT fk_maintenance_vehicle
         FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_maintenance_cost_nonnegative CHECK (cost IS NULL OR cost >= 0)
 );
 
 CREATE TABLE VehicleChangeLog (
@@ -226,12 +233,30 @@ CREATE TABLE VehicleChangeLog (
         ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+CREATE TABLE ActionLog (
+    action_id   INT PRIMARY KEY AUTO_INCREMENT,
+    user_id     INT,
+    emp_id      INT,
+    action_type VARCHAR(50)  NOT NULL,
+    object_type VARCHAR(50),
+    object_id   VARCHAR(50),
+    details     TEXT,
+    action_date TIMESTAMP    NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_action_log_user
+        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_action_log_employee
+        FOREIGN KEY (emp_id) REFERENCES Employees(emp_id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
 -- ─── Indexes ──────────────────────────────────────────────────────────────────
 
 CREATE INDEX idx_vehicles_status ON Vehicles(status);
 CREATE INDEX idx_vehicles_model  ON Vehicles(model_id);
 CREATE INDEX idx_sales_vehicle   ON Sales(vehicle_id);
 CREATE INDEX idx_users_username  ON Users(username);
+CREATE INDEX idx_action_log_date ON ActionLog(action_date);
 
 -- ─── Reviews ──────────────────────────────────────────────────────────────────
 
@@ -241,7 +266,7 @@ CREATE TABLE IF NOT EXISTS Reviews (
   author_name  VARCHAR(100) NOT NULL,
   rating       TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
   review_text  TEXT NOT NULL,
-  source       ENUM('TEAM','EDMUNDS','KBB') DEFAULT 'TEAM',
+  source       ENUM('TEAM') DEFAULT 'TEAM',
   created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (model_id) REFERENCES Models(model_id) ON DELETE CASCADE
 );

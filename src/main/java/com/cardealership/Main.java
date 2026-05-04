@@ -55,6 +55,7 @@ public class Main {
         }
         return new MySQLDatabase(host, port, database, username, password, params);
     }
+
     private static final Map<String, User> sessions = new ConcurrentHashMap<>();
     private static final CarDatabase carDatabase = new CarDatabase(database);
     private static final UserDatabase userDatabase = new UserDatabase(database);
@@ -111,7 +112,6 @@ public class Main {
             }
 
             String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-            System.out.println("[login] body: " + body);
             Map<String, String> params = parseForm(body);
             User user = authenticate(params.get("username"), params.get("password"));
             System.out.println("[login] user found: " + (user != null ? user.getUsername() : "null"));
@@ -120,6 +120,7 @@ public class Main {
                 String token = UUID.randomUUID().toString();
                 sessions.put(token, user);
                 System.out.println("[login] " + user.getUsername() + " logged in, role=" + user.getRole());
+                logGeneralAction(user, "LOGIN", "User", String.valueOf(user.getId()), "Successful login");
                 String dest = "ADMIN".equals(user.getRole()) ? "/dashboard.html" : "/cars.html";
                 ex.getResponseHeaders().add("Set-Cookie", "session=" + token + "; Path=/; HttpOnly");
                 redirect(ex, dest);
@@ -184,10 +185,8 @@ public class Main {
             boolean hasId = parts.length >= 4 && !parts[3].isEmpty();
 
             // Write operations — require ADMIN session
-            if ("POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method) || "DELETE".equals(method)) {
-                if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
-                if (!"ADMIN".equals(user.getRole())) {
-                    sendJson(ex, 403, "{\"error\":\"Forbidden\"}");
+            if (isVehicleWriteMethod(method)) {
+                if (!requireAdmin(ex, user)) {
                     return;
                 }
             }
@@ -195,7 +194,7 @@ public class Main {
             if ("DELETE".equals(method) && hasId) {
                 int id = Integer.parseInt(parts[3]);
                 boolean deleted = carDatabase.deleteCar(id);
-                if (deleted) logVehicleChange(id, user.getEmpId(), "DELETE", null, null);
+                if (deleted) logGeneralAction(user, "VEHICLE_DELETED", "Vehicle", String.valueOf(id), "Vehicle deleted from inventory");
                 sendJson(ex, deleted ? 200 : 404, deleted ? "{\"ok\":true}" : "{\"error\":\"Car not found\"}");
 
             } else if ("PATCH".equals(method) && hasId) {
@@ -240,8 +239,9 @@ public class Main {
                     car.setVin(carDatabase.generateUniqueVin());
                 }
                 validateCar(car, false);
-                boolean added = carDatabase.saveCar(car);
-                if (added) logVehicleChange(car.getModelId(), user.getEmpId(), "INSERT", null, null);
+                int newVehicleId = carDatabase.saveCarAndReturnId(car);
+                boolean added = newVehicleId > 0;
+                if (added) logVehicleChange(newVehicleId, user.getEmpId(), "INSERT", "vehicle", "model_id=" + car.getModelId());
                 sendJson(ex, added ? 201 : 500, added ? "{\"ok\":true}" : "{\"error\":\"Could not add car\"}");
 
             } else if ("GET".equals(method) && hasId) {
@@ -266,6 +266,8 @@ public class Main {
             } else {
                 sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
             }
+        } catch (IllegalArgumentException e) {
+            sendJson(ex, 400, "{\"error\":\"" + escapeJson(e.getMessage()) + "\"}");
         } catch (Exception e) {
             System.err.println("[cars] ERROR: " + e.getMessage());
             e.printStackTrace();
@@ -277,8 +279,7 @@ public class Main {
     private static void handleLogs(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
-            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
-            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+            if (!requireAdmin(ex, user)) { return; }
 
             List<String[]> entries = actionLogDatabase.getRecent(50);
             StringBuilder sb = new StringBuilder("[");
@@ -363,7 +364,7 @@ public class Main {
                 sendJson(ex, 400, "{\"error\":\"All fields are required\"}");
                 return;
             }
-            if (!email.contains("@")) {
+            if (!isValidEmail(email)) {
                 sendJson(ex, 400, "{\"error\":\"Invalid email address\"}");
                 return;
             }
@@ -418,7 +419,7 @@ public class Main {
             }
 
             User user = getSessionUser(ex);
-            if (user == null || !"CUSTOMER".equals(user.getRole())) {
+            if (user == null || !hasRole(user, "CUSTOMER")) {
                 sendJson(ex, 401, "{\"error\":\"Please sign in as a customer to submit an enquiry\"}");
                 return;
             }
@@ -434,7 +435,7 @@ public class Main {
                 sendJson(ex, 400, "{\"error\":\"name and email are required\"}");
                 return;
             }
-            if (!email.contains("@")) {
+            if (!isValidEmail(email)) {
                 sendJson(ex, 400, "{\"error\":\"invalid email address\"}");
                 return;
             }
@@ -455,8 +456,7 @@ public class Main {
     private static void handleEnquiries(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
-            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
-            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+            if (!requireAdmin(ex, user)) { return; }
 
             if ("POST".equalsIgnoreCase(ex.getRequestMethod())) {
                 String query = ex.getRequestURI().getQuery();
@@ -473,6 +473,7 @@ public class Main {
                 }
                 if (enquiryId <= 0) { sendJson(ex, 400, "{\"error\":\"Missing id\"}"); return; }
                 enquiryDatabase.markRead(enquiryId, read);
+                logGeneralAction(user, "ENQUIRY_STATUS_CHANGED", "Enquiry", String.valueOf(enquiryId), read ? "Marked read" : "Marked unread");
                 sendJson(ex, 200, "{\"ok\":true}");
                 return;
             }
@@ -511,8 +512,7 @@ public class Main {
     private static void handleSales(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
-            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
-            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+            if (!requireAdmin(ex, user)) { return; }
 
             if ("POST".equals(ex.getRequestMethod())) {
                 String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
@@ -531,9 +531,14 @@ public class Main {
                 int customerId = Integer.parseInt(customerIdStr);
                 double salePrice = Double.parseDouble(salePriceStr);
                 if (payment.isEmpty()) payment = "CASH";
+                validateSale(vehicleId, customerId, salePrice);
 
                 boolean ok = salesDatabase.recordSale(vehicleId, customerId, user.getEmpId(), salePrice, payment, notes);
-                sendJson(ex, ok ? 201 : 500, ok ? "{\"ok\":true}" : "{\"error\":\"Could not record sale\"}");
+                if (ok) {
+                    logVehicleChange(vehicleId, user.getEmpId(), "UPDATE", "status", "Sold");
+                    logGeneralAction(user, "SALE_RECORDED", "Vehicle", String.valueOf(vehicleId), "Sale recorded for customer_id=" + customerId);
+                }
+                sendJson(ex, ok ? 201 : 409, ok ? "{\"ok\":true}" : "{\"error\":\"Vehicle is already sold or could not be updated\"}");
 
             } else if ("GET".equals(ex.getRequestMethod())) {
                 String[][] rows = salesDatabase.getRecentSales(50);
@@ -561,6 +566,8 @@ public class Main {
             } else {
                 sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
             }
+        } catch (IllegalArgumentException e) {
+            sendJson(ex, 400, "{\"error\":\"" + escapeJson(e.getMessage()) + "\"}");
         } catch (Exception e) {
             System.err.println("[sales] ERROR: " + e.getMessage());
             e.printStackTrace();
@@ -572,8 +579,7 @@ public class Main {
     private static void handleCustomers(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
-            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
-            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+            if (!requireAdmin(ex, user)) { return; }
 
             if (!"GET".equals(ex.getRequestMethod())) {
                 sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
@@ -608,8 +614,7 @@ public class Main {
     private static void handleEmployees(HttpExchange ex) throws IOException {
         try {
             User user = getSessionUser(ex);
-            if (user == null) { sendJson(ex, 401, "{\"error\":\"Unauthorized\"}"); return; }
-            if (!"ADMIN".equals(user.getRole())) { sendJson(ex, 403, "{\"error\":\"Forbidden\"}"); return; }
+            if (!requireAdmin(ex, user)) { return; }
 
             if (!"GET".equals(ex.getRequestMethod())) {
                 sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
@@ -682,20 +687,43 @@ public class Main {
         }
     }
 
-    // GET /api/reviews  → JSON array of all reviews (public)
+    // GET  /api/reviews  → JSON array of all reviews (public)
+    // POST /api/reviews  → create a team review (ADMIN only), body: JSON
     private static void handleReviews(HttpExchange ex) throws IOException {
         try {
-            if (!"GET".equals(ex.getRequestMethod())) {
+            String method = ex.getRequestMethod();
+
+            if ("POST".equals(method)) {
+                User user = getSessionUser(ex);
+                if (!requireAdmin(ex, user)) {
+                    return;
+                }
+
+                String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                int modelId = parsePositiveInt(jsonString(body, "modelId"), "modelId");
+                int rating = parsePositiveInt(jsonString(body, "rating"), "rating");
+                String authorName = jsonString(body, "authorName").trim();
+                String reviewText = jsonString(body, "reviewText").trim();
+
+                validateReview(modelId, authorName, rating, reviewText);
+                int reviewId = reviewDatabase.saveReview(modelId, authorName, rating, reviewText);
+                logGeneralAction(user, "REVIEW_CREATED", "Model", String.valueOf(modelId), "Review created");
+                sendJson(ex, 201, "{\"ok\":true,\"reviewId\":" + reviewId + "}");
+                return;
+            }
+
+            if (!"GET".equals(method)) {
                 sendJson(ex, 405, "{\"error\":\"Method not allowed\"}");
                 return;
             }
+
             java.util.List<java.util.Map<String, Object>> reviews = reviewDatabase.getAllReviews();
             StringBuilder sb = new StringBuilder("[");
             for (int i = 0; i < reviews.size(); i++) {
                 if (i > 0) sb.append(",");
                 java.util.Map<String, Object> r = reviews.get(i);
                 sb.append("{")
-                  .append("\"reviewId\":").append(r.get("reviewId")).append(",")
+                  .append("\"reviewId\":\"").append(escapeJson(String.valueOf(r.get("reviewId")))).append("\",")
                   .append("\"authorName\":\"").append(escapeJson((String) r.get("authorName"))).append("\",")
                   .append("\"rating\":").append(r.get("rating")).append(",")
                   .append("\"reviewText\":\"").append(escapeJson((String) r.get("reviewText"))).append("\",")
@@ -707,16 +735,14 @@ public class Main {
             }
             sb.append("]");
             sendJson(ex, 200, sb.toString());
+        } catch (IllegalArgumentException e) {
+            sendJson(ex, 400, "{\"error\":\"" + escapeJson(e.getMessage()) + "\"}");
         } catch (Exception e) {
             System.err.println("[reviews] ERROR: " + e.getMessage());
             sendJson(ex, 500, "{\"error\":\"Server error\"}");
         }
     }
 
-    // Tries to find a year-specific Wikipedia car image using the search generator.
-    // Searches for "YEAR MAKE MODEL" first, then falls back to "MAKE MODEL".
-    // Using generator=search means we search article titles and fetch their images
-    // in one request — so "2013 Toyota Camry" can match a generation-specific article.
     private static String fetchWikipediaImage(String make, String model, String year) {
         String[] queries = year.isEmpty()
             ? new String[]{ make + " " + model }
@@ -725,8 +751,6 @@ public class Main {
         for (String q : queries) {
             try {
                 String encoded = java.net.URLEncoder.encode(q, StandardCharsets.UTF_8);
-                // generator=search finds articles matching the query and returns their images —
-                // more likely to hit a year/generation-specific article than a direct title lookup
                 String apiUrl = "https://en.wikipedia.org/w/api.php"
                     + "?action=query"
                     + "&generator=search"
@@ -761,7 +785,7 @@ public class Main {
                     searchFrom = end + 1;
                     String lower = candidate.toLowerCase();
                     if (lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.contains(".jpg/")) {
-                        return candidate; // best match — JPEG photo
+                        return candidate;
                     }
                     if (firstAny == null) firstAny = candidate;
                 }
@@ -973,8 +997,62 @@ public class Main {
         return switch (status.trim().toUpperCase()) {
             case "SOLD" -> "Sold";
             case "RESERVED" -> "Reserved";
-            default -> "Available";
+            case "AVAILABLE" -> "Available";
+            default -> throw new IllegalArgumentException("Vehicle status must be Available, Reserved, or Sold.");
         };
+    }
+
+    private static boolean isVehicleWriteMethod(String method) {
+        return "POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method) || "DELETE".equals(method);
+    }
+
+    private static boolean hasRole(User user, String role) {
+        return user != null && role != null && role.equals(user.getRole());
+    }
+
+    private static boolean requireAdmin(HttpExchange ex, User user) throws IOException {
+        if (user == null) {
+            sendJson(ex, 401, "{\"error\":\"Unauthorized\"}");
+            return false;
+        }
+        if (!hasRole(user, "ADMIN")) {
+            sendJson(ex, 403, "{\"error\":\"Forbidden\"}");
+            return false;
+        }
+        return true;
+    }
+
+    private static int parsePositiveInt(String value, String fieldName) {
+        try {
+            int parsed = Integer.parseInt(value);
+            if (parsed > 0) return parsed;
+        } catch (NumberFormatException ignored) {}
+        throw new IllegalArgumentException(fieldName + " must be a positive number.");
+    }
+
+    private static void validateReview(int modelId, String authorName, int rating, String reviewText) {
+        if (modelId <= 0) {
+            throw new IllegalArgumentException("A vehicle model is required.");
+        }
+        if (authorName == null || authorName.isBlank()) {
+            throw new IllegalArgumentException("Author name is required.");
+        }
+        if (authorName.length() > 100) {
+            throw new IllegalArgumentException("Author name must be 100 characters or less.");
+        }
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5.");
+        }
+        if (reviewText == null || reviewText.isBlank()) {
+            throw new IllegalArgumentException("Review text is required.");
+        }
+        if (reviewText.length() > 2000) {
+            throw new IllegalArgumentException("Review text must be 2000 characters or less.");
+        }
+    }
+
+    private static boolean isValidEmail(String email) {
+        return email != null && email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
     }
 
     private static User authenticate(String username, String password) throws DLException {
@@ -1018,8 +1096,36 @@ public class Main {
             throw new IllegalArgumentException("Car year is not valid.");
         }
 
-        if (car.getPrice() < 0) {
-            throw new IllegalArgumentException("Car price cannot be negative.");
+        if (car.getPrice() <= 0) {
+            throw new IllegalArgumentException("Car price must be positive.");
+        }
+
+        if (car.getMileage() < 0) {
+            throw new IllegalArgumentException("Car mileage cannot be negative.");
+        }
+
+        if (!isValidVehicleStatus(car.getStatus())) {
+            throw new IllegalArgumentException("Vehicle status must be Available, Reserved, or Sold.");
+        }
+
+        if (car.getVin() != null && !car.getVin().isBlank() && car.getVin().length() != 17) {
+            throw new IllegalArgumentException("VIN must be exactly 17 characters.");
+        }
+    }
+
+    private static boolean isValidVehicleStatus(String status) {
+        return "Available".equals(status) || "Reserved".equals(status) || "Sold".equals(status);
+    }
+
+    private static void validateSale(int vehicleId, int customerId, double salePrice) {
+        if (vehicleId <= 0) {
+            throw new IllegalArgumentException("vehicleId must be valid.");
+        }
+        if (customerId <= 0) {
+            throw new IllegalArgumentException("customerId must be valid.");
+        }
+        if (salePrice <= 0) {
+            throw new IllegalArgumentException("salePrice must be positive.");
         }
     }
 
@@ -1028,6 +1134,15 @@ public class Main {
             actionLogDatabase.saveActionLog(vehicleId, empId, changeType, fieldChanged, newValue);
         } catch (DLException e) {
             System.err.println("[change_log] Failed to write log: " + e.getMessage());
+        }
+    }
+
+    private static void logGeneralAction(User user, String actionType, String objectType, String objectId, String details) {
+        if (user == null) return;
+        try {
+            actionLogDatabase.saveGeneralAction(user.getId(), user.getEmpId(), actionType, objectType, objectId, details);
+        } catch (DLException e) {
+            System.err.println("[action_log] Failed to write log: " + e.getMessage());
         }
     }
 }

@@ -1,9 +1,3 @@
-/**
- * Light / dark theme toggle.
- * Reads preference from localStorage; falls back to system preference.
- * Sets data-theme="light" on <html>; dark is the default (no attribute).
- * Call window.toggleTheme() from any button.
- */
 (function () {
   const KEY = 'veloce-theme';
 
@@ -31,10 +25,8 @@
     applyTheme(next);
   };
 
-  // Apply immediately (before paint) to avoid flash
   applyTheme(savedTheme());
 
-  // Re-sync button label after DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => applyTheme(savedTheme()));
   }

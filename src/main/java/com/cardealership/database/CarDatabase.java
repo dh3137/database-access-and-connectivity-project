@@ -1,6 +1,9 @@
 package com.cardealership.database;
 
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +68,10 @@ public class CarDatabase {
     }
 
     public boolean saveCar(Car car) throws DLException {
+        return saveCarAndReturnId(car) > 0;
+    }
+
+    public int saveCarAndReturnId(Car car) throws DLException {
         String sql = "INSERT INTO Vehicles (model_id, year, price, status, color, mileage, vin, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         ArrayList<String> values = new ArrayList<>();
         values.add(String.valueOf(car.getModelId()));
@@ -75,7 +82,7 @@ public class CarDatabase {
         values.add(String.valueOf(car.getMileage()));
         values.add(nullIfBlank(car.getVin()));
         values.add(valueOrEmpty(car.getDescription()));
-        return database.setData(sql, values);
+        return database.setDataReturnKey(sql, values);
     }
 
     public boolean updateCar(Car car) throws DLException {
@@ -101,10 +108,38 @@ public class CarDatabase {
     }
 
     public boolean deleteCar(int id) throws DLException {
-        String sql = "DELETE FROM Vehicles WHERE vehicle_id=?";
-        ArrayList<String> values = new ArrayList<>();
-        values.add(String.valueOf(id));
-        return database.setData(sql, values);
+        String deleteLogsSql = "DELETE FROM VehicleChangeLog WHERE vehicle_id = ?";
+        String deleteVehicleSql = "DELETE FROM Vehicles WHERE vehicle_id = ?";
+
+        try (Connection connection = database.getConnection()) {
+            boolean originalAutoCommit = connection.getAutoCommit();
+            try {
+                connection.setAutoCommit(false);
+
+                try (PreparedStatement deleteLogs = connection.prepareStatement(deleteLogsSql)) {
+                    deleteLogs.setInt(1, id);
+                    deleteLogs.executeUpdate();
+                }
+
+                int deleted;
+                try (PreparedStatement deleteVehicle = connection.prepareStatement(deleteVehicleSql)) {
+                    deleteVehicle.setInt(1, id);
+                    deleted = deleteVehicle.executeUpdate();
+                }
+
+                connection.commit();
+                return deleted > 0;
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new DLException(e, "Operation=deleteCar", "VehicleId=" + id);
+            } finally {
+                connection.setAutoCommit(originalAutoCommit);
+            }
+        } catch (DLException e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new DLException(e, "Operation=deleteCar", "VehicleId=" + id);
+        }
     }
 
     private Car mapCar(String[] row) {
