@@ -2,6 +2,7 @@ package com.cardealership.database;
 
 import com.cardealership.DLException;
 import com.cardealership.util.MySQLDatabase;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class CustomerDatabase {
@@ -20,6 +21,16 @@ public class CustomerDatabase {
         params.add(email);
         params.add(phone != null ? phone : "");
         return db.setDataReturnKey(sql, params);
+    }
+
+    public int createCustomer(Connection connection, String firstName, String lastName, String email, String phone) throws DLException {
+        String sql = "INSERT INTO Customers (first_name, last_name, email, phone) VALUES (?, ?, ?, ?)";
+        ArrayList<String> params = new ArrayList<>();
+        params.add(firstName);
+        params.add(lastName);
+        params.add(email);
+        params.add(phone != null ? phone : "");
+        return db.setDataReturnKey(connection, sql, params);
     }
 
     public boolean emailExists(String email) throws DLException {
