@@ -1015,7 +1015,7 @@
       <div class="rule-item"><div class="rule-dot rule-dot-blue"></div><div class="rule-text"><strong>One active Reservation per vehicle.</strong> Check before inserting a new Reservation row.</div></div>
       <div class="rule-item"><div class="rule-dot rule-dot-green"></div><div class="rule-text"><strong>Sale triggers status change.</strong> Recording a Sale must flip Vehicle.status to Sold atomically.</div></div>
       <div class="rule-item"><div class="rule-dot rule-dot-amber"></div><div class="rule-text"><strong>Customer must be complete before sale.</strong> first_name, last_name, and email all required.</div></div>
-      <div class="rule-item"><div class="rule-dot rule-dot-blue"></div><div class="rule-text"><strong>Every vehicle change logs to VehicleChangeLog.</strong> INSERT, UPDATE, and DELETE all get a row.</div></div>
+      <div class="rule-item"><div class="rule-dot rule-dot-blue"></div><div class="rule-text"><strong>Important actions are audited.</strong> Vehicle create/update/status changes use VehicleChangeLog; deletes and other general actions use ActionLog.</div></div>
       <div class="rule-item"><div class="rule-dot rule-dot-red"></div><div class="rule-text"><strong>Vehicle must be Available or Reserved to sell.</strong> Reject sale attempt if status is already Sold.</div></div>
       <div class="rule-item"><div class="rule-dot rule-dot-green"></div><div class="rule-text"><strong>Reservation converts on sale.</strong> Set Reservation.status = Converted when the vehicle is sold.</div></div>
     </div>

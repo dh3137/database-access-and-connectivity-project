@@ -214,15 +214,19 @@ INSERT INTO VehicleChangeLog (vehicle_id, emp_id, change_type, field_changed, ne
     (20,1, 'UPDATE', 'status', 'Sold'),
     (21,4, 'INSERT', NULL,     NULL);
 
+INSERT INTO ActionLog (user_id, emp_id, action_type, object_type, object_id, details) VALUES
+    (1, 1, 'SALE_RECORDED', 'Vehicle', '20', 'Sample sale recorded for customer_id=1'),
+    (2, 2, 'VEHICLE_UPDATED', 'Vehicle', '5', 'Sample vehicle status changed to Reserved');
+
 -- Reviews (model-level, team-authored)
 INSERT INTO Reviews (model_id, author_name, rating, review_text, source) VALUES
-    (1,  'Ivan Karlo',   5, 'The Honda Civic is our top pick for value-conscious buyers. Excellent fuel economy, a refined cabin, and Honda''s legendary reliability make it a standout in the compact class.', 'TEAM'),
-    (1,  'Team AutoPrime', 4, 'Smooth ride quality and intuitive infotainment. The turbocharged 1.5L punches above its weight — great for daily commutes and weekend road trips alike.', 'TEAM'),
-    (5,  'Ivan Karlo',   5, 'The Mustang GT delivers raw American muscle with surprising everyday usability. The 5.0L V8 soundtrack alone is worth the price of admission.', 'TEAM'),
+    (1,  'Ivan Karlo',   5, 'The Toyota Yaris is a smart pick for city driving. It is efficient, easy to park, and surprisingly refined for buyers who want dependable daily transportation.', 'TEAM'),
+    (1,  'Team AutoPrime', 4, 'Compact dimensions and simple controls make the Yaris approachable. We like it most for first-time buyers and commuters who want low running costs.', 'TEAM'),
+    (5,  'Ivan Karlo',   5, 'The BMW M4 delivers serious performance with a cabin that still works every day. Steering response is sharp, and the powertrain feels eager in every drive mode.', 'TEAM'),
     (5,  'Team AutoPrime', 4, 'Sharp handling and aggressive styling set this apart from the competition. We recommend the Performance Pack for drivers who want the full experience.', 'TEAM'),
-    (9,  'Team AutoPrime', 5, 'The 3 Series defines what a sport sedan should be. Perfect weight distribution, responsive steering, and a cabin that balances luxury with driver focus.', 'TEAM'),
-    (9,  'Ivan Karlo',   5, 'Every detail in the 3 Series interior feels intentional. The iDrive system is one of the best in the business, and the driving dynamics are class-leading.', 'TEAM'),
-    (15, 'Team AutoPrime', 5, 'The Huracán is a daily-driveable supercar in the truest sense. The naturally aspirated V10 is intoxicating, and Lamborghini''s build quality has never been better.', 'TEAM'),
-    (20, 'Ivan Karlo',   4, 'The RAV4 strikes the perfect balance between practicality and comfort. Generous cargo space, strong safety scores, and Toyota reliability make it our top SUV recommendation.', 'TEAM'),
-    (20, 'Team AutoPrime', 4, 'Great traction in mixed conditions and a smooth highway ride. The hybrid variant offers impressive fuel savings with no compromise in utility.', 'TEAM'),
-    (22, 'Team AutoPrime', 5, 'The Model Y redefines what an SUV can be. Instantaneous torque, over-the-air updates, and a minimalist cabin that feels genuinely futuristic.', 'TEAM');
+    (9,  'Team AutoPrime', 5, 'The Mercedes-Benz S-Class sets the tone for full-size luxury. The ride is quiet, the cabin materials are excellent, and the technology feels carefully integrated.', 'TEAM'),
+    (9,  'Ivan Karlo',   5, 'Every detail in the S-Class interior feels intentional. It is the strongest choice here for customers who value comfort, space, and a calm highway drive.', 'TEAM'),
+    (15, 'Team AutoPrime', 5, 'The Ferrari 488 GTB is focused, fast, and dramatic without feeling rough around the edges. The turbocharged V8 delivers huge pace with excellent response.', 'TEAM'),
+    (20, 'Ivan Karlo',   4, 'The BMW X5 strikes a strong balance between practicality and comfort. Generous cargo space, confident road manners, and a premium cabin make it an easy SUV recommendation.', 'TEAM'),
+    (20, 'Team AutoPrime', 4, 'Great traction in mixed conditions and a smooth highway ride make the X5 feel secure. It is best for buyers who want utility without giving up luxury.', 'TEAM'),
+    (22, 'Team AutoPrime', 5, 'The Porsche Cayenne brings sports-car confidence into an SUV shape. It feels composed, quick, and more engaging than most vehicles in this class.', 'TEAM');

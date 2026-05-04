@@ -25,13 +25,27 @@ public class ActionLogDatabase {
         return database.setData(sql, values);
     }
 
+    public boolean saveGeneralAction(int userId, int empId, String actionType, String objectType, String objectId, String details) throws DLException {
+        String sql = "INSERT INTO ActionLog (user_id, emp_id, action_type, object_type, object_id, details) VALUES (?, ?, ?, ?, ?, ?)";
+        ArrayList<String> values = new ArrayList<>();
+        values.add(userId > 0 ? String.valueOf(userId) : null);
+        values.add(empId > 0 ? String.valueOf(empId) : null);
+        values.add(actionType != null ? actionType : "ACTION");
+        values.add(objectType != null ? objectType : "");
+        values.add(objectId != null ? objectId : "");
+        values.add(details != null ? details : "");
+        return database.setData(sql, values);
+    }
+
     public List<String[]> getRecent(int limit) throws DLException {
         List<String[]> rows = new ArrayList<>();
         String sql = "SELECT vcl.vehicle_id, e.first_name, e.last_name, vcl.change_type, vcl.field_changed, vcl.new_value, vcl.change_date " +
                      "FROM VehicleChangeLog vcl " +
                      "JOIN Employees e ON vcl.emp_id = e.emp_id " +
-                     "ORDER BY vcl.change_date DESC LIMIT " + limit;
-        String[][] result = database.getData(sql, new ArrayList<>());
+                     "ORDER BY vcl.change_date DESC LIMIT ?";
+        ArrayList<String> values = new ArrayList<>();
+        values.add(String.valueOf(limit));
+        String[][] result = database.getData(sql, values);
 
         for (int i = 1; i < result.length; i++) {
             rows.add(result[i]);

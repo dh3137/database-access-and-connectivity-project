@@ -63,6 +63,19 @@ public class ReviewDatabase {
         return reviews;
     }
 
+    public int saveReview(int modelId, String authorName, int rating, String reviewText) throws DLException {
+        String sql = """
+            INSERT INTO Reviews (model_id, author_name, rating, review_text, source)
+            VALUES (?, ?, ?, ?, 'TEAM')
+            """;
+        ArrayList<String> params = new ArrayList<>();
+        params.add(String.valueOf(modelId));
+        params.add(authorName);
+        params.add(String.valueOf(rating));
+        params.add(reviewText);
+        return database.setDataReturnKey(sql, params);
+    }
+
     public double getAverageRating(int modelId) throws DLException {
         String sql = "SELECT AVG(rating) FROM Reviews WHERE model_id = ?";
         ArrayList<String> params = new ArrayList<>();
